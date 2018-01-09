@@ -143,8 +143,7 @@ var json = {
         ]
     }, {
         "title": "Application Observability",
-        questions: [
-            {
+        questions: [{
                 "type": "radiogroup",
                 "name": "Logs",
                 "title": "Application Logging",
@@ -193,8 +192,7 @@ var json = {
         ]
     }, {
         "title": "Application Observability",
-        questions: [
-            {
+        questions: [{
                 "type": "radiogroup",
                 "name": "TEST",
                 "title": "Application Testing",
@@ -221,7 +219,7 @@ var json = {
                 "colCount": 1,
                 "choices": ["1|HSM, hardware based encryption devices", "2|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3|Keys/Certs compiled into application", "4|Certificates/Keys loaded via shared disk", "5|Certificates/Keys loaded via files"]
             },
-            
+
 
         ]
     }]
