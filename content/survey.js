@@ -8,31 +8,58 @@ var json = {
     pages: [{
         "title": "Application Details",
         "questions": [{
-                name: "name",
+                name: "ASSMENTNAME",
                 type: "text",
                 title: "Application Name:",
                 placeHolder: "......",
                 isRequired: true
             },
             {
+                type: "radiogroup",
+                name: "GROUPS",
+                title: "Grouping",
+                isRequired: true,
+                colCount: 2,
+                choices: [
+                    "1|Individual Application",
+                    "2| Suite of Applications"
+                ]
+            },
+            {
+                "type": "panel",
+                "innerIndent": 2,
+                "name": "appsuitecount",
+                "title": "How many applications in the application suite",
+                "visibleIf": "{GROUPS} > 1",
+                "elements": [
+                    {
+                        name: "APPCOUNT",
+                        type: "text",
+                        title: "Please enter the number of applications:",
+                        placeHolder: "1",
+                        isRequired: true
+                    }
+                ]
+            },
+            {
                 type: "rating",
-                name: "Criticality",
+                name: "BUSPRIORITY",
                 title: "Whats the level of business criticality of this application?",
                 minRateDescription: "End of Life",
                 maxRateDescription: "Core Business Critical"
             },
             {
                 "type": "radiogroup",
-                "name": "Ownership",
-                "title": "Application Ownership",
+                "name": "OWNER",
+                "title": "Level of Ownership",
                 "comment": "Does the app team understand and actively develop the application ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["1|No health or readyiness probes available", "2|Custom watchdog process monitoring and managing the application", "3|Basic application health requires semi-complex scripting", "4|Scriptable liveness and readyiness probes", "5|Probes execute synthetic transactions to verify application health"]
+                "choices": ["1|Application developed by 3rd party or COTS application ", "2|In maintenance mode, no app SME knowledge, EOL imminent", "3|Maintenance mode, SME knowledge available", "4|Actively developed, SME knowledge available", "5|New Greenfield application"]
             },
             {
                 "type": "radiogroup",
-                "name": "ArchitecturalSuitability",
+                "name": "ARCHTYPE",
                 "comment": "Does the app architecture suitable for containerisation e.g. would a VM be better approach",
                 "title": "Architectural Suitability",
                 "isRequired": true,
@@ -44,12 +71,9 @@ var json = {
     }, {
         "title": "Application Dependencies",
         questions: [
-
-
-
             {
                 "type": "radiogroup",
-                "name": "DependenciesHardware",
+                "name": "DEPSHW",
                 "title": "Hardware",
                 "comment": "Does the application require specific hardware features to run on",
                 "isRequired": true,
@@ -58,7 +82,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "DependenciesOS",
+                "name": "DEPSOS",
                 "title": "Operating System",
                 "comment": "Does the application require specific hardware features to run on",
                 "isRequired": true,
@@ -67,7 +91,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Dependencies3rd",
+                "name": "DEPS3RD",
                 "title": "3rd party vendor components/systems",
                 "comment": "How dependent is the application on other systems and their failure modes",
                 "isRequired": true,
@@ -76,7 +100,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "DependenciesIN",
+                "name": "DEPSIN",
                 "title": "Dependencies - (Incoming/Northbound)",
                 "comment": "How dependent are other systems on this application and how easy are they to change",
                 "isRequired": true,
@@ -85,7 +109,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "DependenciesOUT",
+                "name": "DEPSOUT",
                 "title": "Dependencies - (Outgoing/Southbound)",
                 "comment": "How dependent are other systems on this application and how easy are they to change",
                 "isRequired": true,
@@ -97,7 +121,7 @@ var json = {
         "title": "Application Architecture",
         questions: [{
                 "type": "radiogroup",
-                "name": "Resiliency",
+                "name": "RESILIENCY",
                 "title": "Application resiliency",
                 "comment": "How resilient is the application and how well does it recover from outages",
                 "isRequired": true,
@@ -106,7 +130,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Communication",
+                "name": "COMMS",
                 "title": "Communication",
                 "comment": "How does the app communicate with the external world",
                 "isRequired": true,
@@ -115,7 +139,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "State",
+                "name": "STATE",
                 "title": "State Management",
                 "comment": "Does the application have any state requirements ?",
                 "isRequired": true,
@@ -133,7 +157,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Profile",
+                "name": "PROFILE",
                 "title": "Profile",
                 "comment": "What does the runtime profile of the application look like ?",
                 "isRequired": true,
@@ -145,7 +169,7 @@ var json = {
         "title": "Application Observability",
         questions: [{
                 "type": "radiogroup",
-                "name": "Logs",
+                "name": "LOGS",
                 "title": "Application Logging",
                 "comment": "How easy is it to determine how the application is performing and how to get information from it.",
                 "isRequired": true,
@@ -154,7 +178,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Metrics",
+                "name": "METRICS",
                 "title": "Application Metrics",
                 "comment": "How easy is it to determine how the application is performing and how to get information from it.",
                 "isRequired": true,
@@ -163,12 +187,12 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Health",
+                "name": "HEALTH",
                 "title": "Application Health",
                 "comment": "How easy is it to determine how the application is performing and how to get information from it.",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["1|Application developed by 3rd party or COTS application ", "2|In maintenance mode, no app SME knowledge, EOL imminent", "3|Maintenance mode, SME knowledge available", "4|Actively developed, SME knowledge available", "5|New Greenfield application"]
+                "choices": ["1|No health or readyiness probes available", "2|Custom watchdog process monitoring and managing the application", "3|Basic application health requires semi-complex scripting", "4|Scriptable liveness and readyiness probes", "5|Probes execute synthetic transactions to verify application health"]
             },
             {
                 "type": "radiogroup",
@@ -203,7 +227,7 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "Compliance",
+                "name": "COMPLIANCE",
                 "title": "Compliance",
                 "comment": "Does the application have any legal compliance requirements e.g. PCI, HIPPA etc Does the application have any licensing requirements e.g. per core licensing",
                 "isRequired": true,
@@ -219,10 +243,32 @@ var json = {
                 "colCount": 1,
                 "choices": ["1|HSM, hardware based encryption devices", "2|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3|Keys/Certs compiled into application", "4|Certificates/Keys loaded via shared disk", "5|Certificates/Keys loaded via files"]
             },
-
-
+            {
+                type: "comment",
+                name: "NOTES",
+                title: "Additional notes or comments"
+            }
         ]
-    }]
+    }
+    // , {
+    //     "title": "Assessment notes",
+    //     questions: [{
+    //             "type": "radiogroup",
+    //             "name": "WORKTYPE",
+    //             "title": "Application Testing",
+    //             "comment": "What kind of testing does the application undergo ?",
+    //             "isRequired": true,
+    //             "colCount": 1,
+    //             "choices": ["1|Manual testing only", "2|Minimal automated testing, UI focused only ", "3|Automated unit & regression testing, basic CI pipelines", "4|Highly repeatable automated testing - Unit, Integration, smoke tests before production deployment, modern test practices followed", "5|Chaos Engineering principlals followed. Testing in production e.g. A/B, experimentation"]
+    //         },
+    //         {
+    //             type: "comment",
+    //             name: "NOTES",
+    //             title: "Additional notes or comments"
+    //         }
+    //     ]
+    // }
+    ]
 }
 
 window.survey = new Survey.Model(json);
