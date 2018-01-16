@@ -1,6 +1,25 @@
+var defaultThemeColors = Survey
+    .StylesManager
+    .ThemeColors["default"];
+
+defaultThemeColors["$main-color"] = "#a30000";
+defaultThemeColors["$main-hover-color"] = "#820000";
+defaultThemeColors["$text-color"] = "#4a4a4a";
+defaultThemeColors["$header-color"] = "#ffffff";
+defaultThemeColors["$header-background-color"] = "#820000";
+defaultThemeColors["$body-container-background-color"] = "#f8f8f8";
+defaultThemeColors["$error-color"]="#a30000";
+defaultThemeColors["$border-color"]="#820000";
+
+
+// "$error-background-color": "#fd6575"
+
+
+
+
 Survey
     .StylesManager
-    .applyTheme("default");
+    .applyTheme();
 
 var json = {
     title: "Application Assessment",
