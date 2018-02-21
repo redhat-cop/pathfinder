@@ -10,16 +10,23 @@ function onFormSubmit(e) {
         var f = FormApp.openByUrl(fUrl);
 
         var rs = f.getResponses();
-        var r = rs[rs.length - 1]; // Get last response made
-
-        var itemResponses = r.getItemResponses();
-        for (var j = 1; j < itemResponses.length; j++) {
-            var itemResponse = itemResponses[j].getResponse()
-            var res = itemResponse.substr(0, 1);
-            var cell = sheet.getRange(rs.length, j).setValue(res)
+        for (var i = 0; i < rs.length; i++) {
+            r = rs[i];
+            var itemResponses = r.getItemResponses();
+            for (var j = 0; j < itemResponses.length; j++) {
+                var itemResponse = itemResponses[j].getResponse();
+                var res="";
+                var filter = itemResponse.charAt(1);
+                if (filter == '.'){
+                   res = itemResponse.substr(0, 1);
+                }else{
+                 res = itemResponse;
+                }
+                var cell = sheet.getRange(i+1, j+1).setValue(res)
+            }
         }
     } catch (e) {
-        sheet.getRange(3, 2).setValue(e.message);
+        sheet.getRange(10000, 2).setValue(e.message);
     }
 }
 
