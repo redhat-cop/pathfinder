@@ -1,0 +1,259 @@
+---
+swagger: 2.0
+info:
+  title: Assessment
+  description: Pathfinder Assessment API
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 1.0.0
+paths:
+  /customers/{custId}:
+    get:
+      description: Get Customer
+      responses:
+        200:
+          description: Customer Details
+          schema:
+            $ref: '#/definitions/CustomerType'
+        404:
+          description: Customer Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+  /customers/{custId}/applications/{appId}:
+    get:
+      description: Get Application details
+      responses:
+        200:
+          description: Application Details
+          schema:
+            $ref: '#/definitions/ApplicationType'
+        404:
+          description: Application Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+    - name: appId
+      in: path
+      description: Application Identifier
+      required: true
+      type: string
+  /customers/:
+    post:
+      description: Create Customer
+      parameters:
+      - name: body
+        in: body
+        schema:
+          $ref: '#/definitions/CustomerType'
+      responses:
+        200:
+          description: Customer Created
+          schema:
+            type: string
+        400:
+          description: Unable to create customer
+  /customers/{custId}/applications/:
+    get:
+      description: Get applications list
+      responses:
+        200:
+          description: Applications List
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ApplicationType'
+    post:
+      description: Create Application
+      parameters:
+      - name: custId
+        in: path
+        description: Customer Identifier
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: Application Definition
+        schema:
+          $ref: '#/definitions/ApplicationType'
+      responses:
+        200:
+          description: Application Created
+          schema:
+            type: string
+        400:
+          description: Unable to create application
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+  /customers/{custId}/applications/{appId}/assessments:
+    get:
+      description: Get assessment ids
+      responses:
+        200:
+          description: Application Assessments
+          schema:
+            type: array
+            items:
+              type: string
+    post:
+      description: Create Assessment
+      parameters:
+      - name: body
+        in: body
+        description: Application Assessment
+        schema:
+          $ref: '#/definitions/AssessmentType'
+      responses:
+        200:
+          description: Assessment Created
+          schema:
+            type: string
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+  /customers/{custId}/applications/{appId}/assessments/{assessId}:
+    get:
+      description: Get Application Assessment
+      responses:
+        200:
+          description: Assessment Details
+          schema:
+            $ref: '#/definitions/AssessmentType'
+        400:
+          description: Assessment Not Found
+    post:
+      description: Update Application Assessment
+      parameters:
+      - name: body
+        in: body
+        description: Application Assessment details
+        schema:
+          $ref: '#/definitions/AssessmentType'
+      responses:
+        200:
+          description: Application Assessment Updated
+        400:
+          description: Assessment not found
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+    - name: assessId
+      in: path
+      required: true
+      type: string
+definitions:
+  AssessmentType:
+    title: Root Type for AssessmentType
+    description: The root of the AssessmentType type's schema.
+    type: object
+    properties:
+      GROUPS:
+        type: string
+      ASSMENTNAME:
+        type: string
+      BUSPRIORITY:
+        type: string
+      OWNER:
+        type: string
+      ARCHTYPE:
+        type: string
+      DEPSHW:
+        type: string
+      DEPSOS:
+        type: string
+      DEPS3RD:
+        type: string
+      DEPSIN:
+        type: string
+      DEPSOUT:
+        type: string
+      RESILIENCY:
+        type: string
+      COMMS:
+        type: string
+      STATE:
+        type: string
+      HA:
+        type: string
+      PROFILE:
+        type: string
+      LOGS:
+        type: string
+      METRICS:
+        type: string
+      HEALTH:
+        type: string
+      CONFIG:
+        type: string
+      DEPLOY:
+        type: string
+      TEST:
+        type: string
+      COMPLIANCE:
+        type: string
+      SECURITY:
+        type: string
+      NOTES:
+        type: string
+  CustomerType:
+    required:
+    - CustomerName
+    - CustomerDescription
+    - CustomerAssessor
+    properties:
+      CustomerName:
+        type: string
+      CustomerDescription:
+        type: string
+      CustomerAssessor:
+        type: string
+  ApplicationType:
+    required:
+    - Description
+    - Name
+    properties:
+      Name:
+        description: Application Name
+        type: string
+      Description:
+        description: Application Description
+        type: string
+  keyvalue:
+    required:
+    - key
+    - value
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+  testassessment:
+    required:
+    - payload
+    properties:
+      payload:
+        type: array
+        items:
+          $ref: '#/definitions/keyvalue'
