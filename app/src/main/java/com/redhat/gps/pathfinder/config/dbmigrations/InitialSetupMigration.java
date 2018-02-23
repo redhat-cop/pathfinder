@@ -1,7 +1,6 @@
 package com.redhat.gps.pathfinder.config.dbmigrations;
 
-import com.redhat.gps.pathfinder.domain.Authority;
-import com.redhat.gps.pathfinder.domain.User;
+import com.redhat.gps.pathfinder.domain.*;
 import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
 
 import com.github.mongobee.changeset.ChangeLog;
@@ -9,8 +8,10 @@ import com.github.mongobee.changeset.ChangeSet;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Creates the initial database setup
@@ -91,5 +92,28 @@ public class InitialSetupMigration {
         userUser.setCreatedDate(Instant.now());
         userUser.getAuthorities().add(userAuthority);
         mongoTemplate.save(userUser);
+    }
+
+
+    @ChangeSet(order = "03", author = "initiator", id = "03-addCollections")
+    public void addCollections(MongoTemplate mongoTemplate) {
+
+        Assessments firstAssessment = new Assessments();
+        firstAssessment.setResults("test");
+        mongoTemplate.save(firstAssessment);
+
+        Applications firstApp = new Applications();
+        firstApp.setName("test app");
+        List<Assessments> myList = new ArrayList<>();
+        myList.add(firstAssessment);
+        firstApp.setAssessments(myList);
+        mongoTemplate.save(firstApp);
+
+        Customer firstCust = new Customer();
+        firstCust.setName("test customer");
+        List<Applications> myAppList = new ArrayList<>();
+        myAppList.add(firstApp);
+        firstCust.setApplications(myAppList);
+        mongoTemplate.save(firstCust);
     }
 }
