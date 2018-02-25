@@ -164,7 +164,7 @@ paths:
       required: true
       type: string
 definitions:
-  AssessmentType:
+  OldAssessmentType:
     title: Root Type for AssessmentType
     description: The root of the AssessmentType type's schema.
     type: object
@@ -223,6 +223,8 @@ definitions:
     - CustomerDescription
     - CustomerAssessor
     properties:
+      CustomerId:
+        type: string
       CustomerName:
         type: string
       CustomerDescription:
@@ -234,6 +236,9 @@ definitions:
     - Description
     - Name
     properties:
+      Id:
+        description: Application Id
+        type: string
       Name:
         description: Application Name
         type: string
@@ -249,11 +254,11 @@ definitions:
         type: string
       value:
         type: string
-  testassessment:
-    required:
-    - payload
+  AssessmentType:
+#    required:
+#    - payload
     properties:
       payload:
-        type: array
-        items:
-          $ref: '#/definitions/keyvalue'
+        type: string
+      datetime:
+        type: string

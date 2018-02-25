@@ -95,25 +95,25 @@ public class InitialSetupMigration {
     }
 
 
-    @ChangeSet(order = "03", author = "initiator", id = "03-addCollections")
-    public void addCollections(MongoTemplate mongoTemplate) {
-
-        Assessments firstAssessment = new Assessments();
-        firstAssessment.setResults("test");
-        mongoTemplate.save(firstAssessment);
-
-        Applications firstApp = new Applications();
-        firstApp.setName("test app");
-        List<Assessments> myList = new ArrayList<>();
-        myList.add(firstAssessment);
-        firstApp.setAssessments(myList);
-        mongoTemplate.save(firstApp);
-
-        Customer firstCust = new Customer();
-        firstCust.setName("test customer");
-        List<Applications> myAppList = new ArrayList<>();
-        myAppList.add(firstApp);
-        firstCust.setApplications(myAppList);
-        mongoTemplate.save(firstCust);
-    }
+//    @ChangeSet(order = "03", author = "initiator", id = "03-addCollections")
+//    public void addCollections(MongoTemplate mongoTemplate) {
+//
+//        Assessments firstAssessment = new Assessments();
+//        firstAssessment.setResults("test");
+//        mongoTemplate.save(firstAssessment);
+//
+//        Applications firstApp = new Applications();
+//        firstApp.setName("test app");
+//        List<Assessments> myList = new ArrayList<>();
+//        myList.add(firstAssessment);
+//        firstApp.setAssessments(myList);
+//        mongoTemplate.save(firstApp);
+//
+//        Customer firstCust = new Customer();
+//        firstCust.setName("test customer");
+//        List<Applications> myAppList = new ArrayList<>();
+//        myAppList.add(firstApp);
+//        firstCust.setApplications(myAppList);
+//        mongoTemplate.save(firstCust);
+//    }
 }

@@ -14,6 +14,9 @@ import java.util.List;
 public interface CustomerRepository extends MongoRepository<Customer, String> {
 
     @Override
+    Customer save(Customer entity);
+
+    @Override
     Customer insert(Customer entity);
 
     @Override

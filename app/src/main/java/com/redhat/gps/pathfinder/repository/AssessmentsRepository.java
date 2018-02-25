@@ -12,4 +12,18 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 @Repository
 public interface AssessmentsRepository extends MongoRepository<Assessments, String> {
 
+    @Override
+    Assessments insert(Assessments Assessments);
+
+    @Override
+    Assessments save(Assessments entity);
+
+    @Override
+    Assessments findOne(String s);
+
+    @Override
+    boolean exists(String s);
+
+    @Override
+    long count();
 }
