@@ -1,5 +1,6 @@
 package com.redhat.gps.pathfinder.domain;
 
+import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,14 +13,62 @@ import java.util.Objects;
  * A Assessments.
  */
 @Document(collection = "assessments")
+@Data
 public class Assessments implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    private String GROUPS = null;
+
+    private String ASSMENTNAME = null;
+
+    private String BUSPRIORITY = null;
+
+    private String OWNER = null;
+
+    private String ARCHTYPE = null;
+
+    private String DEPSHW = null;
+
+    private String DEPSOS = null;
+
+    private String dePS3RD = null;
+
+    private String DEPSIN = null;
+
+    private String DEPSOUT = null;
+
+    private String RESILIENCY = null;
+
+    private String COMMS = null;
+
+    private String STATE = null;
+
+    private String HA = null;
+
+    private String PROFILE = null;
+
+    private String LOGS = null;
+
+    private String METRICS = null;
+
+    private String HEALTH = null;
+
+    private String CONFIG = null;
+
+    private String DEPLOY = null;
+
+    private String TEST = null;
+
+    private String COMPLIANCE = null;
+
+    private String SECURITY = null;
+
+    private String NOTES = null;
 
     @Id
     private String id;
 
-    @NotNull
+//    @NotNull
     @Field("results")
     private String results;
 

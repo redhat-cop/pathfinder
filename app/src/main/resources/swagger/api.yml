@@ -164,7 +164,7 @@ paths:
       required: true
       type: string
 definitions:
-  OldAssessmentType:
+  AssessmentVals:
     title: Root Type for AssessmentType
     description: The root of the AssessmentType type's schema.
     type: object
@@ -259,6 +259,6 @@ definitions:
 #    - payload
     properties:
       payload:
-        type: string
+        $ref: '#/definitions/AssessmentVals'
       datetime:
         type: string
