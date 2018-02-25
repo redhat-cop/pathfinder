@@ -137,19 +137,19 @@ paths:
             $ref: '#/definitions/AssessmentType'
         400:
           description: Assessment Not Found
-    post:
-      description: Update Application Assessment
-      parameters:
-      - name: body
-        in: body
-        description: Application Assessment details
-        schema:
-          $ref: '#/definitions/AssessmentType'
-      responses:
-        200:
-          description: Application Assessment Updated
-        400:
-          description: Assessment not found
+#    post:
+#      description: Update Application Assessment
+#      parameters:
+#      - name: body
+#        in: body
+#        description: Application Assessment details
+#        schema:
+#          $ref: '#/definitions/AssessmentType'
+#      responses:
+#        200:
+#          description: Application Assessment Updated
+#        400:
+#          description: Assessment not found
     parameters:
     - name: custId
       in: path

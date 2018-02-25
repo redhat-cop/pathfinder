@@ -8,6 +8,7 @@ import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
 import com.redhat.gps.pathfinder.repository.CustomerRepository;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationType;
 import com.redhat.gps.pathfinder.web.api.model.AssessmentType;
+import com.redhat.gps.pathfinder.web.api.model.AssessmentVals;
 import com.redhat.gps.pathfinder.web.api.model.CustomerType;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -44,16 +45,45 @@ public class CustomerAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
     }
 
-    public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(String custId, String appId, String assessId) {
+    public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true )@PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdGet....");
 
-        return null;
-    }
+        Assessments currAssm = assmRepo.findOne(assessId);
+        AssessmentType resp = new AssessmentType();
 
+        if (currAssm != null){
+            AssessmentVals newitem = new AssessmentVals();
+            newitem.setARCHTYPE(currAssm.getARCHTYPE());
+            newitem.setASSMENTNAME(currAssm.getASSMENTNAME());
+            newitem.setBUSPRIORITY(currAssm.getBUSPRIORITY());
+            newitem.setARCHTYPE(currAssm.getARCHTYPE());
+            newitem.setCOMMS(currAssm.getCOMMS());
+            newitem.setCOMPLIANCE(currAssm.getCOMPLIANCE());
+            newitem.setCONFIG(currAssm.getCONFIG());
+            newitem.setDEPLOY(currAssm.getDEPLOY());
+            newitem.setDePS3RD(currAssm.getDePS3RD());
+            newitem.setDEPSHW(currAssm.getDEPSHW());
+            newitem.setDEPSIN(currAssm.getDEPSIN());
+            newitem.setDEPSOS(currAssm.getDEPSOS());
+            newitem.setDEPSOUT(currAssm.getDEPSOUT());
+            newitem.setGROUPS(currAssm.getGROUPS());
+            newitem.setHA(currAssm.getHA());
+            newitem.setHEALTH(currAssm.getHEALTH());
+            newitem.setLOGS(currAssm.getLOGS());
+            newitem.setMETRICS(currAssm.getMETRICS());
+            newitem.setNOTES(currAssm.getNOTES());
+            newitem.setOWNER(currAssm.getOWNER());
+            newitem.setPROFILE(currAssm.getPROFILE());
+            newitem.setRESILIENCY(currAssm.getRESILIENCY());
+            newitem.setSECURITY(currAssm.getSECURITY());
+            newitem.setSTATE(currAssm.getSTATE());
+            newitem.setTEST(currAssm.getTEST());
 
-    public ResponseEntity<Void> customersCustIdApplicationsAppIdAssessmentsAssessIdPost(String custId, String appId, String assessId, AssessmentType body) {
-        log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdPost....");
-        return null;
+            resp.setPayload(newitem);
+            return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
+        }else{
+            return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
+        }
     }
 
 
