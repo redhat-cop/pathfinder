@@ -26,12 +26,23 @@ var json = {
     showProgressBar: "bottom",
     pages: [{
         "title": "Application Details",
-        "questions": [{
+        "questions": [
+//        {
+//                name: "ASSMENTNAME",
+//                type: "text",
+//                title: "Application Name:",
+//                placeHolder: "......",
+//                isRequired: true
+//            },
+            {
+                type: "dropdown",
                 name: "ASSMENTNAME",
-                type: "text",
-                title: "Application Name:",
-                placeHolder: "......",
-                isRequired: true
+                title: "Select the application to be assessed....",
+                isRequired: true,
+                choicesByUrl: {
+                        url: "api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/",
+                            valueName: "Name"
+                }
             },
             {
                 type: "radiogroup",
