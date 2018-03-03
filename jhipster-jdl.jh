@@ -1,0 +1,13 @@
+entity Customer{
+	name String required
+}
+
+entity Applications{
+	name String required
+}
+
+entity Assessments{
+	results String required
+}
+
+
