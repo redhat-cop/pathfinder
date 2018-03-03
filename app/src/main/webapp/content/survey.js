@@ -295,9 +295,15 @@ window.survey = new Survey.Model(json);
 survey
     .onComplete
     .add(function (result) {
-        document
-            .querySelector('#surveyResult')
-            .innerHTML = "result: " + JSON.stringify(result.data);
+//        document
+//            .querySelector('#surveyResult')
+//            .innerHTML = "result: " + JSON.stringify(result.data);
+            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
+            xmlhttp.open("POST", "/api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/5a90515bfd4fbe22a9ff6539/assessments");
+            xmlhttp.setRequestHeader("Content-Type", "application/json");
+            myObj = { "payload": result.data};
+            xmlhttp.send(JSON.stringify(myObj));
+
     });
 
 $("#surveyElement").Survey({
