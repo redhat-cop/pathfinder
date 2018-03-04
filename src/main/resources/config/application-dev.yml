@@ -32,7 +32,7 @@ spring:
         serialization.indent_output: true
     data:
         mongodb:
-            uri: mongodb://localhost:27017
+            uri: mongodb://localhost:9999/pathfinder?authSource=pathfinder
             database: pathfinder
     mail:
         host: localhost
@@ -117,5 +117,13 @@ jhipster:
 # More documentation is available at:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
+
+//Used when not running in ose/k8s environment
+database-user: dbuser
+database-password: dbuser12345
+database-name: pathfinder
+database-admin-password: 12345
+dbhostname: localhost
+dbhostport: 9999
 
 application:

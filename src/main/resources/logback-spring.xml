@@ -48,6 +48,7 @@
     <logger name="springfox" level="DEBUG"/>
     <logger name="sun.rmi" level="WARN"/>
     <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="io.fabric8" level="DEBUG"/>
     <!--<logger name="com.mongodb" level="DEBUG" />-->
 
     <!-- https://logback.qos.ch/manual/configuration.html#shutdownHook and https://jira.qos.ch/browse/LOGBACK-1090 -->
