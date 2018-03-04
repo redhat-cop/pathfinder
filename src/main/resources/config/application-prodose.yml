@@ -29,6 +29,7 @@ spring:
         mongodb:
             uri: mongodb://mongodb:27017
             database: pathfinder
+            authentication-database: pathfinder
     mail:
         host: localhost
         port: 25
