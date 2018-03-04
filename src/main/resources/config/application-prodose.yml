@@ -38,6 +38,16 @@ spring:
     thymeleaf:
         cache: true
 
+    cloud:
+        kubernetes:
+            configmap:
+                enabled: true
+            secrets:
+                enabled: true
+                paths: /tmp/secrets
+                name: mongodb
+                enableApi: true
+
 # ===================================================================
 # To enable SSL, generate a certificate using:
 # keytool -genkey -alias pathfinder -storetype PKCS12 -keyalg RSA -keysize 2048 -keystore keystore.p12 -validity 3650
@@ -112,11 +122,7 @@ jhipster:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
-spring.cloud.kubernetes.configmap.enabled=true
-spring.cloud.kubernetes.secrets.enabled=true
-spring.cloud.kubernetes.secrets.paths=/tmp/secrets
-spring.cloud.kubernetes.secrets.name=mongodb
-spring.cloud.kubernetes.secrets.enableApi=true
+
 
 
 application:
