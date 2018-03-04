@@ -112,5 +112,11 @@ jhipster:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
+spring.cloud.kubernetes.configmap.enabled=true
+spring.cloud.kubernetes.secrets.enabled=true
+spring.cloud.kubernetes.secrets.paths=/tmp/secrets
+spring.cloud.kubernetes.secrets.name=mongodb
+spring.cloud.kubernetes.secrets.enableApi=true
+
 
 application:

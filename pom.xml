@@ -273,9 +273,9 @@
             <artifactId>spring-security-data</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-kubernetes-core</artifactId>
-            <version>0.2.0.RELEASE</version>
+            <groupId>io.fabric8</groupId>
+            <artifactId>spring-cloud-starter-kubernetes</artifactId>
+            <version>RELEASE</version>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
     </dependencies>
