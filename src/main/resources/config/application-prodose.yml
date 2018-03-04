@@ -27,9 +27,9 @@ spring:
             enabled: false
     data:
         mongodb:
-            uri: mongodb://mongodb:27017
-            database: pathfinder
-            authentication-database: pathfinder
+            uri: mongodb://mongodb:27017/pathfinder?authSource=admin
+#            database: pathfinder
+#            authentication-database: pathfinder
     mail:
         host: localhost
         port: 25
