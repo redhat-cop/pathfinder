@@ -15,8 +15,8 @@
 
 logging:
     level:
-        ROOT: INFO
-        com.redhat.gps.pathfinder: INFO
+        ROOT: DEBUG
+        com.redhat.gps.pathfinder: DEBUG
         io.github.jhipster: INFO
 
 spring:
@@ -27,8 +27,8 @@ spring:
             enabled: false
     data:
         mongodb:
-            uri: mongodb://mongodb:27017/pathfinder?authSource=admin
-#            database: pathfinder
+            uri: mongodb:////pathfinder?authSource=admin
+            database: pathfinder
 #            authentication-database: pathfinder
     mail:
         host: localhost
@@ -111,5 +111,6 @@ jhipster:
 # More documentation is available at:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
+
 
 application:

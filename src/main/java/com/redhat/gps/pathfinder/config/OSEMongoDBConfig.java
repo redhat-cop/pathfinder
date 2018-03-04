@@ -28,17 +28,16 @@ public class OSEMongoDBConfig {
 
     private final Environment environment;
 
-
-    @Value("${database-user:missing}")
+    @Value("${database-user}")
     private String username;
 
-    @Value("${database-password:missing}")
+    @Value("${database-password}")
     private String password;
 
-    @Value("${database-name:missing}")
+    @Value("${database-name}")
     private String dbname;
 
-    @Value("${database-admin-password:missing}")
+    @Value("${database-admin-password}")
     private String adminpwd;
 
     @Value("${dbhostname:mongodb}")

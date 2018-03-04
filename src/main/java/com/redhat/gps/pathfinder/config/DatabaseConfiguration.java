@@ -7,6 +7,7 @@ import io.github.jhipster.domain.util.JSR310DateConverters.DateToZonedDateTimeCo
 import io.github.jhipster.domain.util.JSR310DateConverters.ZonedDateTimeToDateConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
@@ -30,6 +31,9 @@ import java.util.List;
 @Import(value = MongoAutoConfiguration.class)
 @EnableMongoAuditing(auditorAwareRef = "springSecurityAuditorAware")
 public class DatabaseConfiguration {
+
+    @Autowired
+    private OSEMongoDBConfig dbconfig;
 
     private final Logger log = LoggerFactory.getLogger(DatabaseConfiguration.class);
 
@@ -55,7 +59,7 @@ public class DatabaseConfiguration {
     public Mongobee mongobee(MongoClient mongoClient, MongoTemplate mongoTemplate, MongoProperties mongoProperties) {
         log.debug("Configuring Mongobee");
         Mongobee mongobee = new Mongobee(mongoClient);
-        mongobee.setDbName(mongoProperties.getDatabase());
+        mongobee.setDbName(dbconfig.getDatabaseName());
         mongobee.setMongoTemplate(mongoTemplate);
         // package to scan for migrations
         mongobee.setChangeLogsScanPackage("com.redhat.gps.pathfinder.config.dbmigrations");
