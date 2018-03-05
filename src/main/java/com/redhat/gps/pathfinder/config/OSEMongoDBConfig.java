@@ -78,7 +78,6 @@ public class OSEMongoDBConfig {
     @Bean
     @ConditionalOnMissingBean
     public MongoClient mongo() throws UnknownHostException {
-        log.info(this.toString());
         MongoClientOptions tmpoptions;
         if (options == null) {
             tmpoptions = MongoClientOptions.builder().build();
@@ -96,10 +95,34 @@ public class OSEMongoDBConfig {
         credentials.add(MongoCredential.createCredential(this.username, this.dbname,
             this.password.toCharArray()));
 
-        return new MongoClient(
-            Collections.singletonList(new ServerAddress(this.dbhost, this.dbport)), credentials,
-            options);
+        MongoClientURI dburi = new MongoClientURI(this.createMongoURL());
 
+        return new MongoClient(dburi);
+
+//        return new MongoClient(
+//            Collections.singletonList(new ServerAddress(this.dbhost, this.dbport)), credentials,
+//            options);
+
+    }
+
+    //mongodb://dbuser:dbuser12345@mongodb/pathfinder?authSource=admin
+
+    private String createMongoURL(){
+        StringBuilder res = new StringBuilder();
+        res.append("mongodb://")
+            .append(this.username)
+            .append(":")
+            .append(this.password)
+            .append("@")
+            .append(this.dbhost)
+            .append(":")
+            .append(this.dbport)
+            .append("/")
+            .append(this.dbname)
+            .append("?authSource=")
+            .append(this.dbname);
+        log.debug("Mongo URL=============>"+res.toString());
+        return res.toString();
     }
 
     @Override
