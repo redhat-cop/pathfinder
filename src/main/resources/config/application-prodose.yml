@@ -27,7 +27,7 @@ spring:
             enabled: false
     data:
         mongodb:
-            uri: mongodb:///pathfinder?authSource=admin
+            uri: mongodb://mongodb/pathfinder?authSource=admin
             database: pathfinder
 #            authentication-database: pathfinder
     mail:
