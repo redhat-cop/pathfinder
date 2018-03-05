@@ -76,7 +76,6 @@ public class OSEMongoDBConfig {
     }
 
     @Bean
-    @ConditionalOnMissingBean
     public MongoClient mongo() throws UnknownHostException {
         MongoClientOptions tmpoptions;
         if (options == null) {
