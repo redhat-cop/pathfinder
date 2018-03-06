@@ -15,8 +15,8 @@
 
 logging:
     level:
-        ROOT: DEBUG
-        com.redhat.gps.pathfinder: DEBUG
+        ROOT: INFO
+        com.redhat.gps.pathfinder: INFO
         io.github.jhipster: INFO
 
 spring:
@@ -111,6 +111,5 @@ jhipster:
 # More documentation is available at:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
-#dbhostname: localhost
 
 application:

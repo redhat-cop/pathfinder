@@ -22,8 +22,8 @@ import java.util.Optional;
 /**
  * REST controller for managing Applications.
  */
-@RestController
-@RequestMapping("/api")
+//@RestController
+//@RequestMapping("/api")
 public class ApplicationsResource {
 
     private final Logger log = LoggerFactory.getLogger(ApplicationsResource.class);

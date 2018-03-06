@@ -22,8 +22,8 @@ import java.util.Optional;
 /**
  * REST controller for managing Assessments.
  */
-@RestController
-@RequestMapping("/api")
+//@RestController
+//@RequestMapping("/api")
 public class AssessmentsResource {
 
     private final Logger log = LoggerFactory.getLogger(AssessmentsResource.class);

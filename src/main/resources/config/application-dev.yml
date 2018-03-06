@@ -15,9 +15,9 @@
 
 logging:
     level:
-        ROOT: DEBUG
+        ROOT: INFO
         com.redhat.gps.pathfinder: DEBUG
-        io.github.jhipster: DEBUG
+        io.github.jhipster: INFO
 
 spring:
     profiles:

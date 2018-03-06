@@ -14,8 +14,8 @@ import java.util.List;
 /**
  * Resource to return information about the currently running Spring profiles.
  */
-@RestController
-@RequestMapping("/api")
+//@RestController
+//@RequestMapping("/api")
 public class ProfileInfoResource {
 
     private final Environment env;
