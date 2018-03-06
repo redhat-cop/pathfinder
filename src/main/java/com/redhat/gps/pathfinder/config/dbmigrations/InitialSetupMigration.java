@@ -1,17 +1,16 @@
 package com.redhat.gps.pathfinder.config.dbmigrations;
 
-import com.redhat.gps.pathfinder.domain.*;
-import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
-
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
+import com.redhat.gps.pathfinder.domain.Assessments;
+import com.redhat.gps.pathfinder.domain.Authority;
+import com.redhat.gps.pathfinder.domain.User;
+import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+
+import static com.redhat.gps.pathfinder.web.api.StaticAPIImpl.MIN_ASSESSMENT_VALUES;
 
 /**
  * Creates the initial database setup
@@ -95,25 +94,34 @@ public class InitialSetupMigration {
     }
 
 
-//    @ChangeSet(order = "03", author = "initiator", id = "03-addCollections")
-//    public void addCollections(MongoTemplate mongoTemplate) {
-//
-//        Assessments firstAssessment = new Assessments();
-//        firstAssessment.setResults("test");
-//        mongoTemplate.save(firstAssessment);
-//
-//        Applications firstApp = new Applications();
-//        firstApp.setName("test app");
-//        List<Assessments> myList = new ArrayList<>();
-//        myList.add(firstAssessment);
-//        firstApp.setAssessments(myList);
-//        mongoTemplate.save(firstApp);
-//
-//        Customer firstCust = new Customer();
-//        firstCust.setName("test customer");
-//        List<Applications> myAppList = new ArrayList<>();
-//        myAppList.add(firstApp);
-//        firstCust.setApplications(myAppList);
-//        mongoTemplate.save(firstCust);
-//    }
+    @ChangeSet(order = "03", author = "initiator", id = "03-addStaticData")
+    public void addStaticData(MongoTemplate mongoTemplate) {
+
+        Assessments staticMinAssessmentValue = new Assessments();
+        staticMinAssessmentValue.setId(MIN_ASSESSMENT_VALUES);
+        staticMinAssessmentValue.setARCHTYPE("3");
+        staticMinAssessmentValue.setCLUSTER("3");
+        staticMinAssessmentValue.setCOMMS("3");
+        staticMinAssessmentValue.setCOMPLIANCE("4");
+        staticMinAssessmentValue.setCONFIG("3");
+        staticMinAssessmentValue.setCONTAINERS("2");
+        staticMinAssessmentValue.setDEPLOY("5");
+        staticMinAssessmentValue.setDEPS3RD("4");
+        staticMinAssessmentValue.setDEPSHW("3");
+        staticMinAssessmentValue.setDEPSIN("3");
+        staticMinAssessmentValue.setDEPSOUT("3");
+        staticMinAssessmentValue.setDEPSOS("3");
+        staticMinAssessmentValue.setHA("3");
+        staticMinAssessmentValue.setHEALTH("2");
+        staticMinAssessmentValue.setLOGS("4");
+        staticMinAssessmentValue.setMETRICS("4");
+        staticMinAssessmentValue.setOWNER("3");
+        staticMinAssessmentValue.setPROFILE("4");
+        staticMinAssessmentValue.setRESILIENCY("2");
+        staticMinAssessmentValue.setSECURITY("3");
+        staticMinAssessmentValue.setSTATE("3");
+        staticMinAssessmentValue.setTEST("3");
+
+        mongoTemplate.save(staticMinAssessmentValue);
+    }
 }

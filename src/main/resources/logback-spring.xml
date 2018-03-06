@@ -41,7 +41,7 @@
     <logger name="org.reflections" level="WARN"/>
     <logger name="org.springframework" level="WARN"/>
     <logger name="org.springframework.web" level="INFO"/>
-    <logger name="org.springframework.security" level="WARN"/>
+    <logger name="org.springframework.security" level="INFO"/>
     <logger name="org.springframework.cache" level="WARN"/>
     <logger name="org.thymeleaf" level="WARN"/>
     <logger name="org.xnio" level="WARN"/>

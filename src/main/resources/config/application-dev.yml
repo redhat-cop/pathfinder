@@ -15,7 +15,7 @@
 
 logging:
     level:
-        ROOT: INFO
+        ROOT: DEBUG
         com.redhat.gps.pathfinder: DEBUG
         io.github.jhipster: INFO
 
