@@ -228,6 +228,11 @@ definitions:
         type: string
       NOTES:
         type: string
+      DEPSOUTLIST:
+        type: array
+        items:
+          type: string
+
   CustomerType:
     required:
     - CustomerName

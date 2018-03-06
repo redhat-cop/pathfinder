@@ -79,6 +79,7 @@ public class CustomerAPIImpl implements CustomersApi {
             newitem.setSECURITY(currAssm.getSECURITY());
             newitem.setSTATE(currAssm.getSTATE());
             newitem.setTEST(currAssm.getTEST());
+            newitem.setDEPSOUTLIST(currAssm.getDEPSOUTLIST());
 
             resp.setPayload(newitem);
             return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
@@ -153,6 +154,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 newitem.setSECURITY(body.getPayload().getSECURITY());
                 newitem.setSTATE(body.getPayload().getSTATE());
                 newitem.setTEST(body.getPayload().getTEST());
+                newitem.setDEPSOUTLIST(body.getPayload().getDEPSOUTLIST());
 
                 newitem = assmRepo.insert(newitem);
 

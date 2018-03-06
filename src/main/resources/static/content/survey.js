@@ -25,7 +25,7 @@ var json = {
             {
                 type: "dropdown",
                 "name": "CUSTNAME",
-                title: "Select the Customer",
+                title: "Select the Customer...123",
                 isRequired: true,
                 choicesByUrl: {
                       url: "api/pathfinder/customers/",
@@ -132,6 +132,16 @@ var json = {
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0|Unknown","1|Availability only verified when processing traffic", "2|Complex strict startup order required", "3|Application not ready until dependencies are available ", "4|Limited processing available if dependencies are unavailable", "5|No dependencies"]
+            },
+            {
+                "type": "tagbox",
+                "isRequired": true,
+                "choicesByUrl": {
+                    // Ignore the URL this will be replaced by the event handler
+                    "url": "api/pathfinder/customers/12345/applications/"
+                },
+                "name": "DEPSOUTLIST",
+                "title": "Please add southbound dependencies..."
             }
         ]
     }, {
@@ -301,7 +311,13 @@ survey
         q.choicesByUrl.valueName = "Id";
         q.choicesByUrl.titleName = "Name";
         q.choicesByUrl.run();
-            });
+
+        var v = survey.getQuestionByName('DEPSOUTLIST');
+        v.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";
+        v.choicesByUrl.valueName = "Id";
+        v.choicesByUrl.titleName = "Name";
+        v.choicesByUrl.run();
+    });
 
 
 $("#surveyElement").Survey({

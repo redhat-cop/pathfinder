@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import javax.validation.constraints.*;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -67,6 +68,8 @@ public class Assessments implements Serializable {
     private String SECURITY = null;
 
     private String NOTES = null;
+
+    private List<String> DEPSOUTLIST = null;
 
     @Id
     private String id;
