@@ -25,7 +25,7 @@ var json = {
             {
                 type: "dropdown",
                 "name": "CUSTNAME",
-                title: "Select the Customer...123",
+                title: "Select the Customer...",
                 isRequired: true,
                 choicesByUrl: {
                       url: "api/pathfinder/customers/",
@@ -54,6 +54,9 @@ var json = {
                 type: "rating",
                 "name": "BUSPRIORITY",
                 title: "Whats the level of business criticality of this application?",
+                rateMin: 1,
+                rateMax: 10,
+                rateStep: 1,
                 minRateDescription: "End of Life",
                 maxRateDescription: "Core Business Critical"
             },
