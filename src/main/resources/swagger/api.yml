@@ -178,8 +178,6 @@ definitions:
     description: The root of the AssessmentType type's schema.
     type: object
     properties:
-      GROUPS:
-        type: string
       ASSMENTNAME:
         type: string
       BUSPRIORITY:
@@ -206,6 +204,8 @@ definitions:
         type: string
       HA:
         type: string
+      CLUSTER:
+        type: string
       PROFILE:
         type: string
       LOGS:
@@ -223,6 +223,8 @@ definitions:
       COMPLIANCE:
         type: string
       SECURITY:
+        type: string
+      CONTAINERS:
         type: string
       NOTES:
         type: string

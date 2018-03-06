@@ -32,7 +32,7 @@ spring:
         serialization.indent_output: true
     data:
         mongodb:
-            uri: mongodb:///pathfinder?authSource=pathfinder
+#            uri: mongodb:///pathfinder?authSource=pathfinder
             database: pathfinder
     mail:
         host: localhost
@@ -124,6 +124,6 @@ database-password: dbuser12345
 database-name: pathfinder
 database-admin-password: 12345
 dbhostname: localhost
-dbhostport: 9999
+dbhostport: 27017
 
 application:

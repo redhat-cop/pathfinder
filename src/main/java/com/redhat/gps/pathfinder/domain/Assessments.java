@@ -17,7 +17,10 @@ import java.util.Objects;
 public class Assessments implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    private String GROUPS = null;
+
+    private String CONTAINERS = null;
+
+    private String CLUSTER = null;
 
     private String ASSMENTNAME = null;
 
@@ -31,7 +34,7 @@ public class Assessments implements Serializable {
 
     private String DEPSOS = null;
 
-    private String dePS3RD = null;
+    private String DEPS3RD = null;
 
     private String DEPSIN = null;
 
