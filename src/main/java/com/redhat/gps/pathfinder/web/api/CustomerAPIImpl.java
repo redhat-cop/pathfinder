@@ -45,13 +45,13 @@ public class CustomerAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
     }
 
-    public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true )@PathVariable("assessId") String assessId) {
+    public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdGet....");
 
         Assessments currAssm = assmRepo.findOne(assessId);
         AssessmentType resp = new AssessmentType();
 
-        if (currAssm != null){
+        if (currAssm != null) {
             AssessmentVals newitem = new AssessmentVals();
             newitem.setARCHTYPE(currAssm.getARCHTYPE());
             newitem.setASSMENTNAME(currAssm.getASSMENTNAME());
@@ -81,13 +81,13 @@ public class CustomerAPIImpl implements CustomersApi {
 
             resp.setPayload(newitem);
             return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
-        }else{
+        } else {
             return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
         }
     }
 
 
-    public ResponseEntity<List<String>> customersCustIdApplicationsAppIdAssessmentsGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId) {
+    public ResponseEntity<List<String>> customersCustIdApplicationsAppIdAssessmentsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsGet....");
         Applications currApp = appsRepo.findOne(appId);
 
@@ -103,10 +103,9 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
 
             }
+        } catch (Exception ex) {
+            log.error("Unable to create applications for customer " + ex.toString());
         }
-            catch (Exception ex) {
-                log.error("Unable to create applications for customer " + ex.toString());
-            }
 
 
         return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
@@ -242,5 +241,23 @@ public class CustomerAPIImpl implements CustomersApi {
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
+    }
+
+
+    public ResponseEntity<List<CustomerType>> customersGet() {
+        log.debug("customersGet....");
+        ArrayList<CustomerType> response = new ArrayList<>();
+        List<Customer> myCust = custRepo.findAll();
+        if (myCust == null) {
+            return new ResponseEntity<List<CustomerType>>(response, HttpStatus.BAD_REQUEST);
+        } else {
+            for (Customer x : myCust) {
+                CustomerType resp = new CustomerType();
+                resp.setCustomerName(x.getName());
+                resp.setCustomerId(x.getId());
+                response.add(resp);
+            }
+            return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
+        }
     }
 }

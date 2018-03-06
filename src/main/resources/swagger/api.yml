@@ -46,6 +46,15 @@ paths:
       required: true
       type: string
   /customers/:
+    get:
+      description: Get Customers
+      responses:
+        200:
+          description: Customers Details
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerType'
     post:
       description: Create Customer
       parameters:

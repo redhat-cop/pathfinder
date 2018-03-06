@@ -23,53 +23,37 @@ Survey
 
 var json = {
     title: "Application Assessment",
+    sendResultOnPageNext: "true",
     showProgressBar: "bottom",
     pages: [{
+        "title": "Customer Details",
+        "questions": [
+            {
+                type: "dropdown",
+                name: "CUSTNAME",
+                title: "Select the Customer",
+                isRequired: true,
+                choicesByUrl: {
+                      url: "api/pathfinder/customers/",
+                      valueName: "CustomerId",
+                      titleName: "CustomerName"
+                }
+            }
+        ]
+    },
+    {
         "title": "Application Details",
         "questions": [
-//        {
-//                name: "ASSMENTNAME",
-//                type: "text",
-//                title: "Application Name:",
-//                placeHolder: "......",
-//                isRequired: true
-//            },
             {
                 type: "dropdown",
                 name: "ASSMENTNAME",
                 title: "Select the application to be assessed....",
                 isRequired: true,
                 choicesByUrl: {
-                        url: "api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/",
-                            valueName: "Name"
+                        url: "api/pathfinder/customers/12345/applications/",
+                        valueName: "Id",
+                        titleName: "Name"
                 }
-            },
-            {
-                type: "radiogroup",
-                name: "GROUPS",
-                title: "Grouping",
-                isRequired: true,
-                colCount: 2,
-                choices: [
-                    "1|Individual Application",
-                    "2| Suite of Applications"
-                ]
-            },
-            {
-                "type": "panel",
-                "innerIndent": 2,
-                "name": "appsuitecount",
-                "title": "How many applications in the application suite",
-                "visibleIf": "{GROUPS} > 1",
-                "elements": [
-                    {
-                        name: "APPCOUNT",
-                        type: "text",
-                        title: "Please enter the number of applications:",
-                        placeHolder: "1",
-                        isRequired: true
-                    }
-                ]
             },
             {
                 type: "rating",
@@ -306,16 +290,26 @@ window.survey = new Survey.Model(json);
 survey
     .onComplete
     .add(function (result) {
-//        document
-//            .querySelector('#surveyResult')
-//            .innerHTML = "result: " + JSON.stringify(result.data);
-            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-            xmlhttp.open("POST", "/api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/5a90515bfd4fbe22a9ff6539/assessments");
+            var xmlhttp = new XMLHttpRequest();
+            var cust = result.data.CUSTNAME;
+            var assm = result.data.ASSMENTNAME;
+            xmlhttp.open("POST", "/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
             xmlhttp.setRequestHeader("Content-Type", "application/json");
             myObj = { "payload": result.data};
             xmlhttp.send(JSON.stringify(myObj));
-
     });
+
+survey
+    .onPartialSend
+    .add(function (result) {
+        var q = survey.getQuestionByName('ASSMENTNAME');
+        var tmp = result.data.CUSTNAME;
+        q.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";
+        q.choicesByUrl.valueName = "Id";
+        q.choicesByUrl.titleName = "Name";
+        q.choicesByUrl.run();
+            });
+
 
 $("#surveyElement").Survey({
     model: survey
