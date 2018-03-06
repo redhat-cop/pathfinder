@@ -42,7 +42,7 @@ var json = {
                 type: "dropdown",
                 "name": "ASSMENTNAME",
                 title: "Select the application to be assessed....",
-                isRequired: true,
+                isRequired: false,
                 choicesByUrl: {
                         // Ignore the URL this will be replaced by the event handler
                         url: "api/pathfinder/customers/12345/applications/",

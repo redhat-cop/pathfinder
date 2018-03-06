@@ -230,6 +230,7 @@ public class CustomerAPIImpl implements CustomersApi {
             CustomerType resp = new CustomerType();
             resp.setCustomerName(myCust.getName());
             resp.setCustomerId(myCust.getId());
+            resp.setCustomerDescription(myCust.getId());
             return new ResponseEntity<CustomerType>(resp, HttpStatus.OK);
         }
     }
