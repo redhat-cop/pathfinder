@@ -2,15 +2,15 @@ package com.redhat.gps.pathfinder.config.dbmigrations;
 
 import com.github.mongobee.changeset.ChangeLog;
 import com.github.mongobee.changeset.ChangeSet;
-import com.redhat.gps.pathfinder.domain.Assessments;
-import com.redhat.gps.pathfinder.domain.Authority;
-import com.redhat.gps.pathfinder.domain.User;
+import com.redhat.gps.pathfinder.config.PathfinderQuestionConfig;
+import com.redhat.gps.pathfinder.domain.*;
 import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
 import java.time.Instant;
+import java.util.ArrayList;
 
-import static com.redhat.gps.pathfinder.web.api.StaticAPIImpl.MIN_ASSESSMENT_VALUES;
+import static com.redhat.gps.pathfinder.web.api.QuestionsMetaDataAPI.MIN_ASSESSMENT_VALUES;
 
 /**
  * Creates the initial database setup
@@ -94,7 +94,7 @@ public class InitialSetupMigration {
     }
 
 
-    @ChangeSet(order = "03", author = "initiator", id = "03-addStaticData")
+    @ChangeSet(order = "03", author = "initiator", id = "03-addStaticData",runAlways = true)
     public void addStaticData(MongoTemplate mongoTemplate) {
 
         Assessments staticMinAssessmentValue = new Assessments();
@@ -124,4 +124,57 @@ public class InitialSetupMigration {
 
         mongoTemplate.save(staticMinAssessmentValue);
     }
+
+    @ChangeSet(order = "04", author = "initiator", id = "03-addQuestionWeights",runAlways = true)
+    public void addQuestionWeights(MongoTemplate mongoTemplate) {
+        QuestionMetaData currData = null;
+        currData = PathfinderQuestionConfig.QuestionARCHTYPE();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionCLUSTER();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionCOMMS();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionCOMPLIANCE();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionCONFIG();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionCONTAINERS();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPLOY();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPS3RD();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPSHW();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPSIN();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPSOS();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionDEPSOUT();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionHA();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionHEALTH();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionLOGS();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionMETRICS();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionOWNER();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionPROFILE();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionOWNER();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionRESILIENCY();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionSECURITY();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionSTATE();
+        mongoTemplate.save(currData);
+        currData = PathfinderQuestionConfig.QuestionTEST();
+        mongoTemplate.save(currData);
+
+    }
+
 }

@@ -8,16 +8,16 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
   version: 1.0.0
 paths:
-  /static/minimum:
-    get:
-      description: Get Assessment minimum values
-      responses:
-        200:
-          description: Assessment minimum values
-          schema:
-            $ref: '#/definitions/AssessmentType'
-        404:
-          description: Customer Not Found
+#  /static/minimum:
+#    get:
+#      description: Get Assessment minimum values
+#      responses:
+#        200:
+#          description: Assessment minimum values
+#          schema:
+#            $ref: '#/definitions/AssessmentType'
+#        404:
+#          description: Customer Not Found
   /customers/{custId}:
     get:
       description: Get Customer
