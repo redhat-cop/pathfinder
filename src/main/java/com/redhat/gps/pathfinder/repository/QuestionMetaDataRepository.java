@@ -6,8 +6,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
-import static javafx.scene.input.KeyCode.T;
-
 @SuppressWarnings("unused")
 @Repository
 public interface QuestionMetaDataRepository extends MongoRepository<QuestionMetaData, String> {
