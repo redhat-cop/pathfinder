@@ -76,7 +76,7 @@ var json = {
                 "comment": "Does the application have any legal compliance requirements e.g. PCI, HIPPA etc Does the application have any licensing requirements e.g. per core licensing",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|High compliance requirements - both Legal and licensing", "2|Licensing compliance -  licensing servers", "3|Legal compliance - distinct hardware, isolated clusters, compliance certification"]
+                "choices": ["0|Unknown","1|High compliance requirements - both Legal and licensing", "2|Licensing compliance -  licensing servers", "3|Legal compliance - distinct hardware, isolated clusters, compliance certification","4| None"]
             }
         ]
     }, {
@@ -98,7 +98,7 @@ var json = {
                 "comment": "Does the application require specific hardware features to run on",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Non X86 CPU requirements", "2|Custom or legacy hardware required", "3|X86 CPU architecture based", "4|GPU, specific worker node hardware requirements"]
+                "choices": ["0|Unknown","1|Non X86 CPU requirements", "2|Custom or legacy hardware required", "3|GPU, specific worker node hardware requirements", "4|X86 CPU architecture based"]
             },
             {
                 "type": "radiogroup",
@@ -240,7 +240,7 @@ var json = {
                 "comment": "How is the application configured ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Compiled/Patched into application at installation time", "2|Externally stored and loaded using specific key e.g. hostname, ip address", "3|Configuration baked into container image and enabled via system property at runtime", "4|Configuration files loaded from shared disk", "5|Configuration files loaded by application from mounted files, environment variables"]
+                "choices": ["0|Unknown","1|Compiled/Patched into application at installation time", "2|Externally stored and loaded using specific key e.g. hostname, ip address", "3|Configuration baked into application and enabled via system property at runtime", "4|Configuration files loaded from shared disk", "5|Configuration files loaded by application from mounted files, environment variables"]
             }
         ]
     }, {

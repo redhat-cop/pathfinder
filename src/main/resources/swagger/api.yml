@@ -8,16 +8,6 @@ info:
     url: https://www.apache.org/licenses/LICENSE-2.0
   version: 1.0.0
 paths:
-#  /static/minimum:
-#    get:
-#      description: Get Assessment minimum values
-#      responses:
-#        200:
-#          description: Assessment minimum values
-#          schema:
-#            $ref: '#/definitions/AssessmentType'
-#        404:
-#          description: Customer Not Found
   /customers/{custId}:
     get:
       description: Get Customer
@@ -156,19 +146,16 @@ paths:
             $ref: '#/definitions/AssessmentType'
         400:
           description: Assessment Not Found
-#    post:
-#      description: Update Application Assessment
-#      parameters:
-#      - name: body
-#        in: body
-#        description: Application Assessment details
-#        schema:
-#          $ref: '#/definitions/AssessmentType'
-#      responses:
-#        200:
-#          description: Application Assessment Updated
-#        400:
-#          description: Assessment not found
+  /customers/{custId}/applications/{appId}/assessments/{assessId}/process:
+    get:
+      description: Process assessment results and return value
+      responses:
+        200:
+          description: Assessment Results
+          schema:
+            $ref: '#/definitions/AssessmentProcessType'
+        400:
+          description: Assessment Not Found
     parameters:
     - name: custId
       in: path
@@ -288,3 +275,27 @@ definitions:
         $ref: '#/definitions/AssessmentVals'
       datetime:
         type: string
+  AssessmentProcessType:
+    required:
+    - AssmentNotes
+    - AssessResults
+    properties:
+      AssmentNotes:
+         type: string
+      AssessResults:
+         type: array
+         items:
+            $ref: '#/definitions/AssessmentProcessQuestionResultsType'
+  AssessmentProcessQuestionResultsType:
+    required:
+    - QuestionTag
+    - QuestionAnswerDescription
+    - QuestionRank
+    properties:
+      QuestionTag:
+        type: string
+      QuestionAnswerDescription:
+        type: string
+      QuestionRank:
+        type: integer
+

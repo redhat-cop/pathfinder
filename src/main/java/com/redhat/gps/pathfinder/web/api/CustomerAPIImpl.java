@@ -3,26 +3,23 @@ package com.redhat.gps.pathfinder.web.api;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
 import com.redhat.gps.pathfinder.domain.Customer;
+import com.redhat.gps.pathfinder.domain.QuestionMetaData;
 import com.redhat.gps.pathfinder.repository.ApplicationsRepository;
 import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
 import com.redhat.gps.pathfinder.repository.CustomerRepository;
-import com.redhat.gps.pathfinder.web.api.model.ApplicationType;
-import com.redhat.gps.pathfinder.web.api.model.AssessmentType;
-import com.redhat.gps.pathfinder.web.api.model.AssessmentVals;
-import com.redhat.gps.pathfinder.web.api.model.CustomerType;
+import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
+import com.redhat.gps.pathfinder.web.api.model.*;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.lang.reflect.Array;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Base64;
@@ -39,10 +36,13 @@ public class CustomerAPIImpl implements CustomersApi {
 
     private final AssessmentsRepository assmRepo;
 
-    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo) {
+    private final QuestionMetaDataRepository questionRepository;
+
+    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository) {
         this.custRepo = custRepo;
         this.appsRepo = appsRepo;
         this.assmRepo = assmRepo;
+        this.questionRepository = questionRepository;
     }
 
     public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
@@ -99,17 +99,17 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currApp != null) {
 
                 List<Assessments> res = currApp.getAssessments();
-                for (Assessments x : res) {
-                    results.add(x.getId());
+                if ((res!= null)&& (!res.isEmpty())) {
+                    for (Assessments x : res) {
+                        results.add(x.getId());
+                    }
                 }
-                return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<List<String>>(results, HttpStatus.OK);
 
             }
         } catch (Exception ex) {
-            log.error("Unable to create applications for customer " + ex.toString());
+            log.error("Unable to get assessments for customer ", ex.getStackTrace());
         }
-
-
         return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
     }
 
@@ -171,7 +171,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<String>("Application not found", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
-            log.error("Unable to create applications for customer " + ex.toString());
+            log.error("Unable to create applications for customer ",ex.getStackTrace());
         }
         return new ResponseEntity<String>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
@@ -242,7 +242,7 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {
-            log.error("Unable to insert customer " + ex.toString());
+            log.error("Unable to insert customer ",ex.getStackTrace());
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
@@ -265,4 +265,42 @@ public class CustomerAPIImpl implements CustomersApi {
             return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
         }
     }
+
+
+    public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
+
+        AssessmentProcessType resp = new AssessmentProcessType();
+        AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
+
+        try {
+
+            Assessments currAssm = assmRepo.findOne(assessId);
+            if (currAssm == null){
+                return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.BAD_REQUEST);
+            }
+            resp.assmentNotes(currAssm.getNOTES());
+
+            List<QuestionMetaData> questionData = questionRepository.findAll();
+
+
+            for (QuestionMetaData currQuestion : questionData) {
+                String key = currQuestion.getId();
+
+                Method invokeByKey = Assessments.class.getMethod("get" + key);
+                String res = (String) invokeByKey.invoke(null);
+                vals.setQuestionTag(currQuestion.getId());
+                vals.setQuestionRank(currQuestion.getMetaData().get(Integer.parseInt(res)).getRank());
+
+
+            }
+        } catch (Exception ex) {
+            log.error("Error while processing assessment" + ex.toString());
+            return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+        return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.OK);
+    }
+
+
 }

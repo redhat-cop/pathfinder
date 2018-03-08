@@ -124,6 +124,6 @@ database-password: dbuser12345
 database-name: pathfinder
 database-admin-password: 12345
 dbhostname: localhost
-dbhostport: 27017
+dbhostport: 9999
 
 application:
