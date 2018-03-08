@@ -146,6 +146,20 @@ paths:
             $ref: '#/definitions/AssessmentType'
         400:
           description: Assessment Not Found
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+    - name: assessId
+      in: path
+      required: true
+      type: string
+
   /customers/{custId}/applications/{appId}/assessments/{assessId}/process:
     get:
       description: Process assessment results and return value

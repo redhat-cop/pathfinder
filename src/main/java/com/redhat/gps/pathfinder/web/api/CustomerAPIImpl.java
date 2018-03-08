@@ -48,42 +48,46 @@ public class CustomerAPIImpl implements CustomersApi {
     public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdGet....");
 
-        Assessments currAssm = assmRepo.findOne(assessId);
         AssessmentType resp = new AssessmentType();
+        try {
+            Assessments currAssm = assmRepo.findOne(assessId);
+            if (currAssm != null) {
+                AssessmentVals newitem = new AssessmentVals();
+                newitem.setARCHTYPE(currAssm.getARCHTYPE());
+                newitem.setASSMENTNAME(currAssm.getASSMENTNAME());
+                newitem.setBUSPRIORITY(currAssm.getBUSPRIORITY());
+                newitem.setARCHTYPE(currAssm.getARCHTYPE());
+                newitem.setCOMMS(currAssm.getCOMMS());
+                newitem.setCOMPLIANCE(currAssm.getCOMPLIANCE());
+                newitem.setCONFIG(currAssm.getCONFIG());
+                newitem.setDEPLOY(currAssm.getDEPLOY());
+                newitem.setDePS3RD(currAssm.getDEPS3RD());
+                newitem.setDEPSHW(currAssm.getDEPSHW());
+                newitem.setDEPSIN(currAssm.getDEPSIN());
+                newitem.setDEPSOS(currAssm.getDEPSOS());
+                newitem.setDEPSOUT(currAssm.getDEPSOUT());
+                newitem.setCONTAINERS(currAssm.getCONTAINERS());
+                newitem.setCLUSTER(currAssm.getCLUSTER());
+                newitem.setHA(currAssm.getHA());
+                newitem.setHEALTH(currAssm.getHEALTH());
+                newitem.setLOGS(currAssm.getLOGS());
+                newitem.setMETRICS(currAssm.getMETRICS());
+                newitem.setNOTES(currAssm.getNOTES());
+                newitem.setOWNER(currAssm.getOWNER());
+                newitem.setPROFILE(currAssm.getPROFILE());
+                newitem.setRESILIENCY(currAssm.getRESILIENCY());
+                newitem.setSECURITY(currAssm.getSECURITY());
+                newitem.setSTATE(currAssm.getSTATE());
+                newitem.setTEST(currAssm.getTEST());
+                newitem.setDEPSOUTLIST(currAssm.getDEPSOUTLIST());
 
-        if (currAssm != null) {
-            AssessmentVals newitem = new AssessmentVals();
-            newitem.setARCHTYPE(currAssm.getARCHTYPE());
-            newitem.setASSMENTNAME(currAssm.getASSMENTNAME());
-            newitem.setBUSPRIORITY(currAssm.getBUSPRIORITY());
-            newitem.setARCHTYPE(currAssm.getARCHTYPE());
-            newitem.setCOMMS(currAssm.getCOMMS());
-            newitem.setCOMPLIANCE(currAssm.getCOMPLIANCE());
-            newitem.setCONFIG(currAssm.getCONFIG());
-            newitem.setDEPLOY(currAssm.getDEPLOY());
-            newitem.setDePS3RD(currAssm.getDEPS3RD());
-            newitem.setDEPSHW(currAssm.getDEPSHW());
-            newitem.setDEPSIN(currAssm.getDEPSIN());
-            newitem.setDEPSOS(currAssm.getDEPSOS());
-            newitem.setDEPSOUT(currAssm.getDEPSOUT());
-            newitem.setCONTAINERS(currAssm.getCONTAINERS());
-            newitem.setCLUSTER(currAssm.getCLUSTER());
-            newitem.setHA(currAssm.getHA());
-            newitem.setHEALTH(currAssm.getHEALTH());
-            newitem.setLOGS(currAssm.getLOGS());
-            newitem.setMETRICS(currAssm.getMETRICS());
-            newitem.setNOTES(currAssm.getNOTES());
-            newitem.setOWNER(currAssm.getOWNER());
-            newitem.setPROFILE(currAssm.getPROFILE());
-            newitem.setRESILIENCY(currAssm.getRESILIENCY());
-            newitem.setSECURITY(currAssm.getSECURITY());
-            newitem.setSTATE(currAssm.getSTATE());
-            newitem.setTEST(currAssm.getTEST());
-            newitem.setDEPSOUTLIST(currAssm.getDEPSOUTLIST());
-
-            resp.setPayload(newitem);
-            return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
-        } else {
+                resp.setPayload(newitem);
+                return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
+            } else {
+                return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
+            }
+        } catch (Exception ex) {
+            log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdGet", ex.getStackTrace());
             return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
         }
     }
@@ -91,30 +95,39 @@ public class CustomerAPIImpl implements CustomersApi {
 
     public ResponseEntity<List<String>> customersCustIdApplicationsAppIdAssessmentsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsGet....");
-        Applications currApp = appsRepo.findOne(appId);
-
         ArrayList<String> results = new ArrayList<>();
         try {
+            Applications currApp = appsRepo.findOne(appId);
 
-            if (currApp != null) {
 
-                List<Assessments> res = currApp.getAssessments();
-                if ((res!= null)&& (!res.isEmpty())) {
-                    for (Assessments x : res) {
-                        results.add(x.getId());
+            try {
+
+                if (currApp != null) {
+
+                    List<Assessments> res = currApp.getAssessments();
+                    if ((res != null) && (!res.isEmpty())) {
+                        for (Assessments x : res) {
+                            results.add(x.getId());
+                        }
                     }
-                }
-                return new ResponseEntity<List<String>>(results, HttpStatus.OK);
+                    return new ResponseEntity<List<String>>(results, HttpStatus.OK);
 
+                }
+            } catch (Exception ex) {
+                log.error("Unable to get assessments for customer ", ex.getStackTrace());
             }
+            return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
-            log.error("Unable to get assessments for customer ", ex.getStackTrace());
+            log.error("customersCustIdApplicationsAppIdAssessmentsGet", ex.getStackTrace());
         }
         return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
     }
 
 
-    public ResponseEntity<String> customersCustIdApplicationsAppIdAssessmentsPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Application Assessment") @Valid @RequestBody AssessmentType body) {
+    public ResponseEntity<String> customersCustIdApplicationsAppIdAssessmentsPost
+        (@ApiParam(value = "", required = true) @PathVariable("custId") String
+             custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
+             appId, @ApiParam(value = "Application Assessment") @Valid @RequestBody AssessmentType body) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsPost...." + body);
 
         try {
@@ -171,7 +184,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<String>("Application not found", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
-            log.error("Unable to create applications for customer ",ex.getStackTrace());
+            log.error("customersCustIdApplicationsAppIdAssessmentsPost Unable to create applications for customer ", ex.getStackTrace());
         }
         return new ResponseEntity<String>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
@@ -182,17 +195,20 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
     @Override
-    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId) {
+    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet
+        (@ApiParam(value = "", required = true) @PathVariable("custId") String custId) {
         log.info("customersCustIdApplicationsGet....[" + custId + "]");
         ArrayList<ApplicationType> response = new ArrayList<>();
 
         try {
             List<Applications> resp = custRepo.findOne(custId).getApplications();
-            for (Applications x : resp) {
-                ApplicationType lapp = new ApplicationType();
-                lapp.setName(x.getName());
-                lapp.setId(x.getId());
-                response.add(lapp);
+            if ((resp!=null)&&(!resp.isEmpty())) {
+                for (Applications x : resp) {
+                    ApplicationType lapp = new ApplicationType();
+                    lapp.setName(x.getName());
+                    lapp.setId(x.getId());
+                    response.add(lapp);
+                }
             }
         } catch (Exception ex) {
             log.error("Unable to list applications for customer " + ex.toString());
@@ -201,7 +217,9 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.OK);
     }
 
-    public ResponseEntity<String> customersCustIdApplicationsPost(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Definition") @Valid @RequestBody ApplicationType body) {
+    public ResponseEntity<String> customersCustIdApplicationsPost
+        (@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String
+             custId, @ApiParam(value = "Application Definition") @Valid @RequestBody ApplicationType body) {
         log.debug("customersCustIdApplicationsPost....");
         Customer myCust = custRepo.findOne(custId);
         if (myCust == null) {
@@ -221,7 +239,8 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
-    public ResponseEntity<CustomerType> customersCustIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+    public ResponseEntity<CustomerType> customersCustIdGet
+        (@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
         log.debug("customersCustIdGet....");
         Customer myCust = custRepo.findOne(custId);
         if (myCust == null) {
@@ -242,7 +261,7 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {
-            log.error("Unable to insert customer ",ex.getStackTrace());
+            log.error("Unable to insert customer ", ex.getStackTrace());
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
@@ -267,7 +286,10 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
 
-    public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
+    public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet
+        (@ApiParam(value = "", required = true) @PathVariable("custId") String
+             custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
+             appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
 
         AssessmentProcessType resp = new AssessmentProcessType();
         AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
@@ -275,8 +297,8 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
 
             Assessments currAssm = assmRepo.findOne(assessId);
-            if (currAssm == null){
-                return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.BAD_REQUEST);
+            if (currAssm == null) {
+                return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.BAD_REQUEST);
             }
             resp.assmentNotes(currAssm.getNOTES());
 
@@ -295,11 +317,11 @@ public class CustomerAPIImpl implements CustomersApi {
             }
         } catch (Exception ex) {
             log.error("Error while processing assessment" + ex.toString());
-            return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
 
-        return new ResponseEntity<AssessmentProcessType>(resp,HttpStatus.OK);
+        return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.OK);
     }
 
 
