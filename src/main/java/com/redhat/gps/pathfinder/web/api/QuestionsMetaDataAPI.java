@@ -47,14 +47,14 @@ public class QuestionsMetaDataAPI {
      *
      * @return the ResponseEntity with status 200 (OK) and the list of customers in body
      */
-    @GetMapping("/questions")
+    @GetMapping(value = "/questions",produces = "application/json")
     @Timed
-    public List<QuestionMetaData> getAllCustomers() {
+    public List<QuestionMetaData> getAllQuestionMetadata() {
         log.debug("REST request to get question metadata ");
         return questionRepository.findAll();
     }
 
-    @GetMapping("/minimum")
+    @GetMapping(value= "/minimum",produces = "application/json")
     @Timed
     public Assessments getMinValues(){
         log.debug("REST request to get minimum values ");

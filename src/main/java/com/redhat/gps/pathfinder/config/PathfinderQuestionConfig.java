@@ -16,32 +16,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -57,32 +57,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -98,32 +98,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -139,32 +139,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -181,32 +181,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -223,32 +223,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -265,32 +265,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -306,32 +306,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -348,32 +348,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -390,32 +390,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -432,32 +432,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -473,32 +473,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -514,32 +514,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -555,32 +555,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -597,32 +597,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -638,32 +638,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -680,32 +680,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -722,32 +722,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -763,32 +763,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -804,32 +804,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -845,32 +845,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.AMBER.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.AMBER);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);
@@ -886,32 +886,32 @@ public class PathfinderQuestionConfig {
 
         QuestionWeights c1 = new QuestionWeights();
         c1.setWeight(1);
-        c1.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c1.setRank(QuestionWeights.QuestionRank.UNKNOWN);
         qweights.add(c1);
 
         QuestionWeights c2 = new QuestionWeights();
         c2.setWeight(1);
-        c2.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c2.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c2);
 
         QuestionWeights c3 = new QuestionWeights();
         c3.setWeight(1);
-        c3.setRank(QuestionWeights.QuestionRank.RED.ordinal());
+        c3.setRank(QuestionWeights.QuestionRank.RED);
         qweights.add(c3);
 
         QuestionWeights c4 = new QuestionWeights();
         c4.setWeight(1);
-        c4.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c4.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c4);
 
         QuestionWeights c5 = new QuestionWeights();
         c5.setWeight(1);
-        c5.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c5.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c5);
 
         QuestionWeights c6 = new QuestionWeights();
         c6.setWeight(1);
-        c6.setRank(QuestionWeights.QuestionRank.GREEN.ordinal());
+        c6.setRank(QuestionWeights.QuestionRank.GREEN);
         qweights.add(c6);
 
         currData.setMetaData(qweights);

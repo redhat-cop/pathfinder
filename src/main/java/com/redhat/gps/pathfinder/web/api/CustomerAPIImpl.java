@@ -1,9 +1,6 @@
 package com.redhat.gps.pathfinder.web.api;
 
-import com.redhat.gps.pathfinder.domain.Applications;
-import com.redhat.gps.pathfinder.domain.Assessments;
-import com.redhat.gps.pathfinder.domain.Customer;
-import com.redhat.gps.pathfinder.domain.QuestionMetaData;
+import com.redhat.gps.pathfinder.domain.*;
 import com.redhat.gps.pathfinder.repository.ApplicationsRepository;
 import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
 import com.redhat.gps.pathfinder.repository.CustomerRepository;
@@ -267,8 +264,14 @@ public class CustomerAPIImpl implements CustomersApi {
                 String res = (String) currAssm.getResults().get(currQuestion.getId());
                 AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
                 vals.setQuestionTag(currQuestion.getId());
-                vals.setQuestionRank(currQuestion.getMetaData().get(Integer.parseInt(res)).getRank());
+
+                QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(
+                    Integer.parseInt(res)
+                ).getRank();
+                vals.setQuestionRank(answerRank.ordinal());
                 assessResults.add(vals);
+
+                log.debug(currQuestion.getId()+": value="+res+" RANK "+answerRank.toString());
 
             }
             resp.setAssessResults(assessResults);

@@ -6,12 +6,18 @@ import lombok.Data;
 @Data
 public class QuestionWeights {
     public enum QuestionRank {
-        RED, AMBER, GREEN
+        UNKNOWN(0), RED(1), AMBER(2), GREEN(3);
+
+        private final int levelCode;
+
+        private QuestionRank(int levelCode) {
+            this.levelCode = levelCode;
+        }
     }
 
     private int weight;
 
-    private int rank;
+    private QuestionRank rank;
 
     @Override
     public String toString() {
