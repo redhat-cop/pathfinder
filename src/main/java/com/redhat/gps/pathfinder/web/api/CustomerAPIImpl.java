@@ -12,15 +12,18 @@ import com.redhat.gps.pathfinder.web.api.model.*;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.lang.reflect.Array;
-import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/pathfinder")
@@ -244,9 +247,10 @@ public class CustomerAPIImpl implements CustomersApi {
         (@ApiParam(value = "", required = true) @PathVariable("custId") String
              custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
              appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
+        log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet....");
 
         AssessmentProcessType resp = new AssessmentProcessType();
-        AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
+        List<AssessmentProcessQuestionResultsType> assessResults = new ArrayList<>();
 
         try {
 
@@ -254,25 +258,23 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currAssm == null) {
                 return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.BAD_REQUEST);
             }
-//            resp.assmentNotes(currAssm.getNOTES());
 
             List<QuestionMetaData> questionData = questionRepository.findAll();
 
 
             for (QuestionMetaData currQuestion : questionData) {
-                String key = currQuestion.getId();
-
-                Method invokeByKey = Assessments.class.getMethod("get" + key);
-                String res = (String) invokeByKey.invoke(null);
+                String res = (String) currAssm.getResults().get(currQuestion.getId());
+                AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
                 vals.setQuestionTag(currQuestion.getId());
                 vals.setQuestionRank(currQuestion.getMetaData().get(Integer.parseInt(res)).getRank());
+                assessResults.add(vals);
+
             }
+            resp.setAssessResults(assessResults);
         } catch (Exception ex) {
             log.error("Error while processing assessment", ex.getMessage(), ex);
             return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-
         return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.OK);
     }
 
