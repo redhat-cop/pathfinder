@@ -138,7 +138,7 @@ var json = {
             },
             {
                 "type": "tagbox",
-                "isRequired": true,
+                "isRequired": false,
                 "choicesByUrl": {
                     // Ignore the URL this will be replaced by the event handler
                     "url": "api/pathfinder/customers/12345/applications/"
@@ -192,7 +192,7 @@ var json = {
                 "comment": "How is the application clustered ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Application cluster mechanism tightly coupled to application design & implementation", "2|Application cluster provided by common runtime dependencies of application binaries", "3|application clustering mostly provided by application runtime platform, with application integrating with these mechanisms through runtime dependencies", "4|Loosely coupled bespoke clustering solution", "5|Memberless and stateless runtimes"]
+                "choices": ["0|Unknown","1|Application cluster mechanism tightly coupled to application design & implementation", "2|Application cluster provided by common runtime dependencies of application binaries", "3|Application clustering mostly provided by application runtime platform, with application integrating with these mechanisms through runtime dependencies", "4|Loosely coupled bespoke clustering solution", "5|Memberless and stateless runtimes"]
             },
             {
                 "type": "radiogroup",
@@ -297,11 +297,15 @@ survey
     .onComplete
     .add(function (result) {
             var xmlhttp = new XMLHttpRequest();
-            var cust = result.data.CUSTNAME;
-            var assm = result.data.ASSMENTNAME;
+            tmpResult = result.data;
+            var cust = tmpResult.CUSTNAME;
+            var assm = tmpResult.ASSMENTNAME;
+            //dependencies array needs special handling
+            var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
+            delete tmpResult.DEPSOUTLIST;
             xmlhttp.open("POST", "/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
             xmlhttp.setRequestHeader("Content-Type", "application/json");
-            myObj = { "payload": result.data};
+            myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST};
             xmlhttp.send(JSON.stringify(myObj));
     });
 

@@ -26,6 +26,28 @@ public class Customer implements Serializable {
     @Field("name")
     private String name;
 
+    public String getVertical() {
+        return vertical;
+    }
+
+    public void setVertical(String vertical) {
+        this.vertical = vertical;
+    }
+
+    public String getSize() {
+        return size;
+    }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
+    @Field("vertical")
+    private String vertical;
+
+    @Field("size")
+    private String size;
+
     @DBRef
     private List<Applications> Applications;
 
@@ -64,29 +86,29 @@ public class Customer implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Customer customer = (Customer) o;
-        if (customer.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), customer.getId());
+        return Objects.equals(name, customer.name) &&
+            Objects.equals(vertical, customer.vertical) &&
+            Objects.equals(size, customer.size) &&
+            Objects.equals(Applications, customer.Applications);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+
+        return Objects.hash(name, vertical, size, Applications);
     }
 
     @Override
     public String toString() {
         return "Customer{" +
-            "id=" + getId() +
-            ", name='" + getName() + "'" +
-            "}";
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", vertical='" + vertical + '\'' +
+            ", size='" + size + '\'' +
+            ", Applications=" + Applications +
+            '}';
     }
 }

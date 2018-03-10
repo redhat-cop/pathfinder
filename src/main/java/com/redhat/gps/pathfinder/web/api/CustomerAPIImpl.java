@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Base64;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/pathfinder")
@@ -52,42 +50,21 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
             Assessments currAssm = assmRepo.findOne(assessId);
             if (currAssm != null) {
-                AssessmentVals newitem = new AssessmentVals();
-                newitem.setARCHTYPE(currAssm.getARCHTYPE());
-                newitem.setASSMENTNAME(currAssm.getASSMENTNAME());
-                newitem.setBUSPRIORITY(currAssm.getBUSPRIORITY());
-                newitem.setARCHTYPE(currAssm.getARCHTYPE());
-                newitem.setCOMMS(currAssm.getCOMMS());
-                newitem.setCOMPLIANCE(currAssm.getCOMPLIANCE());
-                newitem.setCONFIG(currAssm.getCONFIG());
-                newitem.setDEPLOY(currAssm.getDEPLOY());
-                newitem.setDePS3RD(currAssm.getDEPS3RD());
-                newitem.setDEPSHW(currAssm.getDEPSHW());
-                newitem.setDEPSIN(currAssm.getDEPSIN());
-                newitem.setDEPSOS(currAssm.getDEPSOS());
-                newitem.setDEPSOUT(currAssm.getDEPSOUT());
-                newitem.setCONTAINERS(currAssm.getCONTAINERS());
-                newitem.setCLUSTER(currAssm.getCLUSTER());
-                newitem.setHA(currAssm.getHA());
-                newitem.setHEALTH(currAssm.getHEALTH());
-                newitem.setLOGS(currAssm.getLOGS());
-                newitem.setMETRICS(currAssm.getMETRICS());
-                newitem.setNOTES(currAssm.getNOTES());
-                newitem.setOWNER(currAssm.getOWNER());
-                newitem.setPROFILE(currAssm.getPROFILE());
-                newitem.setRESILIENCY(currAssm.getRESILIENCY());
-                newitem.setSECURITY(currAssm.getSECURITY());
-                newitem.setSTATE(currAssm.getSTATE());
-                newitem.setTEST(currAssm.getTEST());
-                newitem.setDEPSOUTLIST(currAssm.getDEPSOUTLIST());
+                resp.setDeps(currAssm.getDeps());
+                AssessmentResponse tempPayload = new AssessmentResponse();
 
-                resp.setPayload(newitem);
+                Iterator it = currAssm.getResults().entrySet().iterator();
+                while (it.hasNext()){
+                    Map.Entry pair = (Map.Entry)it.next();
+                    tempPayload.put((String)pair.getKey(),(String)pair.getValue());
+                }
+                resp.setPayload(tempPayload);
                 return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
             } else {
                 return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
-            log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdGet", ex.getStackTrace());
+            log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdGet", ex.getMessage(), ex);
             return new ResponseEntity<AssessmentType>(resp, HttpStatus.BAD_REQUEST);
         }
     }
@@ -98,8 +75,6 @@ public class CustomerAPIImpl implements CustomersApi {
         ArrayList<String> results = new ArrayList<>();
         try {
             Applications currApp = appsRepo.findOne(appId);
-
-
             try {
 
                 if (currApp != null) {
@@ -114,11 +89,11 @@ public class CustomerAPIImpl implements CustomersApi {
 
                 }
             } catch (Exception ex) {
-                log.error("Unable to get assessments for customer ", ex.getStackTrace());
+                log.error("Unable to get assessments for customer ", ex.getMessage(), ex);
             }
             return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
-            log.error("customersCustIdApplicationsAppIdAssessmentsGet", ex.getStackTrace());
+            log.error("customersCustIdApplicationsAppIdAssessmentsGet", ex.getMessage(), ex);
         }
         return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
     }
@@ -128,7 +103,7 @@ public class CustomerAPIImpl implements CustomersApi {
         (@ApiParam(value = "", required = true) @PathVariable("custId") String
              custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
              appId, @ApiParam(value = "Application Assessment") @Valid @RequestBody AssessmentType body) {
-        log.debug("customersCustIdApplicationsAppIdAssessmentsPost...." + body);
+        log.debug("customersCustIdApplicationsAppIdAssessmentsPost...." + body.getPayload());
 
         try {
             if (!custRepo.exists(custId)) {
@@ -141,33 +116,8 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currApp != null) {
 
                 Assessments newitem = new Assessments();
-                newitem.setARCHTYPE(body.getPayload().getARCHTYPE());
-                newitem.setASSMENTNAME(body.getPayload().getASSMENTNAME());
-                newitem.setBUSPRIORITY(body.getPayload().getBUSPRIORITY());
-                newitem.setARCHTYPE(body.getPayload().getARCHTYPE());
-                newitem.setCOMMS(body.getPayload().getCOMMS());
-                newitem.setCOMPLIANCE(body.getPayload().getCOMPLIANCE());
-                newitem.setCONFIG(body.getPayload().getCONFIG());
-                newitem.setDEPLOY(body.getPayload().getDEPLOY());
-                newitem.setDEPS3RD(body.getPayload().getDePS3RD());
-                newitem.setDEPSHW(body.getPayload().getDEPSHW());
-                newitem.setDEPSIN(body.getPayload().getDEPSIN());
-                newitem.setDEPSOS(body.getPayload().getDEPSOS());
-                newitem.setDEPSOUT(body.getPayload().getDEPSOUT());
-                newitem.setCLUSTER(body.getPayload().getCLUSTER());
-                newitem.setCONTAINERS(body.getPayload().getCONTAINERS());
-                newitem.setHA(body.getPayload().getHA());
-                newitem.setHEALTH(body.getPayload().getHEALTH());
-                newitem.setLOGS(body.getPayload().getLOGS());
-                newitem.setMETRICS(body.getPayload().getMETRICS());
-                newitem.setNOTES(body.getPayload().getNOTES());
-                newitem.setOWNER(body.getPayload().getOWNER());
-                newitem.setPROFILE(body.getPayload().getPROFILE());
-                newitem.setRESILIENCY(body.getPayload().getRESILIENCY());
-                newitem.setSECURITY(body.getPayload().getSECURITY());
-                newitem.setSTATE(body.getPayload().getSTATE());
-                newitem.setTEST(body.getPayload().getTEST());
-                newitem.setDEPSOUTLIST(body.getPayload().getDEPSOUTLIST());
+                newitem.setResults(body.getPayload());
+                newitem.setDeps(body.getDeps());
 
                 newitem = assmRepo.insert(newitem);
 
@@ -184,7 +134,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<String>("Application not found", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
-            log.error("customersCustIdApplicationsAppIdAssessmentsPost Unable to create applications for customer ", ex.getStackTrace());
+            log.error("customersCustIdApplicationsAppIdAssessmentsPost Unable to create applications for customer ", ex.getMessage(), ex);
         }
         return new ResponseEntity<String>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
@@ -211,7 +161,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 }
             }
         } catch (Exception ex) {
-            log.error("Unable to list applications for customer " + ex.toString());
+            log.error("Unable to list applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.OK);
@@ -258,10 +208,12 @@ public class CustomerAPIImpl implements CustomersApi {
         log.debug("customersPost....");
         Customer myCust = new Customer();
         myCust.setName(body.getCustomerName());
+        myCust.setSize(body.getCustomerVertical());
+        myCust.setSize(body.getCustomerSize());
         try {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {
-            log.error("Unable to insert customer ", ex.getStackTrace());
+            log.error("Unable to Create customer ", ex.getMessage(), ex);
             return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
@@ -279,6 +231,8 @@ public class CustomerAPIImpl implements CustomersApi {
                 CustomerType resp = new CustomerType();
                 resp.setCustomerName(x.getName());
                 resp.setCustomerId(x.getId());
+                resp.setCustomerSize(x.getSize());
+                resp.setCustomerVertical(x.getVertical());
                 response.add(resp);
             }
             return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
@@ -300,7 +254,7 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currAssm == null) {
                 return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.BAD_REQUEST);
             }
-            resp.assmentNotes(currAssm.getNOTES());
+//            resp.assmentNotes(currAssm.getNOTES());
 
             List<QuestionMetaData> questionData = questionRepository.findAll();
 
@@ -314,7 +268,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 vals.setQuestionRank(currQuestion.getMetaData().get(Integer.parseInt(res)).getRank());
             }
         } catch (Exception ex) {
-            log.error("Error while processing assessment" + ex.toString());
+            log.error("Error while processing assessment", ex.getMessage(), ex);
             return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 

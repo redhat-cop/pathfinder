@@ -93,39 +93,7 @@ public class InitialSetupMigration {
         mongoTemplate.save(userUser);
     }
 
-
-    @ChangeSet(order = "03", author = "initiator", id = "03-addStaticData",runAlways = true)
-    public void addStaticData(MongoTemplate mongoTemplate) {
-
-        Assessments staticMinAssessmentValue = new Assessments();
-        staticMinAssessmentValue.setId(MIN_ASSESSMENT_VALUES);
-        staticMinAssessmentValue.setARCHTYPE("3");
-        staticMinAssessmentValue.setCLUSTER("3");
-        staticMinAssessmentValue.setCOMMS("3");
-        staticMinAssessmentValue.setCOMPLIANCE("4");
-        staticMinAssessmentValue.setCONFIG("3");
-        staticMinAssessmentValue.setCONTAINERS("2");
-        staticMinAssessmentValue.setDEPLOY("5");
-        staticMinAssessmentValue.setDEPS3RD("4");
-        staticMinAssessmentValue.setDEPSHW("3");
-        staticMinAssessmentValue.setDEPSIN("3");
-        staticMinAssessmentValue.setDEPSOUT("3");
-        staticMinAssessmentValue.setDEPSOS("3");
-        staticMinAssessmentValue.setHA("3");
-        staticMinAssessmentValue.setHEALTH("2");
-        staticMinAssessmentValue.setLOGS("4");
-        staticMinAssessmentValue.setMETRICS("4");
-        staticMinAssessmentValue.setOWNER("3");
-        staticMinAssessmentValue.setPROFILE("4");
-        staticMinAssessmentValue.setRESILIENCY("2");
-        staticMinAssessmentValue.setSECURITY("3");
-        staticMinAssessmentValue.setSTATE("3");
-        staticMinAssessmentValue.setTEST("3");
-
-        mongoTemplate.save(staticMinAssessmentValue);
-    }
-
-    @ChangeSet(order = "04", author = "initiator", id = "03-addQuestionWeights",runAlways = true)
+        @ChangeSet(order = "03", author = "initiator", id = "03-addQuestionWeights",runAlways = true)
     public void addQuestionWeights(MongoTemplate mongoTemplate) {
         QuestionMetaData currData = null;
         currData = PathfinderQuestionConfig.QuestionARCHTYPE();

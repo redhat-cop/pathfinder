@@ -5,7 +5,10 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,64 +21,17 @@ public class Assessments implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private String CONTAINERS = null;
-
-    private String CLUSTER = null;
-
-    private String ASSMENTNAME = null;
-
-    private String BUSPRIORITY = null;
-
-    private String OWNER = null;
-
-    private String ARCHTYPE = null;
-
-    private String DEPSHW = null;
-
-    private String DEPSOS = null;
-
-    private String DEPS3RD = null;
-
-    private String DEPSIN = null;
-
-    private String DEPSOUT = null;
-
-    private String RESILIENCY = null;
-
-    private String COMMS = null;
-
-    private String STATE = null;
-
-    private String HA = null;
-
-    private String PROFILE = null;
-
-    private String LOGS = null;
-
-    private String METRICS = null;
-
-    private String HEALTH = null;
-
-    private String CONFIG = null;
-
-    private String DEPLOY = null;
-
-    private String TEST = null;
-
-    private String COMPLIANCE = null;
-
-    private String SECURITY = null;
-
-    private String NOTES = null;
-
-    private List<String> DEPSOUTLIST = null;
 
     @Id
     private String id;
 
-//    @NotNull
+    @NotNull
     @Field("results")
-    private String results;
+    private HashMap<String, String> results;
+
+
+    @Field("dependencies")
+    private List<String> deps = new ArrayList<String>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
@@ -86,45 +42,52 @@ public class Assessments implements Serializable {
         this.id = id;
     }
 
-    public String getResults() {
+    public HashMap<String, String> getResults() {
         return results;
     }
 
-    public Assessments results(String results) {
+    public Assessments results(HashMap<String, String> results) {
         this.results = results;
         return this;
     }
 
-    public void setResults(String results) {
+    public void setResults(HashMap<String, String> results) {
         this.results = results;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Assessments assessments = (Assessments) o;
-        if (assessments.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), assessments.getId());
+    public List<String> getDeps() {
+        return deps;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(getId());
+    public void setDeps(List<String> deps) {
+        this.deps = deps;
     }
 
     @Override
     public String toString() {
         return "Assessments{" +
-            "id=" + getId() +
-            ", results='" + getResults() + "'" +
-            "}";
+            "id='" + id + '\'' +
+            ", results=" + results +
+            ", deps=" + deps +
+            '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Assessments that = (Assessments) o;
+        return Objects.equals(id, that.id) &&
+            Objects.equals(results, that.results) &&
+            Objects.equals(deps, that.deps);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(super.hashCode(), id, results, deps);
+    }
+    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+
 }

@@ -27,6 +27,10 @@ public class QuestionMetaData {
     @Field("Aspect")
     private String Aspect;
 
+    @NotNull
+    @Field("Minimum")
+    private Integer Minimum;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

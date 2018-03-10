@@ -160,6 +160,7 @@ paths:
       required: true
       type: string
 
+
   /customers/{custId}/applications/{appId}/assessments/{assessId}/process:
     get:
       description: Process assessment results and return value
@@ -184,71 +185,72 @@ paths:
       required: true
       type: string
 definitions:
-  AssessmentVals:
-    title: Root Type for AssessmentType
-    description: The root of the AssessmentType type's schema.
-    type: object
-    properties:
-      ASSMENTNAME:
-        type: string
-      BUSPRIORITY:
-        type: string
-      OWNER:
-        type: string
-      ARCHTYPE:
-        type: string
-      DEPSHW:
-        type: string
-      DEPSOS:
-        type: string
-      DEPS3RD:
-        type: string
-      DEPSIN:
-        type: string
-      DEPSOUT:
-        type: string
-      RESILIENCY:
-        type: string
-      COMMS:
-        type: string
-      STATE:
-        type: string
-      HA:
-        type: string
-      CLUSTER:
-        type: string
-      PROFILE:
-        type: string
-      LOGS:
-        type: string
-      METRICS:
-        type: string
-      HEALTH:
-        type: string
-      CONFIG:
-        type: string
-      DEPLOY:
-        type: string
-      TEST:
-        type: string
-      COMPLIANCE:
-        type: string
-      SECURITY:
-        type: string
-      CONTAINERS:
-        type: string
-      NOTES:
-        type: string
-      DEPSOUTLIST:
-        type: array
-        items:
-          type: string
+#  AssessmentVals:
+#    title: Root Type for AssessmentType
+#    description: The root of the AssessmentType type's schema.
+#    type: object
+#    properties:
+#      ASSMENTNAME:
+#        type: string
+#      BUSPRIORITY:
+#        type: string
+#      OWNER:
+#        type: string
+#      ARCHTYPE:
+#        type: string
+#      DEPSHW:
+#        type: string
+#      DEPSOS:
+#        type: string
+#      DEPS3RD:
+#        type: string
+#      DEPSIN:
+#        type: string
+#      DEPSOUT:
+#        type: string
+#      RESILIENCY:
+#        type: string
+#      COMMS:
+#        type: string
+#      STATE:
+#        type: string
+#      HA:
+#        type: string
+#      CLUSTER:
+#        type: string
+#      PROFILE:
+#        type: string
+#      LOGS:
+#        type: string
+#      METRICS:
+#        type: string
+#      HEALTH:
+#        type: string
+#      CONFIG:
+#        type: string
+#      DEPLOY:
+#        type: string
+#      TEST:
+#        type: string
+#      COMPLIANCE:
+#        type: string
+#      SECURITY:
+#        type: string
+#      CONTAINERS:
+#        type: string
+#      NOTES:
+#        type: string
+#      DEPSOUTLIST:
+#        type: array
+#        items:
+#          type: string
 
   CustomerType:
     required:
     - CustomerName
     - CustomerDescription
     - CustomerAssessor
+    - CustomerVertical
     properties:
       CustomerId:
         type: string
@@ -257,6 +259,10 @@ definitions:
       CustomerDescription:
         type: string
       CustomerAssessor:
+        type: string
+      CustomerVertical:
+        type: string
+      CustomerSize:
         type: string
   ApplicationType:
     required:
@@ -272,23 +278,41 @@ definitions:
       Description:
         description: Application Description
         type: string
-  keyvalue:
-    required:
-    - key
-    - value
+
+
+  AssessmentResponse:
+    description: map
     properties:
-      key:
+      default:
+        $ref: '#/definitions/QuestionAnswer'
+    additionalProperties:
+      type: string
+
+  QuestionAnswer:
+    type: object
+    required:
+    - default
+    properties:
+      default:
         type: string
-      value:
+      additonalProperties:
         type: string
+
   AssessmentType:
-#    required:
-#    - payload
+    type: object
+    required:
+    - payload
+    - deps
     properties:
       payload:
-        $ref: '#/definitions/AssessmentVals'
+        $ref: '#/definitions/AssessmentResponse'
       datetime:
         type: string
+      deps:
+        type: array
+        items:
+          type: string
+
   AssessmentProcessType:
     required:
     - AssmentNotes
