@@ -185,66 +185,6 @@ paths:
       required: true
       type: string
 definitions:
-#  AssessmentVals:
-#    title: Root Type for AssessmentType
-#    description: The root of the AssessmentType type's schema.
-#    type: object
-#    properties:
-#      ASSMENTNAME:
-#        type: string
-#      BUSPRIORITY:
-#        type: string
-#      OWNER:
-#        type: string
-#      ARCHTYPE:
-#        type: string
-#      DEPSHW:
-#        type: string
-#      DEPSOS:
-#        type: string
-#      DEPS3RD:
-#        type: string
-#      DEPSIN:
-#        type: string
-#      DEPSOUT:
-#        type: string
-#      RESILIENCY:
-#        type: string
-#      COMMS:
-#        type: string
-#      STATE:
-#        type: string
-#      HA:
-#        type: string
-#      CLUSTER:
-#        type: string
-#      PROFILE:
-#        type: string
-#      LOGS:
-#        type: string
-#      METRICS:
-#        type: string
-#      HEALTH:
-#        type: string
-#      CONFIG:
-#        type: string
-#      DEPLOY:
-#        type: string
-#      TEST:
-#        type: string
-#      COMPLIANCE:
-#        type: string
-#      SECURITY:
-#        type: string
-#      CONTAINERS:
-#        type: string
-#      NOTES:
-#        type: string
-#      DEPSOUTLIST:
-#        type: array
-#        items:
-#          type: string
-
   CustomerType:
     required:
     - CustomerName
@@ -317,9 +257,14 @@ definitions:
     required:
     - AssmentNotes
     - AssessResults
+    - Dependencies
     properties:
       AssmentNotes:
          type: string
+      Dependencies:
+         type: array
+         items:
+            type: string
       AssessResults:
          type: array
          items:
@@ -336,4 +281,5 @@ definitions:
         type: string
       QuestionRank:
         type: integer
+
 

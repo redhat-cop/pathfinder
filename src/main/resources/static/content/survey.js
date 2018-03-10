@@ -305,7 +305,7 @@ survey
             delete tmpResult.DEPSOUTLIST;
             xmlhttp.open("POST", "/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
             xmlhttp.setRequestHeader("Content-Type", "application/json");
-            myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST};
+            myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
             xmlhttp.send(JSON.stringify(myObj));
     });
 

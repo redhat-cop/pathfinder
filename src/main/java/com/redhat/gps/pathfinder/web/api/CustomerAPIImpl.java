@@ -121,6 +121,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 Assessments newitem = new Assessments();
                 newitem.setResults(body.getPayload());
                 newitem.setDeps(body.getDeps());
+                newitem.setDatetime(body.getDatetime());
 
                 newitem = assmRepo.insert(newitem);
 
@@ -271,6 +272,8 @@ public class CustomerAPIImpl implements CustomersApi {
 
             }
             resp.setAssessResults(assessResults);
+            resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
+            resp.setDependencies(currAssm.getDeps());
         } catch (Exception ex) {
             log.error("Error while processing assessment", ex.getMessage(), ex);
             return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);

@@ -33,6 +33,46 @@ public class Assessments implements Serializable {
     @Field("dependencies")
     private List<String> deps = new ArrayList<String>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Assessments that = (Assessments) o;
+        return Objects.equals(id, that.id) &&
+            Objects.equals(results, that.results) &&
+            Objects.equals(deps, that.deps) &&
+            Objects.equals(datetime, that.datetime);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(super.hashCode(), id, results, deps, datetime);
+    }
+
+    public String getDatetime() {
+
+        return datetime;
+    }
+
+    @Override
+    public String toString() {
+        return "Assessments{" +
+            "id='" + id + '\'' +
+            ", results=" + results +
+            ", deps=" + deps +
+            ", datatime='" + datetime + '\'' +
+            '}';
+    }
+
+    public void setDatetime(String datatime) {
+        this.datetime = datatime;
+    }
+
+    @Field("AssessmentDateTime")
+    private String datetime;
+
     // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
@@ -63,31 +103,6 @@ public class Assessments implements Serializable {
         this.deps = deps;
     }
 
-    @Override
-    public String toString() {
-        return "Assessments{" +
-            "id='" + id + '\'' +
-            ", results=" + results +
-            ", deps=" + deps +
-            '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
-        Assessments that = (Assessments) o;
-        return Objects.equals(id, that.id) &&
-            Objects.equals(results, that.results) &&
-            Objects.equals(deps, that.deps);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(super.hashCode(), id, results, deps);
-    }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
 }
