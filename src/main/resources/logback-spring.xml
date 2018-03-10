@@ -58,6 +58,7 @@
     <logger name="sun.rmi.transport" level="WARN"/>
     <logger name="io.fabric8.spring.cloud.kubernetes" level="INFO"/>
     <logger name="com.github.mongobee" level="INFO"/>
+    <logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="DEBUG"/>
 
     <!-- https://logback.qos.ch/manual/configuration.html#shutdownHook and https://jira.qos.ch/browse/LOGBACK-1090 -->
     <shutdownHook class="ch.qos.logback.core.hook.DelayingShutdownHook"/>
@@ -66,8 +67,8 @@
         <resetJUL>true</resetJUL>
     </contextListener>
 
-    <root level="INFO">
-        <appender-ref ref="STDOUT" />
-    </root>
+    <!--<root level="INFO">-->
+        <!--<appender-ref ref="STDOUT" />-->
+    <!--</root>-->
 
 </configuration>

@@ -312,8 +312,6 @@ public class CustomerAPIImpl implements CustomersApi {
                 String res = (String) invokeByKey.invoke(null);
                 vals.setQuestionTag(currQuestion.getId());
                 vals.setQuestionRank(currQuestion.getMetaData().get(Integer.parseInt(res)).getRank());
-
-
             }
         } catch (Exception ex) {
             log.error("Error while processing assessment" + ex.toString());
