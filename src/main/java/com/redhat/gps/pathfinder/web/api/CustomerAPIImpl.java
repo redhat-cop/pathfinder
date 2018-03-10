@@ -277,6 +277,8 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setAssessResults(assessResults);
             resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
             resp.setDependencies(currAssm.getDeps());
+            resp.setBusinessPriority(currAssm.getResults().get("BUSPRIORITY"));
+
         } catch (Exception ex) {
             log.error("Error while processing assessment", ex.getMessage(), ex);
             return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);

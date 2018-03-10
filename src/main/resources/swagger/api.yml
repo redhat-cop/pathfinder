@@ -258,8 +258,11 @@ definitions:
     - AssmentNotes
     - AssessResults
     - Dependencies
+    - BusinessPriority
     properties:
       AssmentNotes:
+         type: string
+      BusinessPriority:
          type: string
       Dependencies:
          type: array
