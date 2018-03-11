@@ -1,20 +1,17 @@
 package com.redhat.gps.pathfinder.web.api;
 
 import com.redhat.gps.pathfinder.domain.*;
-import com.redhat.gps.pathfinder.repository.ApplicationsRepository;
-import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
-import com.redhat.gps.pathfinder.repository.CustomerRepository;
-import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
+import com.redhat.gps.pathfinder.repository.*;
 import com.redhat.gps.pathfinder.web.api.model.*;
+import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -36,11 +33,14 @@ public class CustomerAPIImpl implements CustomersApi {
 
     private final QuestionMetaDataRepository questionRepository;
 
-    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository) {
+    private final ReviewsRepository reviewRepository;
+
+    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository, ReviewsRepository reviewRepository) {
         this.custRepo = custRepo;
         this.appsRepo = appsRepo;
         this.assmRepo = assmRepo;
         this.questionRepository = questionRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
@@ -285,6 +285,74 @@ public class CustomerAPIImpl implements CustomersApi {
         }
         return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.OK);
     }
+
+
+    public ResponseEntity<String> customersCustIdApplicationsAppIdReviewPost(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "Application Definition"  )  @Valid @RequestBody ReviewType body) {
+        log.debug("customersCustIdApplicationsAppIdReviewPost....");
+        try {
+            Applications app = appsRepo.findOne(appId);
+            if (app == null) {
+                log.error("Error while processing review - Unable to find application with id ", appId);
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            }
+
+            Assessments assm = assmRepo.findOne(body.getAssessmentId());
+            if (assm == null) {
+                log.error("Error while processing review - Unable to find assessment with id ", body.getAssessmentId());
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            }
+
+            ApplicationAssessmentReview reviewData = new ApplicationAssessmentReview(
+                body.getReviewTimestamp(),
+                assm,
+                body.getReviewDecision(),
+                body.getWorkEffort(),
+                body.getReviewNotes(),
+                app);
+
+            reviewData = reviewRepository.save(reviewData);
+            app.setReview(reviewData);
+            appsRepo.save(app);
+
+            return new ResponseEntity<String>(reviewData.getId(), HttpStatus.OK);
+        }catch(Exception ex){
+            log.error("Error while processing review", ex.getMessage(), ex);
+            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "Application Definition"  )  @Valid @RequestBody ReviewType body) {
+        log.debug("customersCustIdApplicationsAppIdReviewGet....");
+        ReviewType resp = new ReviewType();
+        try {
+            Applications app = appsRepo.findOne(appId);
+            if (app == null) {
+                log.error("Error while retrieving review - Unable to find application with id ", appId);
+                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+            }
+
+            ApplicationAssessmentReview reviewData = reviewRepository.findOne(app.getReview().getId());
+
+            if (reviewData == null){
+                log.error("Error while retrieving review - Unable to find review for applicatio ", appId);
+                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+            }
+
+            resp.setReviewDecision(reviewData.getReviewDecision());
+            resp.setReviewNotes(reviewData.getReviewNotes());
+            resp.setWorkEffort(reviewData.getReviewEstimate());
+            resp.setReviewTimestamp(reviewData.getReviewDate());
+
+            return new ResponseEntity<ReviewType>(resp,HttpStatus.OK);
+
+        }catch(Exception ex){
+            log.error("Error while processing review", ex.getMessage(), ex);
+            return new ResponseEntity<ReviewType>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
 
 
 }

@@ -1,16 +1,52 @@
 ---
 swagger: 2.0
 info:
-  title: Assessment
+  title: Pathfinder Application Assessment
   description: Pathfinder Assessment API
+  contact:
+    name: VFT Team, EMEA Architects, Red Hat
+    url: http://www.redhat.com
+    email: noconnor@redhat.com
   license:
     name: Apache 2.0
     url: https://www.apache.org/licenses/LICENSE-2.0
   version: 1.0.0
+produces:
+  - application/json
+consumes:
+  - application/json
+schemes:
+  - http
+  - https
 paths:
+  /customers/:
+    get:
+      description: Get Customers
+      responses:
+        200:
+          description: Get List of customers
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CustomerType'
+    post:
+      description: Create a Customer
+      parameters:
+      - name: body
+        in: body
+        schema:
+          $ref: '#/definitions/CustomerType'
+      responses:
+        200:
+          description: Customer Created
+          schema:
+            type: string
+        400:
+          description: Unable to create customer
+
   /customers/{custId}:
     get:
-      description: Get Customer
+      description: Get Customer details
       responses:
         200:
           description: Customer Details
@@ -24,9 +60,11 @@ paths:
       description: Customer Identifier
       required: true
       type: string
+
+
   /customers/{custId}/applications/{appId}:
     get:
-      description: Get Application details
+      description: Get details of an Application for a customer
       responses:
         200:
           description: Application Details
@@ -45,33 +83,14 @@ paths:
       description: Application Identifier
       required: true
       type: string
-  /customers/:
-    get:
-      description: Get Customers
-      responses:
-        200:
-          description: Customers Details
-          schema:
-            type: array
-            items:
-              $ref: '#/definitions/CustomerType'
-    post:
-      description: Create Customer
-      parameters:
-      - name: body
-        in: body
-        schema:
-          $ref: '#/definitions/CustomerType'
-      responses:
-        200:
-          description: Customer Created
-          schema:
-            type: string
-        400:
-          description: Unable to create customer
+
+
+
+
+
   /customers/{custId}/applications/:
     get:
-      description: Get applications list
+      description: Get list of applications for a customer
       responses:
         200:
           description: Applications List
@@ -80,7 +99,7 @@ paths:
             items:
               $ref: '#/definitions/ApplicationType'
     post:
-      description: Create Application
+      description: Create an Application for a customer
       parameters:
       - name: custId
         in: path
@@ -104,9 +123,11 @@ paths:
       in: path
       required: true
       type: string
+
+
   /customers/{custId}/applications/{appId}/assessments:
     get:
-      description: Get assessment ids
+      description: Get assessment ids for an application for a customer
       responses:
         200:
           description: Application Assessments
@@ -115,7 +136,7 @@ paths:
             items:
               type: string
     post:
-      description: Create Assessment
+      description: Create Assessment for an application for a customer
       parameters:
       - name: body
         in: body
@@ -136,9 +157,11 @@ paths:
       in: path
       required: true
       type: string
+
+
   /customers/{custId}/applications/{appId}/assessments/{assessId}:
     get:
-      description: Get Application Assessment
+      description: Get Application Assessment for an appliation for a customer
       responses:
         200:
           description: Assessment Details
@@ -163,7 +186,7 @@ paths:
 
   /customers/{custId}/applications/{appId}/assessments/{assessId}/process:
     get:
-      description: Process assessment results and return value
+      description: Process an assessment results for an application for a customer
       responses:
         200:
           description: Assessment Results
@@ -184,7 +207,91 @@ paths:
       in: path
       required: true
       type: string
+
+
+
+  /customers/{custId}/applications/{appId}/review:
+    post:
+      description: Create Review of an application for a customer
+      responses:
+        200:
+          description: Review Created
+          schema:
+            type: string
+        400:
+          description: Unable to create review
+    get:
+      description: Get an application review of an application for a customer
+      responses:
+        200:
+          description: Application review
+          schema:
+              $ref: '#/definitions/ReviewType'
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+    - name: body
+      required: false
+      in: body
+      description: Application Review
+      schema:
+        $ref: '#/definitions/ReviewType'
+
+
 definitions:
+  ReviewDecisionType:
+    type: object
+    properties:
+      rank:
+        type: string
+        enum:
+        - REHOST
+        - REPLATFORM
+        - REFACTOR
+        - REPURCHASE
+        - RETIRE
+        - RETAIN
+
+  ReviewWorkEstimateType:
+    type: object
+    properties:
+      rank:
+        type: string
+        enum:
+        - SMALL
+        - MEDIUM
+        - LARGE
+        - XLarge
+        - XXLarge
+        - XXXLarge
+
+  ReviewType:
+    required:
+    - AssessmentId
+    - ReviewDecision
+    - WorkEffort
+    - ReviewNotes
+    - ReviewTimestamp
+    properties:
+      AssessmentId:
+        type: string
+      ReviewDecision:
+        $ref: '#/definitions/ReviewDecisionType'
+      WorkEffort:
+        $ref: '#/definitions/ReviewWorkEstimateType'
+      ReviewNotes:
+        type: string
+      ReviewTimestamp:
+        type: string
+
+
+
   CustomerType:
     required:
     - CustomerName
