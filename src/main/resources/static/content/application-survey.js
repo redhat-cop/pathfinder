@@ -15,6 +15,10 @@ Survey
     .StylesManager
     .applyTheme();
 
+Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
+        options.request.setRequestHeader("Content-Type", "application/json");
+};
+
 var json = {
     title: "Application Assessment",
     sendResultOnPageNext: "true",
@@ -42,10 +46,10 @@ var json = {
                 type: "dropdown",
                 "name": "ASSMENTNAME",
                 title: "Select the application to be assessed....",
-                isRequired: false,
+                isRequired: true,
                 choicesByUrl: {
                         // Ignore the URL this will be replaced by the event handler
-                        url: "api/pathfinder/customers/12345/applications/",
+                        url: "api/pathfinder/",
                         valueName: "Id",
                         titleName: "Name"
                 }
@@ -317,7 +321,7 @@ survey
         q.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";
         q.choicesByUrl.valueName = "Id";
         q.choicesByUrl.titleName = "Name";
-        q.choicesByUrl.run();
+        q.choicesByUrl.run();       
 
         var v = survey.getQuestionByName('DEPSOUTLIST');
         v.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";

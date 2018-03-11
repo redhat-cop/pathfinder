@@ -13,8 +13,9 @@ info:
   version: 1.0.0
 produces:
   - application/json
-consumes:
-  - application/json
+#consumes:
+#  - application/json
+#  - application/x-www-form-urlencoded
 schemes:
   - http
   - https
