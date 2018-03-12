@@ -56,16 +56,6 @@ public class Assessments implements Serializable {
         return datetime;
     }
 
-    @Override
-    public String toString() {
-        return "Assessments{" +
-            "id='" + id + '\'' +
-            ", results=" + results +
-            ", deps=" + deps +
-            ", datatime='" + datetime + '\'' +
-            '}';
-    }
-
     public void setDatetime(String datatime) {
         this.datetime = datatime;
     }
@@ -80,6 +70,16 @@ public class Assessments implements Serializable {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    @Override
+    public String toString() {
+        return "Assessments{" +
+            "id='" + id + '\'' +
+            ", results=" + results +
+            ", deps=" + deps +
+            ", datetime='" + datetime + '\'' +
+            '}';
     }
 
     public HashMap<String, String> getResults() {

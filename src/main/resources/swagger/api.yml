@@ -13,9 +13,6 @@ info:
   version: 1.0.0
 produces:
   - application/json
-#consumes:
-#  - application/json
-#  - application/x-www-form-urlencoded
 schemes:
   - http
   - https
@@ -294,6 +291,8 @@ definitions:
     - WorkEffort
     - ReviewNotes
     - ReviewTimestamp
+    - BusinessPriority
+    - WorkPriority
     properties:
       AssessmentId:
         type: string
@@ -305,8 +304,10 @@ definitions:
         type: string
       ReviewTimestamp:
         type: string
-
-
+      BusinessPriority:
+        type: string
+      WorkPriority:
+        type: string
 
   CustomerType:
     required:
@@ -395,6 +396,7 @@ definitions:
          type: array
          items:
             $ref: '#/definitions/AssessmentProcessQuestionResultsType'
+
   AssessmentProcessQuestionResultsType:
     required:
     - QuestionTag

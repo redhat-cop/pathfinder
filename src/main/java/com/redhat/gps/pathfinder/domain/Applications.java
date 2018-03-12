@@ -25,8 +25,6 @@ public class Applications implements Serializable {
     @Field("name")
     private String name;
 
-
-
     @DBRef
     private List<Assessments> Assessments;
 
@@ -95,9 +93,9 @@ public class Applications implements Serializable {
     public String toString() {
         return "Applications{" +
             "id='" + id + '\'' +
-            ", Name='" + name + '\'' +
+            ", name='" + name + '\'' +
             ", Assessments=" + Assessments +
-            ", Review=" + review +
+            ", review=" + review +
             '}';
     }
 }

@@ -308,7 +308,12 @@ public class CustomerAPIImpl implements CustomersApi {
                 body.getReviewDecision(),
                 body.getWorkEffort(),
                 body.getReviewNotes(),
+                body.getWorkPriority(),
+                body.getBusinessPriority(),
                 app);
+
+            if (app.getReview() != null)
+                reviewData.setId(app.getReview().getId());
 
             reviewData = reviewRepository.save(reviewData);
             app.setReview(reviewData);
@@ -343,6 +348,8 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setReviewNotes(reviewData.getReviewNotes());
             resp.setWorkEffort(reviewData.getReviewEstimate());
             resp.setReviewTimestamp(reviewData.getReviewDate());
+            resp.setWorkPriority(reviewData.getWorkPriority());
+            resp.setBusinessPriority(reviewData.getBusinessPriority());
 
             return new ResponseEntity<ReviewType>(resp, HttpStatus.OK);
 

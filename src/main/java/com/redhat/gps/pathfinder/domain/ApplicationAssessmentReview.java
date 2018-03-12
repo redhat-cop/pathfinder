@@ -41,54 +41,34 @@ public class ApplicationAssessmentReview implements Serializable {
     @Field("Notes")
     private String ReviewNotes;
 
+    @NotNull
+    @Field("WorkPriority")
+    private String WorkPriority;
+
+    @NotNull
+    @Field("BusinessPriority")
+    private String BusinessPriority;
+
     @DBRef
     private Applications Application;
 
-    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, ReviewDecisionType ReviewDecision, ReviewWorkEstimateType ReviewEstimate, String ReviewNotes, Applications Application) {
+    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, ReviewDecisionType ReviewDecision, ReviewWorkEstimateType ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority, Applications Application) {
         this.ReviewDate = ReviewDate;
         this.Assessments = Assessments;
         this.ReviewDecision = ReviewDecision;
         this.ReviewEstimate = ReviewEstimate;
         this.ReviewNotes = ReviewNotes;
+        this.WorkPriority = WorkPriority;
+        this.BusinessPriority = BusinessPriority;
         this.Application = Application;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ApplicationAssessmentReview that = (ApplicationAssessmentReview) o;
-        return Objects.equals(id, that.id) &&
-            Objects.equals(ReviewDate, that.ReviewDate) &&
-            Objects.equals(Assessments, that.Assessments) &&
-            Objects.equals(ReviewDecision, that.ReviewDecision) &&
-            Objects.equals(ReviewEstimate, that.ReviewEstimate) &&
-            Objects.equals(ReviewNotes, that.ReviewNotes) &&
-            Objects.equals(Application, that.Application);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, ReviewDate, Assessments, ReviewDecision, ReviewEstimate, ReviewNotes, Application);
-    }
-
-    @Override
-    public String toString() {
-        return "AssessmentReview{" +
-            "id='" + id + '\'' +
-            ", ReviewDate='" + ReviewDate + '\'' +
-            ", Assessments=" + Assessments +
-            ", ReviewDecision=" + ReviewDecision +
-            ", ReviewEstimate=" + ReviewEstimate +
-            ", ReviewNotes='" + ReviewNotes + '\'' +
-            ", Application=" + Application +
-            '}';
-    }
-
-
     public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getReviewDate() {
@@ -131,11 +111,64 @@ public class ApplicationAssessmentReview implements Serializable {
         ReviewNotes = reviewNotes;
     }
 
+    public String getWorkPriority() {
+        return WorkPriority;
+    }
+
+    public void setWorkPriority(String workPriority) {
+        WorkPriority = workPriority;
+    }
+
+    public String getBusinessPriority() {
+        return BusinessPriority;
+    }
+
+    public void setBusinessPriority(String businessPriority) {
+        BusinessPriority = businessPriority;
+    }
+
     public Applications getApplication() {
         return Application;
     }
 
     public void setApplication(Applications application) {
         Application = application;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ApplicationAssessmentReview that = (ApplicationAssessmentReview) o;
+        return Objects.equals(id, that.id) &&
+            Objects.equals(ReviewDate, that.ReviewDate) &&
+            Objects.equals(Assessments, that.Assessments) &&
+            Objects.equals(ReviewDecision, that.ReviewDecision) &&
+            Objects.equals(ReviewEstimate, that.ReviewEstimate) &&
+            Objects.equals(ReviewNotes, that.ReviewNotes) &&
+            Objects.equals(WorkPriority, that.WorkPriority) &&
+            Objects.equals(BusinessPriority, that.BusinessPriority) &&
+            Objects.equals(Application, that.Application);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, ReviewDate, Assessments, ReviewDecision, ReviewEstimate, ReviewNotes, WorkPriority, BusinessPriority, Application);
+    }
+
+    @Override
+    public String toString() {
+        return "ApplicationAssessmentReview{" +
+            "id='" + id + '\'' +
+            ", ReviewDate='" + ReviewDate + '\'' +
+            ", Assessments=" + Assessments +
+            ", ReviewDecision=" + ReviewDecision +
+            ", ReviewEstimate=" + ReviewEstimate +
+            ", ReviewNotes='" + ReviewNotes + '\'' +
+            ", WorkPriority='" + WorkPriority + '\'' +
+            ", BusinessPriority='" + BusinessPriority + '\'' +
+            ", Application=" + Application +
+            '}';
     }
 }
