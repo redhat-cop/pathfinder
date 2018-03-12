@@ -44,13 +44,13 @@ public class ApplicationAssessmentReview implements Serializable {
     @DBRef
     private Applications Application;
 
-    public ApplicationAssessmentReview(String reviewDate, com.redhat.gps.pathfinder.domain.Assessments assessments, ReviewDecisionType reviewDecision, ReviewWorkEstimateType reviewEstimate, String reviewNotes, Applications application) {
-        ReviewDate = reviewDate;
-        Assessments = assessments;
-        ReviewDecision = reviewDecision;
-        ReviewEstimate = reviewEstimate;
-        ReviewNotes = reviewNotes;
-        Application = application;
+    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, ReviewDecisionType ReviewDecision, ReviewWorkEstimateType ReviewEstimate, String ReviewNotes, Applications Application) {
+        this.ReviewDate = ReviewDate;
+        this.Assessments = Assessments;
+        this.ReviewDecision = ReviewDecision;
+        this.ReviewEstimate = ReviewEstimate;
+        this.ReviewNotes = ReviewNotes;
+        this.Application = Application;
     }
 
     @Override

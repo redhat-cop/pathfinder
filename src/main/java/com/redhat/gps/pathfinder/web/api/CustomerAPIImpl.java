@@ -54,9 +54,9 @@ public class CustomerAPIImpl implements CustomersApi {
                 AssessmentResponse tempPayload = new AssessmentResponse();
 
                 Iterator it = currAssm.getResults().entrySet().iterator();
-                while (it.hasNext()){
-                    Map.Entry pair = (Map.Entry)it.next();
-                    tempPayload.put((String)pair.getKey(),(String)pair.getValue());
+                while (it.hasNext()) {
+                    Map.Entry pair = (Map.Entry) it.next();
+                    tempPayload.put((String) pair.getKey(), (String) pair.getValue());
                 }
                 resp.setPayload(tempPayload);
                 return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
@@ -153,7 +153,7 @@ public class CustomerAPIImpl implements CustomersApi {
 
         try {
             List<Applications> resp = custRepo.findOne(custId).getApplications();
-            if ((resp!=null)&&(!resp.isEmpty())) {
+            if ((resp != null) && (!resp.isEmpty())) {
                 for (Applications x : resp) {
                     ApplicationType lapp = new ApplicationType();
                     lapp.setName(x.getName());
@@ -271,7 +271,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 vals.setQuestionRank(answerRank.ordinal());
                 assessResults.add(vals);
 
-                log.debug(currQuestion.getId()+": value="+res+" RANK "+answerRank.toString());
+                log.debug(currQuestion.getId() + ": value=" + res + " RANK " + answerRank.toString());
 
             }
             resp.setAssessResults(assessResults);
@@ -287,7 +287,7 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
 
-    public ResponseEntity<String> customersCustIdApplicationsAppIdReviewPost(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "Application Definition"  )  @Valid @RequestBody ReviewType body) {
+    public ResponseEntity<String> customersCustIdApplicationsAppIdReviewPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Application Definition") @Valid @RequestBody ReviewType body) {
         log.debug("customersCustIdApplicationsAppIdReviewPost....");
         try {
             Applications app = appsRepo.findOne(appId);
@@ -315,15 +315,15 @@ public class CustomerAPIImpl implements CustomersApi {
             appsRepo.save(app);
 
             return new ResponseEntity<String>(reviewData.getId(), HttpStatus.OK);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
             return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
 
-    public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "Application Definition"  )  @Valid @RequestBody ReviewType body) {
-        log.debug("customersCustIdApplicationsAppIdReviewGet....");
+    public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewReviewIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("reviewId") String reviewId) {
+        log.debug("customersCustIdApplicationsAppIdReviewReviewIdGet....");
         ReviewType resp = new ReviewType();
         try {
             Applications app = appsRepo.findOne(appId);
@@ -334,8 +334,8 @@ public class CustomerAPIImpl implements CustomersApi {
 
             ApplicationAssessmentReview reviewData = reviewRepository.findOne(app.getReview().getId());
 
-            if (reviewData == null){
-                log.error("Error while retrieving review - Unable to find review for applicatio ", appId);
+            if (reviewData == null) {
+                log.error("Error while retrieving review - Unable to find review for application ", appId);
                 return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
             }
 
@@ -344,15 +344,13 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setWorkEffort(reviewData.getReviewEstimate());
             resp.setReviewTimestamp(reviewData.getReviewDate());
 
-            return new ResponseEntity<ReviewType>(resp,HttpStatus.OK);
+            return new ResponseEntity<ReviewType>(resp, HttpStatus.OK);
 
-        }catch(Exception ex){
+        } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
             return new ResponseEntity<ReviewType>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-
 
 
 }

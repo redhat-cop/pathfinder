@@ -221,6 +221,23 @@ paths:
             type: string
         400:
           description: Unable to create review
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+    - name: body
+      required: false
+      in: body
+      description: Application Review
+      schema:
+        $ref: '#/definitions/ReviewType'
+
+  /customers/{custId}/applications/{appId}/review/{reviewId}:
     get:
       description: Get an application review of an application for a customer
       responses:
@@ -237,12 +254,10 @@ paths:
       in: path
       required: true
       type: string
-    - name: body
-      required: false
-      in: body
-      description: Application Review
-      schema:
-        $ref: '#/definitions/ReviewType'
+    - name: reviewId
+      in: path
+      required: true
+      type: string
 
 
 definitions:

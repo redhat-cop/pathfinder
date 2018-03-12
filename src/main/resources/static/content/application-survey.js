@@ -321,7 +321,7 @@ survey
         q.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";
         q.choicesByUrl.valueName = "Id";
         q.choicesByUrl.titleName = "Name";
-        q.choicesByUrl.run();       
+        q.choicesByUrl.run();
 
         var v = survey.getQuestionByName('DEPSOUTLIST');
         v.choicesByUrl.url = "api/pathfinder/customers/"+tmp+"/applications/";
