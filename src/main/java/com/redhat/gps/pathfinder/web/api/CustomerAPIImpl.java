@@ -158,7 +158,9 @@ public class CustomerAPIImpl implements CustomersApi {
                     ApplicationType lapp = new ApplicationType();
                     lapp.setName(x.getName());
                     lapp.setId(x.getId());
-                    lapp.setReview(x.getReview().getId());
+                    if (x.getReview() != null) {
+                        lapp.setReview(x.getReview().getId());
+                    }
                     lapp.setDescription(x.getDescription());
                     response.add(lapp);
                 }
