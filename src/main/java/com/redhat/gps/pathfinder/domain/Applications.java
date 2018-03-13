@@ -25,6 +25,9 @@ public class Applications implements Serializable {
     @Field("name")
     private String name;
 
+    @Field("Description")
+    private String Description;
+
     @DBRef
     private List<Assessments> Assessments;
 
@@ -69,6 +72,14 @@ public class Applications implements Serializable {
         this.review = review;
     }
 
+    public String getDescription() {
+        return Description;
+    }
+
+    public void setDescription(String description) {
+        Description = description;
+    }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
 
@@ -79,6 +90,7 @@ public class Applications implements Serializable {
         Applications that = (Applications) o;
         return Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
+            Objects.equals(Description, that.Description) &&
             Objects.equals(Assessments, that.Assessments) &&
             Objects.equals(review, that.review);
     }
@@ -86,7 +98,7 @@ public class Applications implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, Assessments, review);
+        return Objects.hash(id, name, Description, Assessments, review);
     }
 
     @Override
@@ -94,6 +106,7 @@ public class Applications implements Serializable {
         return "Applications{" +
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
+            ", Description='" + Description + '\'' +
             ", Assessments=" + Assessments +
             ", review=" + review +
             '}';

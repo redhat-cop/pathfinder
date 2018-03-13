@@ -158,6 +158,8 @@ public class CustomerAPIImpl implements CustomersApi {
                     ApplicationType lapp = new ApplicationType();
                     lapp.setName(x.getName());
                     lapp.setId(x.getId());
+                    lapp.setReview(x.getReview().getId());
+                    lapp.setDescription(x.getDescription());
                     response.add(lapp);
                 }
             }
@@ -178,6 +180,7 @@ public class CustomerAPIImpl implements CustomersApi {
         } else {
             Applications app = new Applications();
             app.setName(body.getName());
+            app.setDescription(body.getDescription());
             app = appsRepo.save(app);
             List<Applications> appList = myCust.getApplications();
             if (appList == null) {

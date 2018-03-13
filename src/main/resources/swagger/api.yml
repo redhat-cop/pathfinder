@@ -328,6 +328,7 @@ definitions:
         type: string
       CustomerSize:
         type: string
+
   ApplicationType:
     required:
     - Description
@@ -341,6 +342,9 @@ definitions:
         type: string
       Description:
         description: Application Description
+        type: string
+      Review:
+        description: ID of review, ignored on post
         type: string
 
 
