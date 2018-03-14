@@ -60,6 +60,26 @@ paths:
       type: string
 
 
+  /customers/{custId}/reviews:
+    get:
+      description: Get all reviews for each customer application. NOTE this an ugly hack to help with MVP UI. This needs to be eventually removed.
+      responses:
+        200:
+          description: Customer Details
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ReviewType'
+        404:
+          description: Customer Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+
+
   /customers/{custId}/applications/{appId}:
     get:
       description: Get details of an Application for a customer
@@ -414,5 +434,7 @@ definitions:
       QuestionRank:
         description: UNKNOWN(0), RED(1), AMBER(2), GREEN(3)
         type: integer
+
+
 
 

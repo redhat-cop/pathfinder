@@ -364,5 +364,49 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
+    //This is fugly and needs to be removed at a later stage
+    public ResponseEntity<List<ReviewType>> customersCustIdReviewsGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId) {
+        log.debug("customersCustIdReviewsGet...." + custId);
+        ArrayList<ReviewType> resp = new ArrayList<>();
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust==null) {
+                log.error("customersCustIdReviewsGet....customer not found " + custId);
+                return new ResponseEntity<List<ReviewType>>(HttpStatus.BAD_REQUEST);
+            }
+
+            List<Applications> appList = currCust.getApplications();
+            if ((appList==null)||(appList.isEmpty())){
+                log.error("customersCustIdReviewsGet....no applications for customer " + custId);
+                return new ResponseEntity<List<ReviewType>>(HttpStatus.BAD_REQUEST);
+            }
+
+            ArrayList<ApplicationAssessmentReview> reviewList = new ArrayList<>();
+
+            for (Applications x:appList){
+                ApplicationAssessmentReview tmpRev = x.getReview();
+                if (tmpRev != null){
+                    reviewList.add(x.getReview());
+                    ReviewType newRev = new ReviewType();
+                    newRev.setBusinessPriority(tmpRev.getBusinessPriority());
+                    newRev.setWorkPriority(tmpRev.getWorkPriority());
+                    newRev.setReviewTimestamp(tmpRev.getReviewDate());
+                    newRev.setWorkEffort(tmpRev.getReviewEstimate());
+                    newRev.setReviewNotes(tmpRev.getReviewNotes());
+                    newRev.setReviewDecision(tmpRev.getReviewDecision());
+                    newRev.setAssessmentId(x.getName());
+                    resp.add(newRev);
+                }
+            }
+
+        } catch (Exception ex) {
+            log.error("Error while processing review", ex.getMessage(), ex);
+            return new ResponseEntity<List<ReviewType>>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<List<ReviewType>>(resp,HttpStatus.OK);
+    }
+
 
 }
