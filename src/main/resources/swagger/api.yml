@@ -90,6 +90,12 @@ paths:
             $ref: '#/definitions/ApplicationType'
         404:
           description: Application Not Found
+    delete:
+      responses:
+        200:
+          description: Application deleted
+        404:
+          description: Application Not Found
     parameters:
     - name: custId
       in: path
