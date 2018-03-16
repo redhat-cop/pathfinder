@@ -52,6 +52,12 @@ paths:
             $ref: '#/definitions/CustomerType'
         404:
           description: Customer Not Found
+    delete:
+      responses:
+        200:
+          description: Customer deleted
+        404:
+          description: Customer Not deleted
     parameters:
     - name: custId
       in: path
@@ -193,6 +199,12 @@ paths:
             $ref: '#/definitions/AssessmentType'
         400:
           description: Assessment Not Found
+    delete:
+      responses:
+        200:
+          description: Assessment deleted
+        404:
+          description: Assessment Not Found
     parameters:
     - name: custId
       in: path
@@ -268,6 +280,12 @@ paths:
           description: Application review
           schema:
               $ref: '#/definitions/ReviewType'
+    delete:
+      responses:
+        200:
+          description: Review deleted
+        404:
+          description: Review Not Found
     parameters:
     - name: custId
       in: path

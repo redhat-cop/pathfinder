@@ -3,19 +3,18 @@ package com.redhat.gps.pathfinder.web.api;
 import com.redhat.gps.pathfinder.domain.*;
 import com.redhat.gps.pathfinder.repository.*;
 import com.redhat.gps.pathfinder.web.api.model.*;
-import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -53,9 +52,8 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setDeps(currAssm.getDeps());
                 AssessmentResponse tempPayload = new AssessmentResponse();
 
-                Iterator it = currAssm.getResults().entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry pair = (Map.Entry) it.next();
+                for (Object o : currAssm.getResults().entrySet()) {
+                    Map.Entry pair = (Map.Entry) o;
                     tempPayload.put((String) pair.getKey(), (String) pair.getValue());
                 }
                 resp.setPayload(tempPayload);
@@ -141,17 +139,16 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
     public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Application Identifier",required=true ) @PathVariable("appId") String appId) {
-        // do some magic!
-        log.debug("customersCustIdApplicationsAppIdGet cid{} app{}",custId,appId);
+        log.debug("customersCustIdApplicationsAppIdGet cid {} app {}",custId,appId);
         ApplicationType resp = new ApplicationType();
         //TODO : Check customer exists and owns application as well as application
         try {
             Applications details = appsRepo.findOne(appId);
-
-
             resp.setDescription(details.getDescription());
-            resp.setReview(details.getReview().getId());
+            if (details.getReview() != null)
+                resp.setReview(details.getReview().getId());
             resp.setName(details.getName());
+            resp.setId(appId);
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<ApplicationType>(HttpStatus.BAD_REQUEST);
@@ -424,18 +421,17 @@ public class CustomerAPIImpl implements CustomersApi {
 
     public ResponseEntity<Void> customersCustIdApplicationsAppIdDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Application Identifier",required=true ) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdDelete {} {}",custId,appId);
-        ArrayList<ReviewType> resp = new ArrayList<>();
 
         try {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
-                log.error("customersCustIdReviewsGet....customer not found {}",custId);
+                log.error("customersCustIdApplicationsAppIdDelete....customer not found {}",custId);
                 return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
             }
 
             Applications delApp = appsRepo.findOne(appId);
             if (delApp == null){
-                log.error("customersCustIdReviewsGet....application not found {}",appId);
+                log.error("customersCustIdApplicationsAppIdDelete....application not found {}",appId);
                 return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
             }
 
@@ -453,7 +449,7 @@ public class CustomerAPIImpl implements CustomersApi {
             }
 
             if (!appFound){
-                log.error("customersCustIdReviewsGet....application not found {} in customer list {}",appId,custId);
+                log.error("customersCustIdApplicationsAppIdDelete....application not found {} in customer list {}",appId,custId);
                 return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
             }
 
@@ -475,4 +471,105 @@ public class CustomerAPIImpl implements CustomersApi {
 
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
+
+    public ResponseEntity<Void> customersCustIdApplicationsAppIdReviewReviewIdDelete(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true ) @PathVariable("reviewId") String reviewId) {
+        log.debug("customersCustIdApplicationsAppIdReviewReviewIdDelete {} {} {}",custId,appId, reviewId);
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....customer not found {}", custId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+
+            Applications currApp = appsRepo.findOne(appId);
+            if (currApp == null) {
+                log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....application not found {}", appId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+
+            if (currApp.getReview().getId().equalsIgnoreCase(reviewId)){
+                currApp.setReview(null);
+                appsRepo.save(currApp);
+                reviewRepository.delete(reviewId);
+            }else{
+                log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....review {} not found for application", reviewId,appId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }catch(Exception ex){
+            log.error("Error while deleting review", ex.getMessage(), ex);
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<Void> customersCustIdApplicationsAppIdAssessmentsAssessIdDelete(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true ) @PathVariable("assessId") String assessId) {
+        log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete {} {} {}",custId,appId, assessId);
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....customer not found {}", custId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+
+            Applications currApp = appsRepo.findOne(appId);
+            if (currApp == null) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....application not found {}", appId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+
+            List<Assessments> assmList = currApp.getAssessments();
+
+            if ((assmList == null)||(assmList.isEmpty())){
+                log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....assessment list is null for app {}", appId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+
+            boolean assmFound = false;
+            List<Assessments> newAssmLst = new ArrayList<>();
+
+            for(Assessments x:assmList) {
+                if (x.getId().equalsIgnoreCase(assessId)){
+                    assmFound=true;
+                }else{
+                    newAssmLst.add(x);
+                }
+            }
+
+            if (assmFound){
+                assmRepo.delete(assessId);
+                currApp.setAssessments(newAssmLst);
+                appsRepo.save(currApp);
+            }else{
+                log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....assessment not found for app {}", appId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+        }catch(Exception ex){
+            log.error("Error while deleting assessment", ex.getMessage(), ex);
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
+    public ResponseEntity<Void> customersCustIdDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId) {
+        log.debug("customersCustIdDelete {}",custId);
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdDelete....customer not found {}", custId);
+                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+            }
+            if ((currCust.getApplications() != null)&&(!currCust.getApplications().isEmpty())){
+                log.error("Customer {} has applications...not deleting",custId);
+                return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            custRepo.delete(custId);
+        }catch(Exception ex){
+            log.error("Error while deleting customer", ex.getMessage(), ex);
+            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Void>(HttpStatus.OK);
+    }
+
 }
