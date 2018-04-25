@@ -96,8 +96,8 @@ jhipster:
             port: 2003
             prefix: pathfinder
         prometheus: # Use the "prometheus" Maven profile to have the Prometheus dependencies
-            enabled: false
-            endpoint: /prometheusMetrics
+            enabled: true
+            endpoint: /metrics
         logs: # Reports Dropwizard metrics in the logs
             enabled: false
             report-frequency: 60 # in seconds

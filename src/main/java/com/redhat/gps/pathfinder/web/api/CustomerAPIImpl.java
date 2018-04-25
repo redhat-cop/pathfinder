@@ -1,5 +1,6 @@
 package com.redhat.gps.pathfinder.web.api;
 
+import com.codahale.metrics.annotation.Timed;
 import com.redhat.gps.pathfinder.domain.*;
 import com.redhat.gps.pathfinder.repository.*;
 import com.redhat.gps.pathfinder.web.api.model.*;
@@ -42,6 +43,7 @@ public class CustomerAPIImpl implements CustomersApi {
         this.reviewRepository = reviewRepository;
     }
 
+    @Timed
     public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdGet....");
 
@@ -67,7 +69,7 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
-
+    @Timed
     public ResponseEntity<List<String>> customersCustIdApplicationsAppIdAssessmentsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsGet....");
         ArrayList<String> results = new ArrayList<>();
@@ -96,7 +98,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
     }
 
-
+    @Timed
     public ResponseEntity<String> customersCustIdApplicationsAppIdAssessmentsPost
         (@ApiParam(value = "", required = true) @PathVariable("custId") String
              custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
@@ -138,6 +140,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<String>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
 
+    @Timed
     public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Application Identifier",required=true ) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdGet cid {} app {}",custId,appId);
         ApplicationType resp = new ApplicationType();
@@ -157,6 +160,7 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
     @Override
+    @Timed
     public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet
         (@ApiParam(value = "", required = true) @PathVariable("custId") String custId) {
         log.info("customersCustIdApplicationsGet....[" + custId + "]");
@@ -183,6 +187,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.OK);
     }
 
+    @Timed
     public ResponseEntity<String> customersCustIdApplicationsPost
         (@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String
              custId, @ApiParam(value = "Application Definition") @Valid @RequestBody ApplicationType body) {
@@ -206,6 +211,7 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
+    @Timed
     public ResponseEntity<CustomerType> customersCustIdGet
         (@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
         log.debug("customersCustIdGet....{}",custId);
@@ -221,6 +227,7 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
+    @Timed
     public ResponseEntity<String> customersPost(@ApiParam(value = "") @Valid @RequestBody CustomerType body) {
         log.debug("customersPost....{}",body);
         Customer myCust = new Customer();
@@ -236,7 +243,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
     }
 
-
+    @Timed
     public ResponseEntity<List<CustomerType>> customersGet() {
         log.debug("customersGet....");
         ArrayList<CustomerType> response = new ArrayList<>();
@@ -256,7 +263,7 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
-
+    @Timed
     public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet
         (@ApiParam(value = "", required = true) @PathVariable("custId") String
              custId, @ApiParam(value = "", required = true) @PathVariable("appId") String
@@ -302,7 +309,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.OK);
     }
 
-
+    @Timed
     public ResponseEntity<String> customersCustIdApplicationsAppIdReviewPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Application Definition") @Valid @RequestBody ReviewType body) {
         log.debug("customersCustIdApplicationsAppIdReviewPost....");
         try {
@@ -342,7 +349,7 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
-
+    @Timed
     public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewReviewIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("reviewId") String reviewId) {
         log.debug("customersCustIdApplicationsAppIdReviewReviewIdGet....");
         ReviewType resp = new ReviewType();
@@ -376,6 +383,7 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
     //This is fugly and needs to be removed at a later stage
+    @Timed
     public ResponseEntity<List<ReviewType>> customersCustIdReviewsGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId) {
         log.debug("customersCustIdReviewsGet...." + custId);
         ArrayList<ReviewType> resp = new ArrayList<>();
@@ -419,6 +427,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<List<ReviewType>>(resp,HttpStatus.OK);
     }
 
+    @Timed
     public ResponseEntity<Void> customersCustIdApplicationsAppIdDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Application Identifier",required=true ) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdDelete {} {}",custId,appId);
 
@@ -472,6 +481,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @Timed
     public ResponseEntity<Void> customersCustIdApplicationsAppIdReviewReviewIdDelete(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true ) @PathVariable("reviewId") String reviewId) {
         log.debug("customersCustIdApplicationsAppIdReviewReviewIdDelete {} {} {}",custId,appId, reviewId);
 
@@ -503,6 +513,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @Timed
     public ResponseEntity<Void> customersCustIdApplicationsAppIdAssessmentsAssessIdDelete(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "",required=true ) @PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete {} {} {}",custId,appId, assessId);
 
@@ -552,6 +563,7 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
+    @Timed
     public ResponseEntity<Void> customersCustIdDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId) {
         log.debug("customersCustIdDelete {}",custId);
         try {

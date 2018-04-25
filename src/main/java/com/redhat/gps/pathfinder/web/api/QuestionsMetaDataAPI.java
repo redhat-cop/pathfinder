@@ -55,7 +55,6 @@ public class QuestionsMetaDataAPI {
     }
 
     @GetMapping(value= "/minimum",produces = "application/json")
-    @Timed
     public Assessments getMinValues(){
         log.debug("REST request to get minimum values ");
         return assmRepository.findOne(MIN_ASSESSMENT_VALUES);
