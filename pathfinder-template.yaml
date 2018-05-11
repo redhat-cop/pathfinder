@@ -53,7 +53,7 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: docker-registry.default.svc:5000/pathfinder/pathfinderapp:latest
+        name: pathfinder/pathfinderapp:latest
       generation: null
       importPolicy: {}
       name: latest
@@ -82,7 +82,7 @@ objects:
     runPolicy: Serial
     source:
       git:
-        uri: https://github.com/noelo/pathfinder.git
+        uri: https://github.com/redhat-cop/pathfinder.git
       type: Git
     strategy:
       sourceStrategy:
@@ -146,7 +146,7 @@ objects:
               -Dspring.cloud.kubernetes.secrets.name=mongodb -Dspring.cloud.kubernetes.secrets.paths=/tmp/secrets
           - name: JAVA_ENABLE_DEBUG
             value: "true"
-          image: docker-registry.default.svc:5000/pathfinder/pathfinderapp:latest
+          image: pathfinder/pathfinderapp:latest
           imagePullPolicy: Always
           name: pathfinderapp
           ports:
