@@ -53,7 +53,7 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: pathfinder/pathfinderapp:latest
+        name: quay.io/noeloc/pathfinder:latest
       generation: null
       importPolicy: {}
       name: latest
@@ -75,8 +75,8 @@ objects:
     nodeSelector: null
     output:
       to:
-        kind: ImageStreamTag
-        name: pathfinderapp:latest
+        kind: DockerImage
+        name: quay.io/noeloc/pathfinder:latest
     postCommit: {}
     resources: {}
     runPolicy: Serial
@@ -219,8 +219,8 @@ objects:
     nodeSelector: null
     output:
       to:
-        kind: ImageStreamTag
-        name: pathfinderapp:latest
+        kind: DockerImage
+        name: quay.io/noeloc/pathfinder:latest
     postCommit: {}
     resources: {}
     runPolicy: Serial
