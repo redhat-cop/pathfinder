@@ -11,9 +11,9 @@ package com.redhat.gps.pathfinder.web.api;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,24 +24,16 @@ package com.redhat.gps.pathfinder.web.api;
 
 import com.codahale.metrics.annotation.Timed;
 import com.redhat.gps.pathfinder.domain.Assessments;
-import com.redhat.gps.pathfinder.domain.Customer;
 import com.redhat.gps.pathfinder.domain.QuestionMetaData;
 import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
-import com.redhat.gps.pathfinder.repository.CustomerRepository;
 import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
-import com.redhat.gps.pathfinder.web.rest.errors.BadRequestAlertException;
-import com.redhat.gps.pathfinder.web.rest.util.HeaderUtil;
-import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for retrieving question metadata.
