@@ -31,3 +31,15 @@ oc tag quay.io/noeloc/pathfinder pathfinderapp:latest
 oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)
 ```
 
+## Create the mongodb database
+```
+oc process -n openshift template/mongodb-persistent -p MONGODB_DATABASE=pathfinder|oc create -f-
+```
+
+##Deploy the application
+```
+oc process -f pathfinder-template.yaml| oc create -f-
+```
+
+
+
