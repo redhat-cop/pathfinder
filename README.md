@@ -1,7 +1,7 @@
 # pathfinder
 This application was generated using JHipster 4.14.0, you can find documentation and help at [http://www.jhipster.tech/documentation-archive/v4.14.0](http://www.jhipster.tech/documentation-archive/v4.14.0).
 
-
+# Building the application
 ## Create Quay Push secret
 ```
 oc create secret docker-registry quayhub --docker-server=quay.io --docker-username=username --docker-password=password --docker-email=user@gmail.com
@@ -26,6 +26,12 @@ oc secrets link default quayhub --for=pull
 oc tag quay.io/noeloc/pathfinder pathfinderapp:latest
 ```
 
+## Create the Buildconfigs -  One for source builds another for binary builds
+```
+oc process -f pathfinder-build-template.yaml|oc create -f-
+```
+
+# Deploying the application
 ## Give the default SA access to the view resources - needed for spring clooud kubernetes
 ```
 oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -n $(oc project -q)
@@ -36,7 +42,7 @@ oc policy add-role-to-user view system:serviceaccount:$(oc project -q):default -
 oc process -n openshift template/mongodb-persistent -p MONGODB_DATABASE=pathfinder|oc create -f-
 ```
 
-##Deploy the application
+## Deploy the application
 ```
 oc process -f pathfinder-template.yaml| oc create -f-
 ```
