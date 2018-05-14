@@ -220,6 +220,8 @@ public class CustomerAPIImpl implements CustomersApi {
             return new ResponseEntity<String>(custId, HttpStatus.BAD_REQUEST);
         } else {
             Applications app = new Applications();
+            UUID uuid = UUID.randomUUID();
+            app.setId(uuid.toString());
             app.setName(body.getName());
             app.setDescription(body.getDescription());
             app = appsRepo.save(app);
@@ -385,6 +387,12 @@ public class CustomerAPIImpl implements CustomersApi {
                 log.error("Error while retrieving review - Unable to find application with id {}", appId);
                 return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
             }
+
+            if (app.getReview() == null){
+                log.error("Error while retrieving review - no review associated with application {}", reviewId);
+                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+            }
+
 
             ApplicationAssessmentReview reviewData = reviewRepository.findOne(app.getReview().getId());
 

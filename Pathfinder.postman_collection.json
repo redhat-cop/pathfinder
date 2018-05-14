@@ -1,53 +1,22 @@
 {
 	"info": {
-		"name": "Pathfinder",
 		"_postman_id": "5a0f5430-4dd0-81ac-596e-9ff82cd4f9a1",
-		"description": "",
+		"name": "Pathfinder",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
-		{
-			"name": "Process Assessment",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{AssessmentID}}/process/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{AssessmentID}}",
-						"process",
-						""
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
 		{
 			"name": "Create Pathfinder Customer",
 			"event": [
 				{
 					"listen": "test",
 					"script": {
-						"id": "3c87320f-afc5-439f-b5f4-912ab25931a6",
+						"id": "a4cbd31a-574e-4714-a069-6dfe62ee9d21",
 						"type": "text/javascript",
 						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
 							"var jsonData = responseBody;",
 							"postman.setEnvironmentVariable(\"customerID\", jsonData);"
 						]
@@ -77,8 +46,52 @@
 						"customers",
 						""
 					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pathfinder Customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9afc4129-425a-42eb-ab2f-4d81438a1ba8",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.globals.unset(\"variable_key\");"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
 				},
-				"description": ""
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -88,9 +101,12 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "a0fe2cfb-88ce-402c-825f-35a6a3d3722c",
+						"id": "bbc02ea5-be7a-4aac-93a1-38db4f618370",
 						"type": "text/javascript",
 						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
 							"var jsonData = responseBody;",
 							"postman.setEnvironmentVariable(\"applicationID\", jsonData);"
 						]
@@ -122,8 +138,7 @@
 						"applications",
 						""
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
@@ -133,11 +148,14 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "1132805d-cf70-4f23-b044-f9f0e3d4da32",
+						"id": "0cd5b351-3bde-48de-8faf-03e2e4db9664",
 						"type": "text/javascript",
 						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
 							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"AssessmentID\", jsonData);"
+							"postman.setEnvironmentVariable(\"assessmentID\", jsonData);"
 						]
 					}
 				}
@@ -168,8 +186,92 @@
 						"{{applicationID}}",
 						"assessments"
 					]
-				},
-				"description": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Process Assessment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7389353c-5461-4633-925d-2ae41289cb97",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}/process/",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"assessments",
+						"{{assessmentID}}",
+						"process",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Assessment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "8f1a7ea0-ca5b-4792-8b60-ab8474dff777",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"assessments",
+						"{{assessmentID}}"
+					]
+				}
 			},
 			"response": []
 		},
@@ -179,9 +281,12 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "2e8992ce-ae1c-4ab3-9c5d-91899de1b0c3",
+						"id": "9c9b5d92-f6ec-4772-b2d5-e66e34b4771c",
 						"type": "text/javascript",
 						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
 							"var jsonData = responseBody;",
 							"postman.setEnvironmentVariable(\"reviewID\", jsonData);"
 						]
@@ -214,13 +319,27 @@
 						"{{applicationID}}",
 						"review"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Get Review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -240,124 +359,26 @@
 						"review",
 						"{{reviewID}}"
 					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Get Minimum values",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/static/minimum",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"static",
-						"minimum"
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Get Assessment",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{assessmentID}}"
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Get Questions",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/static/questions",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"static",
-						"questions"
-					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Create Pathfinder Customer",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "3c87320f-afc5-439f-b5f4-912ab25931a6",
-						"type": "text/javascript",
-						"exec": [
-							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"customerID\", jsonData);"
-						]
-					}
 				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
-				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						""
-					]
-				},
-				"description": ""
 			},
 			"response": []
 		},
 		{
 			"name": "Get Applications",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -375,13 +396,60 @@
 						"applications",
 						""
 					]
-				},
-				"description": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Minimum values",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "183b42c7-05eb-4b1a-9e10-e9aa3b281923",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/static/minimum",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"static",
+						"minimum"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Get specific application",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "72d1cb1b-300d-4d13-81bc-d6fa6a7b6dbe",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -399,13 +467,26 @@
 						"applications",
 						"{{applicationID}}"
 					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Get Review of Application",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "37f3e17a-b30b-4f6b-a410-443c889daebf",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -422,37 +503,26 @@
 						"{{customerID}}",
 						"reviews"
 					]
-				},
-				"description": ""
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Application, Assessment & Review",
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}"
-					]
-				},
-				"description": ""
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "List Applications for customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a7f9fef5-b039-4c0f-9966-07fbdc0f7ece",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -470,13 +540,60 @@
 						"applications",
 						""
 					]
-				},
-				"description": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Questions",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6ed3a4e2-509c-484c-9071-90ecfe1d5ac6",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/static/questions",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"static",
+						"questions"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Delete Review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f853e380-5f6e-405d-a583-41616e435d21",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -496,13 +613,66 @@
 						"review",
 						"{{reviewID}}"
 					]
-				},
-				"description": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Review - review not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "9c7ae96b-c364-40e5-8952-0cdd76f2adaf",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"review",
+						"{{reviewID}}"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Delete Assessment",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "046850f6-cf43-42b9-a4d0-8f4005fc55ca",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -522,13 +692,102 @@
 						"assessments",
 						"{{assessmentID}}"
 					]
-				},
-				"description": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Assessment - Assessment not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "64776d0e-3d8d-44cd-8d39-dbade0349193",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"assessments",
+						"{{assessmentID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Application, Assessment & Review",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "0f4ed244-a46a-4160-bcd1-09eb928c7370",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}"
+					]
+				}
 			},
 			"response": []
 		},
 		{
 			"name": "Delete Customer",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "2f835124-15cb-4171-ae6e-4169d12781b0",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						]
+					}
+				}
+			],
 			"request": {
 				"method": "DELETE",
 				"header": [],
@@ -544,8 +803,50 @@
 						"customers",
 						"{{customerID}}"
 					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Pathfinder Customer - customer not found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "288a89a0-8566-4440-8cc5-9c615ef21801",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Customer not found - Status code is 400\", function () {",
+							"    pm.response.to.have.status(400);",
+							"});"
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
 				},
-				"description": ""
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}"
+					]
+				}
 			},
 			"response": []
 		}
