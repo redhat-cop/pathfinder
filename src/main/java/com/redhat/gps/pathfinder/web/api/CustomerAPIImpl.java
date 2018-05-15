@@ -139,6 +139,8 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currApp != null) {
 
                 Assessments newitem = new Assessments();
+                UUID uuid = UUID.randomUUID();
+                newitem.setId(uuid.toString());
                 newitem.setResults(body.getPayload());
                 newitem.setDeps(body.getDeps());
                 newitem.setDatetime(body.getDatetime());
@@ -363,8 +365,14 @@ public class CustomerAPIImpl implements CustomersApi {
                 body.getBusinessPriority(),
                 app);
 
-            if (app.getReview() != null)
+            if (app.getReview() != null) {
                 reviewData.setId(app.getReview().getId());
+            }
+            else {
+                UUID uuid = UUID.randomUUID();
+                reviewData.setId(uuid.toString());
+            }
+
 
             reviewData = reviewRepository.save(reviewData);
             app.setReview(reviewData);
@@ -401,6 +409,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
             }
 
+            resp.setAssessmentId(reviewData.getAssessments().getId());
             resp.setReviewDecision(reviewData.getReviewDecision());
             resp.setReviewNotes(reviewData.getReviewNotes());
             resp.setWorkEffort(reviewData.getReviewEstimate());

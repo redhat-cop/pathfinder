@@ -364,6 +364,60 @@
 			"response": []
 		},
 		{
+			"name": "Create Review - Overwrite existing",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "73998a15-e25e-4fdc-8568-93685ebfa9e8",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"pm.test(\"Review id should be the same\", function () {",
+							"    var respData = pm.response.text();",
+							"    console.log(respData);",
+							"    pm.expect(respData).to.eql(pm.environment.get(\"reviewID\"));",
+							"});",
+							"",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": {\n    \"rank\": \"REHOST\"\n  },\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\": {\n    \"rank\": \"SMALL\"\n  }\n}"
+				},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"review"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Applications",
 			"event": [
 				{
