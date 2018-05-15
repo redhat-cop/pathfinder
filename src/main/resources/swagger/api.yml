@@ -16,6 +16,7 @@ produces:
 schemes:
   - http
   - https
+
 paths:
   /customers/:
     get:
@@ -86,6 +87,26 @@ paths:
       type: string
 
 
+  /customers/{custId}/applicationAssessmentSummary:
+    get:
+      description: Get all customer applications and review status
+      responses:
+        200:
+          description: Customer Details
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ApplicationSummaryType'
+        404:
+          description: Customer Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+
+
   /customers/{custId}/applications/{appId}:
     get:
       description: Get details of an Application for a customer
@@ -113,8 +134,6 @@ paths:
       description: Application Identifier
       required: true
       type: string
-
-
 
 
 
@@ -458,6 +477,42 @@ definitions:
       QuestionRank:
         description: UNKNOWN(0), RED(1), AMBER(2), GREEN(3)
         type: integer
+
+  ApplicationSummaryType:
+    required:
+    - Id
+    - Name
+    - Assessed
+    - BusinessPriority
+    - Decision
+    - WorkEffort
+    - ReviewDate
+    - LatestAssessmentId
+    properties:
+      Id:
+        type: string
+      Name:
+        description: Application Name
+        type: string
+      Assessed:
+        description: Has the application been assessed
+        type: boolean
+      BusinessPriority:
+        description: Business Priority of application
+        type: integer
+      Decision:
+        description: Decision on Application
+        $ref: '#/definitions/ReviewDecisionType'
+      WorkEffort:
+        description: Work effort estimate
+        $ref: '#/definitions/ReviewWorkEstimateType'
+      ReviewDate:
+        description: Review date
+        type: string
+      LatestAssessmentId:
+        description: Associated assessment id
+        type: string
+
 
 
 
