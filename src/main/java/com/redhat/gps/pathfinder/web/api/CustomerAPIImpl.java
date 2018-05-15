@@ -642,12 +642,12 @@ public class CustomerAPIImpl implements CustomersApi {
                 return new ResponseEntity<List<ApplicationSummaryType>>(HttpStatus.BAD_REQUEST);
             }
 
-            if ((currCust.getApplications() == null) || (currCust.getApplications().isEmpty())) {
+            List<Applications> apps = currCust.getApplications();
+
+            if ((apps == null) || (apps.isEmpty())) {
                 log.error("Customer {} has no applications...", custId);
                 return new ResponseEntity<List<ApplicationSummaryType>>(HttpStatus.OK);
             }
-
-            List<Applications> apps = custRepo.findOne(custId).getApplications();
 
             for (Applications currApp : apps) {
                 ApplicationSummaryType item = new ApplicationSummaryType();
@@ -678,4 +678,49 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<List<ApplicationSummaryType>>(resp, HttpStatus.OK);
     }
 
+    @Timed
+    public ResponseEntity<ApplicationAssessmentProgressType> customersCustIdApplicationAssessmentProgressGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+
+        log.debug("customersCustIdApplicationAssessmentProgressGet {}", custId);
+        ApplicationAssessmentProgressType resp = new ApplicationAssessmentProgressType();
+        int appCount = 0, assessedCount = 0, reviewedCount = 0;
+
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdApplicationAssessmentProgressGet....customer not found {}", custId);
+                return new ResponseEntity<ApplicationAssessmentProgressType>(HttpStatus.BAD_REQUEST);
+            }
+
+            List<Applications> apps = currCust.getApplications();
+
+            if ((apps == null) || (apps.isEmpty())) {
+                log.warn("Customer {} has no applications...", custId);
+            } else {
+
+                appCount = currCust.getApplications().size();
+
+                for (Applications currApp : apps) {
+                    ApplicationAssessmentReview review = currApp.getReview();
+                    if (review != null) {
+                        reviewedCount++;
+                    }
+                    List<Assessments> assmList = currApp.getAssessments();
+                    if ((assmList != null) && (!assmList.isEmpty())) {
+                        assessedCount++;
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            log.error("Error while processing customersCustIdApplicationAssessmentProgressGet", ex.getMessage(), ex);
+            return new ResponseEntity<ApplicationAssessmentProgressType>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        resp.setAppcount(appCount);
+        resp.setAssessed(assessedCount);
+        resp.setReviewed(reviewedCount);
+
+        return new ResponseEntity<ApplicationAssessmentProgressType>(resp, HttpStatus.OK);
+    }
 }

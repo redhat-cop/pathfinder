@@ -418,6 +418,83 @@
 			"response": []
 		},
 		{
+			"name": "Get Applications assessment summary",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applications",
+						"{{applicationID}}",
+						"review",
+						"{{reviewID}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Applications assessment progress",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							""
+						]
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applicationAssessmentProgress",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"pathfinder",
+						"customers",
+						"{{customerID}}",
+						"applicationAssessmentProgress"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Get Applications",
 			"event": [
 				{

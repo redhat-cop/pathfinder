@@ -106,6 +106,24 @@ paths:
       required: true
       type: string
 
+  /customers/{custId}/applicationAssessmentProgress:
+    get:
+      description: Get count of customer applications and number assessed and reviewed
+      responses:
+        200:
+          description: Customer Details
+          schema:
+            $ref: '#/definitions/ApplicationAssessmentProgressType'
+        404:
+          description: Customer Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+
+
 
   /customers/{custId}/applications/{appId}:
     get:
@@ -514,6 +532,20 @@ definitions:
         type: string
 
 
-
+  ApplicationAssessmentProgressType:
+    required:
+    - Appcount
+    - Assessed
+    - Reviewed
+    properties:
+        Appcount:
+          description: number of applications for the customer
+          type: integer
+        Assessed:
+          description: number of applications assessed
+          type: integer
+        Reviewed:
+          description: number of applications reviewed
+          type: integer
 
 
