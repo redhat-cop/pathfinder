@@ -31,10 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -99,9 +96,7 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
             Applications currApp = appsRepo.findOne(appId);
             try {
-
                 if (currApp != null) {
-
                     List<Assessments> res = currApp.getAssessments();
                     if ((res != null) && (!res.isEmpty())) {
                         for (Assessments x : res) {
@@ -109,7 +104,6 @@ public class CustomerAPIImpl implements CustomersApi {
                         }
                     }
                     return new ResponseEntity<List<String>>(results, HttpStatus.OK);
-
                 }
             } catch (Exception ex) {
                 log.error("Unable to get assessments for customer ", ex.getMessage(), ex);
@@ -177,6 +171,11 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setReview(details.getReview().getId());
             resp.setName(details.getName());
             resp.setId(appId);
+            if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
+                ApplicationSterotype appStereo = new ApplicationSterotype();
+                appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(details.getStereotype()));
+                resp.setStereotype(appStereo);
+            }
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<ApplicationType>(HttpStatus.BAD_REQUEST);
@@ -186,8 +185,7 @@ public class CustomerAPIImpl implements CustomersApi {
 
     @Override
     @Timed
-    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet
-        (@ApiParam(value = "", required = true) @PathVariable("custId") String custId) {
+    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "TARGETS,DEPENDENCIES,PROFILES") @RequestParam(value = "apptype", required = false) String apptype) {
         log.info("customersCustIdApplicationsGet....[" + custId + "]");
         ArrayList<ApplicationType> response = new ArrayList<>();
 
@@ -207,7 +205,42 @@ public class CustomerAPIImpl implements CustomersApi {
                         lapp.setReview(x.getReview().getId());
                     }
                     lapp.setDescription(x.getDescription());
-                    response.add(lapp);
+                    ApplicationSterotype appStereo = new ApplicationSterotype();
+                    if (apptype != null) {
+
+                        switch (apptype) {
+                            case "TARGETS":  //Explicit targets
+                                if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.TARGETAPP.toString())) {
+                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                    lapp.setStereotype(appStereo);
+                                    response.add(lapp);
+                                }
+                                break;
+                            case "DEPENDENCIES": //Dependencies - Everything but Profiles
+                                if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                    lapp.setStereotype(appStereo);
+                                    response.add(lapp);
+                                }
+                                break;
+                            case "PROFILES": //Explicit Profiles
+                                if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                    lapp.setStereotype(appStereo);
+                                    response.add(lapp);
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    } else {
+                        //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
+                        if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                            appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                            lapp.setStereotype(appStereo);
+                            response.add(lapp);
+                        }
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -231,6 +264,7 @@ public class CustomerAPIImpl implements CustomersApi {
             app.setId(uuid.toString());
             app.setName(body.getName());
             app.setDescription(body.getDescription());
+            app.setStereotype(body.getStereotype().getStereotype().toString());
             app = appsRepo.save(app);
             List<Applications> appList = myCust.getApplications();
             if (appList == null) {
@@ -254,7 +288,10 @@ public class CustomerAPIImpl implements CustomersApi {
             CustomerType resp = new CustomerType();
             resp.setCustomerName(myCust.getName());
             resp.setCustomerId(myCust.getId());
-            resp.setCustomerDescription(myCust.getId());
+            resp.setCustomerDescription(myCust.getName());
+            resp.setCustomerSize(myCust.getSize());
+            resp.setCustomerVertical(myCust.getVertical());
+            resp.setCustomerRTILink(myCust.getRtilink());
             return new ResponseEntity<CustomerType>(resp, HttpStatus.OK);
         }
     }
@@ -269,6 +306,8 @@ public class CustomerAPIImpl implements CustomersApi {
         myCust.setName(body.getCustomerName());
         myCust.setSize(body.getCustomerVertical());
         myCust.setSize(body.getCustomerSize());
+        myCust.setRtilink(body.getCustomerRTILink());
+        myCust.setVertical(body.getCustomerVertical());
         try {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {

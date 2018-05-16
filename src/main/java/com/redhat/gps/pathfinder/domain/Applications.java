@@ -11,9 +11,9 @@ package com.redhat.gps.pathfinder.domain;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,6 +49,49 @@ public class Applications implements Serializable {
 
     @Field("Description")
     private String Description;
+
+    @Field("stereotype")
+    private String stereotype;
+
+    @Override
+    public String toString() {
+        return "Applications{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", Description='" + Description + '\'' +
+            ", stereotype='" + stereotype + '\'' +
+            ", Assessments=" + Assessments +
+            ", review=" + review +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Applications that = (Applications) o;
+        return Objects.equals(id, that.id) &&
+            Objects.equals(name, that.name) &&
+            Objects.equals(Description, that.Description) &&
+            Objects.equals(stereotype, that.stereotype) &&
+            Objects.equals(Assessments, that.Assessments) &&
+            Objects.equals(review, that.review);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, name, Description, stereotype, Assessments, review);
+    }
+
+    public String getStereotype() {
+
+        return stereotype;
+    }
+
+    public void setStereotype(String stereotype) {
+        this.stereotype = stereotype;
+    }
 
     @DBRef
     private List<Assessments> Assessments;
@@ -105,32 +148,4 @@ public class Applications implements Serializable {
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Applications that = (Applications) o;
-        return Objects.equals(id, that.id) &&
-            Objects.equals(name, that.name) &&
-            Objects.equals(Description, that.Description) &&
-            Objects.equals(Assessments, that.Assessments) &&
-            Objects.equals(review, that.review);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, name, Description, Assessments, review);
-    }
-
-    @Override
-    public String toString() {
-        return "Applications{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", Description='" + Description + '\'' +
-            ", Assessments=" + Assessments +
-            ", review=" + review +
-            '}';
-    }
 }

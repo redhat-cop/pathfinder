@@ -48,27 +48,54 @@ public class Customer implements Serializable {
     @Field("name")
     private String name;
 
-    public String getVertical() {
-        return vertical;
-    }
-
-    public void setVertical(String vertical) {
-        this.vertical = vertical;
-    }
-
-    public String getSize() {
-        return size;
-    }
-
-    public void setSize(String size) {
-        this.size = size;
-    }
-
     @Field("vertical")
     private String vertical;
 
     @Field("size")
     private String size;
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", vertical='" + vertical + '\'' +
+            ", size='" + size + '\'' +
+            ", rtilink='" + rtilink + '\'' +
+            ", Applications=" + Applications +
+            '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(id, customer.id) &&
+            Objects.equals(name, customer.name) &&
+            Objects.equals(vertical, customer.vertical) &&
+            Objects.equals(size, customer.size) &&
+            Objects.equals(rtilink, customer.rtilink) &&
+            Objects.equals(Applications, customer.Applications);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, name, vertical, size, rtilink, Applications);
+    }
+
+    public String getRtilink() {
+
+        return rtilink;
+    }
+
+    public void setRtilink(String rtilink) {
+        this.rtilink = rtilink;
+    }
+
+    @Field("rtilink")
+    private String rtilink;
 
     @DBRef
     private List<Applications> Applications;
@@ -99,37 +126,25 @@ public class Customer implements Serializable {
         return this;
     }
 
-
-
     public void setName(String name) {
         this.name = name;
     }
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Customer customer = (Customer) o;
-        return Objects.equals(name, customer.name) &&
-            Objects.equals(vertical, customer.vertical) &&
-            Objects.equals(size, customer.size) &&
-            Objects.equals(Applications, customer.Applications);
+    public String getVertical() {
+        return vertical;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, vertical, size, Applications);
+    public void setVertical(String vertical) {
+        this.vertical = vertical;
     }
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", vertical='" + vertical + '\'' +
-            ", size='" + size + '\'' +
-            ", Applications=" + Applications +
-            '}';
+    public String getSize() {
+        return size;
     }
+
+    public void setSize(String size) {
+        this.size = size;
+    }
+
 }

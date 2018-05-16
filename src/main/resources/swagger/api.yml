@@ -158,6 +158,15 @@ paths:
   /customers/{custId}/applications/:
     get:
       description: Get list of applications for a customer
+      parameters:
+      - name: custId
+        in: path
+        required: true
+        type: string
+      - in: query
+        name: apptype
+        type: string
+        description: TARGETS,DEPENDENCIES,PROFILES
       responses:
         200:
           description: Applications List
@@ -186,10 +195,7 @@ paths:
         400:
           description: Unable to create application
     parameters:
-    - name: custId
-      in: path
-      required: true
-      type: string
+
 
 
   /customers/{custId}/applications/{appId}/assessments:
@@ -339,6 +345,16 @@ paths:
 
 
 definitions:
+  ApplicationSterotype:
+    type: object
+    properties:
+      stereotype:
+        type: string
+        enum:
+        - TARGETAPP
+        - DEPENDENCY
+        - PROFILE
+
   ReviewDecisionType:
     type: object
     properties:
@@ -409,6 +425,8 @@ definitions:
         type: string
       CustomerSize:
         type: string
+      CustomerRTILink:
+        type: string
 
   ApplicationType:
     required:
@@ -427,6 +445,8 @@ definitions:
       Review:
         description: ID of review, ignored on post
         type: string
+      Stereotype:
+        $ref: '#/definitions/ApplicationSterotype'
 
 
   AssessmentResponse:
