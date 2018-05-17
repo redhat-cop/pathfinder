@@ -205,41 +205,44 @@ public class CustomerAPIImpl implements CustomersApi {
                         lapp.setReview(x.getReview().getId());
                     }
                     lapp.setDescription(x.getDescription());
-                    ApplicationSterotype appStereo = new ApplicationSterotype();
-                    if (apptype != null) {
-
-                        switch (apptype) {
-                            case "TARGETS":  //Explicit targets
-                                if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.TARGETAPP.toString())) {
-                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                    lapp.setStereotype(appStereo);
-                                    response.add(lapp);
-                                }
-                                break;
-                            case "DEPENDENCIES": //Dependencies - Everything but Profiles
-                                if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                    lapp.setStereotype(appStereo);
-                                    response.add(lapp);
-                                }
-                                break;
-                            case "PROFILES": //Explicit Profiles
-                                if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                                    appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                    lapp.setStereotype(appStereo);
-                                    response.add(lapp);
-                                }
-                                break;
-                            default:
-                                break;
+                    if (x.getStereotype() != null) {
+                        ApplicationSterotype appStereo = new ApplicationSterotype();
+                        if (apptype != null) {
+                            switch (apptype) {
+                                case "TARGETS":  //Explicit targets
+                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.TARGETAPP.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(appStereo);
+                                        response.add(lapp);
+                                    }
+                                    break;
+                                case "DEPENDENCIES": //Dependencies - Everything but Profiles
+                                    if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(appStereo);
+                                        response.add(lapp);
+                                    }
+                                    break;
+                                case "PROFILES": //Explicit Profiles
+                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(appStereo);
+                                        response.add(lapp);
+                                    }
+                                    break;
+                                default:
+                                    break;
+                            }
+                        } else {
+                            //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
+                            if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                lapp.setStereotype(appStereo);
+                                response.add(lapp);
+                            }
                         }
                     } else {
-                        //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
-                        if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                            appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                            lapp.setStereotype(appStereo);
-                            response.add(lapp);
-                        }
+                        response.add(lapp);
                     }
                 }
             }
@@ -264,7 +267,12 @@ public class CustomerAPIImpl implements CustomersApi {
             app.setId(uuid.toString());
             app.setName(body.getName());
             app.setDescription(body.getDescription());
-            app.setStereotype(body.getStereotype().getStereotype().toString());
+            if (body.getStereotype() == null) {
+                log.warn("customersCustIdApplicationsPost....application stereotype missing ");
+                return new ResponseEntity<String>(custId, HttpStatus.BAD_REQUEST);
+            } else {
+                app.setStereotype(body.getStereotype().getStereotype().toString());
+            }
             app = appsRepo.save(app);
             List<Applications> appList = myCust.getApplications();
             if (appList == null) {
@@ -684,30 +692,31 @@ public class CustomerAPIImpl implements CustomersApi {
             List<Applications> apps = currCust.getApplications();
 
             if ((apps == null) || (apps.isEmpty())) {
-                log.error("Customer {} has no applications...", custId);
-                return new ResponseEntity<List<ApplicationSummaryType>>(HttpStatus.OK);
-            }
+                log.info("customersCustIdApplicationAssessmentSummaryGet Customer {} has no applications...", custId);
 
-            for (Applications currApp : apps) {
-                ApplicationSummaryType item = new ApplicationSummaryType();
-                item.setId(currApp.getId());
-                item.setName(currApp.getName());
-                ApplicationAssessmentReview review = currApp.getReview();
-                if (review != null) {
-                    item.setReviewDate(review.getReviewDate());
-                    item.setDecision(review.getReviewDecision());
-                    item.setWorkEffort(review.getReviewEstimate());
-                    item.setBusinessPriority(new Integer(review.getBusinessPriority()));
+            } else {
+
+                for (Applications currApp : apps) {
+                    ApplicationSummaryType item = new ApplicationSummaryType();
+                    item.setId(currApp.getId());
+                    item.setName(currApp.getName());
+                    ApplicationAssessmentReview review = currApp.getReview();
+                    if (review != null) {
+                        item.setReviewDate(review.getReviewDate());
+                        item.setDecision(review.getReviewDecision());
+                        item.setWorkEffort(review.getReviewEstimate());
+                        item.setBusinessPriority(new Integer(review.getBusinessPriority()));
+                    }
+                    List<Assessments> assmList = currApp.getAssessments();
+                    if ((assmList != null) && (!assmList.isEmpty())) {
+                        Assessments currAssm = assmList.get(assmList.size() - 1);
+                        item.assessed(true);
+                        item.setLatestAssessmentId(currAssm.getId());
+                    } else {
+                        item.assessed(false);
+                    }
+                    resp.add(item);
                 }
-                List<Assessments> assmList = currApp.getAssessments();
-                if ((assmList != null) && (!assmList.isEmpty())) {
-                    Assessments currAssm = assmList.get(assmList.size() - 1);
-                    item.assessed(true);
-                    item.setLatestAssessmentId(currAssm.getId());
-                } else {
-                    item.assessed(false);
-                }
-                resp.add(item);
             }
         } catch (Exception ex) {
             log.error("Error while processing customersCustIdApplicationAssessmentSummaryGet", ex.getMessage(), ex);
