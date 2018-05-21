@@ -764,4 +764,56 @@ public class CustomerAPIImpl implements CustomersApi {
 
         return new ResponseEntity<ApplicationAssessmentProgressType>(resp, HttpStatus.OK);
     }
+
+
+    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+        log.debug("customersCustIdDependencyTreeGet {}", custId);
+        DependenciesListType respDeps = new DependenciesListType();
+
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdDependencyTreeGet....customer not found {}", custId);
+                return new ResponseEntity<DependenciesListType>(HttpStatus.BAD_REQUEST);
+            }
+
+            List<Applications> apps = currCust.getApplications();
+
+            if ((apps == null) || (apps.isEmpty())) {
+                log.warn("Customer {} has no applications...", custId);
+            } else {
+                for (Applications currApp : apps) {
+                    List<Assessments> currAssmList = currApp.getAssessments();
+
+                    if (currAssmList.size() == 0) {
+                        log.info("Application {} has no assessments...", currApp.getId());
+                    } else {
+
+                        String assmID = currAssmList.get(currAssmList.size() - 1).getId();
+                        Assessments currAssm = assmRepo.findOne(assmID);
+
+                        List<String> depList = currAssm.getDeps();
+
+                        if (depList.size() == 0) {
+                            log.info("Application {} has no dependencies...", currApp.getId());
+                        } else {
+                            for (String currDep : depList) {
+                                DepsPairType dep = new DepsPairType();
+                                dep.from(currApp.getId());
+                                dep.to(currDep);
+                                respDeps.addDepsListItem(dep);
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (Exception ex)
+
+        {
+            log.error("Error while processing customersCustIdDependencyTreeGet", ex.getMessage(), ex);
+            return new ResponseEntity<DependenciesListType>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<DependenciesListType>(respDeps,HttpStatus.OK);
+    }
 }

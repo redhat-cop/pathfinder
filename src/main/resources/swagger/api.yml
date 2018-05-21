@@ -123,6 +123,23 @@ paths:
       required: true
       type: string
 
+  /customers/{custId}/dependencyTree:
+    get:
+      description: Get list of applications dependencies
+      responses:
+        200:
+          description: DepencencyTree
+          schema:
+            $ref: '#/definitions/DependenciesListType'
+        404:
+          description: Customer Not Found
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+
 
 
   /customers/{custId}/applications/{appId}:
@@ -558,6 +575,24 @@ definitions:
         description: Associated assessment id
         type: string
 
+  DepsPairType:
+    required:
+    - from
+    - to
+    properties:
+      from:
+        type: string
+      to:
+        type: string
+
+  DependenciesListType:
+    required:
+    - DepsList
+    properties:
+      DepsList:
+         type: array
+         items:
+            $ref: '#/definitions/DepsPairType' 
 
   ApplicationAssessmentProgressType:
     required:
