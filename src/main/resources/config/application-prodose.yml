@@ -119,4 +119,6 @@ jhipster:
 # http://www.jhipster.tech/common-application-properties/
 # ===================================================================
 
+
+keycloak.enabled: false
 application:

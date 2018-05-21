@@ -126,4 +126,6 @@ database-admin-password: 12345
 dbhostname: localhost
 dbhostport: 9999
 
+keycloak.enabled: false
+
 application:
