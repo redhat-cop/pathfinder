@@ -528,7 +528,7 @@
                             <modelPackage>com.redhat.gps.pathfinder.web.api.model</modelPackage>
                             <generateSupportingFiles>false</generateSupportingFiles>
                             <configOptions>
-                                <!--<useBeanValidation>true</useBeanValidation>-->
+                                <useBeanValidation>true</useBeanValidation>
                                 <interfaceOnly>true</interfaceOnly>
                                 <java8>true</java8>
                             </configOptions>

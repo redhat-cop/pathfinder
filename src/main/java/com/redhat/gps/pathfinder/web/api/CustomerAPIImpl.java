@@ -171,7 +171,10 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setReview(details.getReview().getId());
             resp.setName(details.getName());
             resp.setId(appId);
-            resp.setStereotype(details.getStereotype());
+            if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
+                ApplicationSterotype appStereo = new ApplicationSterotype();
+                resp.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
+            }
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<ApplicationType>(HttpStatus.BAD_REQUEST);
@@ -206,20 +209,23 @@ public class CustomerAPIImpl implements CustomersApi {
                         if (apptype != null) {
                             switch (apptype) {
                                 case "TARGETS":  //Explicit targets
-                                    if (x.getStereotype().equalsIgnoreCase("TARGETAPP")) {
-                                        lapp.setStereotype(x.getStereotype());
+                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.TARGETAPP.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
                                         response.add(lapp);
                                     }
                                     break;
                                 case "DEPENDENCIES": //Dependencies - Everything but Profiles
-                                    if (!x.getStereotype().equals("PROFILE")) {
-                                        lapp.setStereotype(x.getStereotype());
+                                    if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
                                         response.add(lapp);
                                     }
                                     break;
                                 case "PROFILES": //Explicit Profiles
-                                    if (x.getStereotype().equals("PROFILE")) {
-                                        lapp.setStereotype(x.getStereotype());
+                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                        lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
                                         response.add(lapp);
                                     }
                                     break;
@@ -228,8 +234,9 @@ public class CustomerAPIImpl implements CustomersApi {
                             }
                         } else {
                             //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
-                            if (!x.getStereotype().equals("PROFILE")) {
-                                lapp.setStereotype(x.getStereotype());
+                            if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
+                                appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
+                                lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
                                 response.add(lapp);
                             }
                         }
@@ -261,9 +268,9 @@ public class CustomerAPIImpl implements CustomersApi {
             app.setDescription(body.getDescription());
             if (body.getStereotype() == null) {
                 log.warn("customersCustIdApplicationsPost....application stereotype missing ");
-                return new ResponseEntity<String>(custId, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
             } else {
-                app.setStereotype(body.getStereotype());
+                app.setStereotype(body.getStereotype().toString());
             }
             app = appsRepo.save(app);
             List<Applications> appList = myCust.getApplications();
@@ -402,8 +409,8 @@ public class CustomerAPIImpl implements CustomersApi {
             ApplicationAssessmentReview reviewData = new ApplicationAssessmentReview(
                 body.getReviewTimestamp(),
                 assm,
-                body.getReviewDecision(),
-                body.getWorkEffort(),
+                body.getReviewDecision().toString(),
+                body.getWorkEffort().toString(),
                 body.getReviewNotes(),
                 body.getWorkPriority(),
                 body.getBusinessPriority(),
@@ -453,9 +460,9 @@ public class CustomerAPIImpl implements CustomersApi {
             }
 
             resp.setAssessmentId(reviewData.getAssessments().getId());
-            resp.setReviewDecision(reviewData.getReviewDecision());
+            resp.setReviewDecision(ReviewType.ReviewDecisionEnum.fromValue(reviewData.getReviewDecision()));
             resp.setReviewNotes(reviewData.getReviewNotes());
-            resp.setWorkEffort(reviewData.getReviewEstimate());
+            resp.setWorkEffort(ReviewType.WorkEffortEnum.fromValue(reviewData.getReviewEstimate()));
             resp.setReviewTimestamp(reviewData.getReviewDate());
             resp.setWorkPriority(reviewData.getWorkPriority());
             resp.setBusinessPriority(reviewData.getBusinessPriority());
@@ -497,9 +504,9 @@ public class CustomerAPIImpl implements CustomersApi {
                     newRev.setBusinessPriority(tmpRev.getBusinessPriority());
                     newRev.setWorkPriority(tmpRev.getWorkPriority());
                     newRev.setReviewTimestamp(tmpRev.getReviewDate());
-                    newRev.setWorkEffort(tmpRev.getReviewEstimate());
+                    newRev.setWorkEffort(ReviewType.WorkEffortEnum.fromValue(tmpRev.getReviewEstimate()));
                     newRev.setReviewNotes(tmpRev.getReviewNotes());
-                    newRev.setReviewDecision(tmpRev.getReviewDecision());
+                    newRev.setReviewDecision(ReviewType.ReviewDecisionEnum.fromValue(tmpRev.getReviewDecision()));
                     newRev.setAssessmentId(x.getName());
                     resp.add(newRev);
                 }

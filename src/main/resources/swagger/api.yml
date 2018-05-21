@@ -396,9 +396,11 @@ definitions:
       ReviewDecision:
         description: REHOST,REPLATFORM,REFACTOR,REPURCHASE,RETIRE,RETAIN
         type: string
+        enum: [REHOST,REPLATFORM,REFACTOR,REPURCHASE,RETIRE,RETAIN]
       WorkEffort:
         description: SMALL,MEDIUM,LARGE,XLarge,XXLarge,XXXLarge
         type: string
+        enum: [SMALL,MEDIUM,LARGE,XLarge,XXLarge,XXXLarge]
       ReviewNotes:
         type: string
       ReviewTimestamp:
@@ -450,6 +452,7 @@ definitions:
       Stereotype:
         description: TARGETAPP, DEPENDENCY, PROFILE
         type: string
+        enum: [TARGETAPP, DEPENDENCY, PROFILE]
 
 
   AssessmentResponse:
@@ -518,6 +521,7 @@ definitions:
       QuestionRank:
         description: UNKNOWN(0), RED(1), AMBER(2), GREEN(3)
         type: integer
+        enum: [UNKNOWN, RED, AMBER, GREEN]
 
   ApplicationSummaryType:
     required:
