@@ -446,7 +446,8 @@ definitions:
         description: ID of review, ignored on post
         type: string
       Stereotype:
-        $ref: '#/definitions/ApplicationSterotype'
+        description: TARGETAPP, DEPENDENCY, PROFILE
+        type: string
 
 
   AssessmentResponse:

@@ -171,11 +171,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setReview(details.getReview().getId());
             resp.setName(details.getName());
             resp.setId(appId);
-            if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
-                ApplicationSterotype appStereo = new ApplicationSterotype();
-                appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(details.getStereotype()));
-                resp.setStereotype(appStereo);
-            }
+            resp.setStereotype(details.getStereotype());
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<ApplicationType>(HttpStatus.BAD_REQUEST);
@@ -210,23 +206,20 @@ public class CustomerAPIImpl implements CustomersApi {
                         if (apptype != null) {
                             switch (apptype) {
                                 case "TARGETS":  //Explicit targets
-                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.TARGETAPP.toString())) {
-                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                        lapp.setStereotype(appStereo);
+                                    if (x.getStereotype().equalsIgnoreCase("TARGETAPP")) {
+                                        lapp.setStereotype(x.getStereotype());
                                         response.add(lapp);
                                     }
                                     break;
                                 case "DEPENDENCIES": //Dependencies - Everything but Profiles
-                                    if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                        lapp.setStereotype(appStereo);
+                                    if (!x.getStereotype().equals("PROFILE")) {
+                                        lapp.setStereotype(x.getStereotype());
                                         response.add(lapp);
                                     }
                                     break;
                                 case "PROFILES": //Explicit Profiles
-                                    if (x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                                        appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                        lapp.setStereotype(appStereo);
+                                    if (x.getStereotype().equals("PROFILE")) {
+                                        lapp.setStereotype(x.getStereotype());
                                         response.add(lapp);
                                     }
                                     break;
@@ -235,9 +228,8 @@ public class CustomerAPIImpl implements CustomersApi {
                             }
                         } else {
                             //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
-                            if (!x.getStereotype().equals(ApplicationSterotype.StereotypeEnum.PROFILE.toString())) {
-                                appStereo.setStereotype(ApplicationSterotype.StereotypeEnum.fromValue(x.getStereotype()));
-                                lapp.setStereotype(appStereo);
+                            if (!x.getStereotype().equals("PROFILE")) {
+                                lapp.setStereotype(x.getStereotype());
                                 response.add(lapp);
                             }
                         }
@@ -271,7 +263,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 log.warn("customersCustIdApplicationsPost....application stereotype missing ");
                 return new ResponseEntity<String>(custId, HttpStatus.BAD_REQUEST);
             } else {
-                app.setStereotype(body.getStereotype().getStereotype().toString());
+                app.setStereotype(body.getStereotype());
             }
             app = appsRepo.save(app);
             List<Applications> appList = myCust.getApplications();
