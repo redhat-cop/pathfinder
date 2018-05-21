@@ -11,9 +11,9 @@ package com.redhat.gps.pathfinder.domain;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -53,11 +53,11 @@ public class ApplicationAssessmentReview implements Serializable {
 
     @NotNull
     @Field("Decision")
-    private ReviewDecisionType ReviewDecision;
+    private String ReviewDecision;
 
     @NotNull
     @Field("Estimate")
-    private ReviewWorkEstimateType ReviewEstimate;
+    private String ReviewEstimate;
 
     @NotNull
     @Field("Notes")
@@ -74,7 +74,7 @@ public class ApplicationAssessmentReview implements Serializable {
     @DBRef
     private Applications Application;
 
-    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, ReviewDecisionType ReviewDecision, ReviewWorkEstimateType ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority, Applications Application) {
+    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, String ReviewDecision, String ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority, Applications Application) {
         this.ReviewDate = ReviewDate;
         this.Assessments = Assessments;
         this.ReviewDecision = ReviewDecision;
@@ -109,19 +109,19 @@ public class ApplicationAssessmentReview implements Serializable {
         Assessments = assessments;
     }
 
-    public ReviewDecisionType getReviewDecision() {
+    public String getReviewDecision() {
         return ReviewDecision;
     }
 
-    public void setReviewDecision(ReviewDecisionType reviewDecision) {
+    public void setReviewDecision(String reviewDecision) {
         ReviewDecision = reviewDecision;
     }
 
-    public ReviewWorkEstimateType getReviewEstimate() {
+    public String getReviewEstimate() {
         return ReviewEstimate;
     }
 
-    public void setReviewEstimate(ReviewWorkEstimateType reviewEstimate) {
+    public void setReviewEstimate(String reviewEstimate) {
         ReviewEstimate = reviewEstimate;
     }
 

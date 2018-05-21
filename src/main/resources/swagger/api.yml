@@ -345,41 +345,41 @@ paths:
 
 
 definitions:
-  ApplicationSterotype:
-    type: object
-    properties:
-      stereotype:
-        type: string
-        enum:
-        - TARGETAPP
-        - DEPENDENCY
-        - PROFILE
+#  ApplicationSterotype:
+#    type: object
+#    properties:
+#      stereotype:
+#        type: string
+#        enum:
+#        - TARGETAPP
+#        - DEPENDENCY
+#        - PROFILE
 
-  ReviewDecisionType:
-    type: object
-    properties:
-      rank:
-        type: string
-        enum:
-        - REHOST
-        - REPLATFORM
-        - REFACTOR
-        - REPURCHASE
-        - RETIRE
-        - RETAIN
-
-  ReviewWorkEstimateType:
-    type: object
-    properties:
-      rank:
-        type: string
-        enum:
-        - SMALL
-        - MEDIUM
-        - LARGE
-        - XLarge
-        - XXLarge
-        - XXXLarge
+#  ReviewDecisionType:
+#    type: object
+#    properties:
+#      rank:
+#        type: string
+#        enum:
+#        - REHOST
+#        - REPLATFORM
+#        - REFACTOR
+#        - REPURCHASE
+#        - RETIRE
+#        - RETAIN
+#
+#  ReviewWorkEstimateType:
+#    type: object
+#    properties:
+#      rank:
+#        type: string
+#        enum:
+#        - SMALL
+#        - MEDIUM
+#        - LARGE
+#        - XLarge
+#        - XXLarge
+#        - XXXLarge
 
   ReviewType:
     required:
@@ -394,9 +394,11 @@ definitions:
       AssessmentId:
         type: string
       ReviewDecision:
-        $ref: '#/definitions/ReviewDecisionType'
+        description: REHOST,REPLATFORM,REFACTOR,REPURCHASE,RETIRE,RETAIN
+        type: string
       WorkEffort:
-        $ref: '#/definitions/ReviewWorkEstimateType'
+        description: SMALL,MEDIUM,LARGE,XLarge,XXLarge,XXXLarge
+        type: string
       ReviewNotes:
         type: string
       ReviewTimestamp:
@@ -541,10 +543,10 @@ definitions:
         type: integer
       Decision:
         description: Decision on Application
-        $ref: '#/definitions/ReviewDecisionType'
+        type: string
       WorkEffort:
         description: Work effort estimate
-        $ref: '#/definitions/ReviewWorkEstimateType'
+        type: string
       ReviewDate:
         description: Review date
         type: string
