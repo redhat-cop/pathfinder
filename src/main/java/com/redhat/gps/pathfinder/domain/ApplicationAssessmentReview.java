@@ -22,8 +22,6 @@ package com.redhat.gps.pathfinder.domain;
  * #L%
  */
 
-import com.redhat.gps.pathfinder.web.api.model.ReviewDecisionType;
-import com.redhat.gps.pathfinder.web.api.model.ReviewWorkEstimateType;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
