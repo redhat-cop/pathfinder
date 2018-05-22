@@ -6,980 +6,1730 @@
 	},
 	"item": [
 		{
-			"name": "Create Pathfinder Customer",
-			"event": [
+			"name": "LoadTest",
+			"description": "",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "a4cbd31a-574e-4714-a069-6dfe62ee9d21",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"customerID\", jsonData);"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+					"name": "CreateCustomer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "4616c8ad-f693-440e-a191-f481625ff050",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"customerIDLT\", jsonData);",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "da40848c-914d-4c08-9b89-6ea597b6b6bd",
+								"type": "text/javascript",
+								"exec": [
+									"let appList = pm.globals.get(\"appList\");",
+									"var apps = JSON.parse(appList);",
+									"apps.test=[]",
+									"pm.globals.set(\"appList\", JSON.stringify(apps));",
+									"pm.globals.set(\"iterationCount\",0);",
+									"pm.globals.set(\"appsCount\",0);",
+									"pm.globals.set(\"appListIndex\",0);",
+									"pm.globals.set(\"depsarray\",[]);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"CustomerName\": \"LoadTestCustomer{{$randomInt}}\",\n  \"CustomerDescription\": \"LoadTestCustomerDesc{{$randomInt}}\",\n  \"CustomerAssessor\": \"Load test\",\n  \"CustomerVertical\": \"Load test\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Pathfinder Customer",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "9afc4129-425a-42eb-ab2f-4d81438a1ba8",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.globals.unset(\"variable_key\");"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+					"name": "CreateApplications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a9540618-a621-476f-aaef-351fbbbedaff",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"loadAppID\", jsonData);",
+									"",
+									"let appList = pm.globals.get(\"appList\");",
+									"",
+									"var apps = JSON.parse(appList);",
+									"",
+									"apps.test.push(jsonData);",
+									"",
+									"pm.globals.set(\"appList\", JSON.stringify(apps));",
+									"",
+									"let iterationCount = pm.globals.get(\"iterationCount\");",
+									"iterationCount++;",
+									"pm.globals.set(\"iterationCount\",iterationCount);",
+									"console.log(\"iterationCount\", iterationCount);",
+									"if (iterationCount <= 500){",
+									"    console.log(\"Next request\");",
+									"    postman.setNextRequest(\"CreateApplications\");",
+									"}else{",
+									"    console.log(\"Get request \",apps.test.length);",
+									"    pm.globals.set(\"appsCount\",apps.test.length);",
+									"    postman.setNextRequest(\"GetApplications\");",
+									"}"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"LoadTestApplication{{$randomInt}}\",\n  \"Description\": \"Customer application\",\n  \"Stereotype\": \"TARGETAPP\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Application",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "bbc02ea5-be7a-4aac-93a1-38db4f618370",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"applicationID\", jsonData);"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"Name\": \"NOCHelpWebPortal5\",\n  \"Description\": \"Customer help web portal\"\n}"
+					"name": "GetApplications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "83b124f1-5cc7-4c0a-84f4-91a9bbdd51c5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let appList = pm.globals.get(\"appList\");",
+									"var apps = JSON.parse(appList);",
+									"var appsCount = apps.test.length-1;",
+									"pm.globals.set(\"appsCount\",appsCount);",
+									"postman.setNextRequest(\"CreateAssessments\");",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Assessments for Application",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "0cd5b351-3bde-48de-8faf-03e2e4db9664",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"assessmentID\", jsonData);"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"{{customerID}}\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": null,\n    \"deps\": [\n    ]\n}"
+					"name": "CreateAssessments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e0ab38b0-2746-49f6-beb6-1af6a1b1a29d",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"let appsCount = pm.globals.get(\"appsCount\");",
+									"console.log(\"appsCount\", appsCount);",
+									"",
+									"if (appsCount >= 0){",
+									"    console.log(\"Next app\");",
+									"    postman.setNextRequest(\"CreateAssessments\");",
+									"}else{",
+									"    console.log(\"Done\");",
+									"    postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
+									"}"
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "e5ac70a0-4181-40e5-99ff-8dac17e51753",
+								"type": "text/javascript",
+								"exec": [
+									"let appList = pm.globals.get(\"appList\");",
+									"let appsCount = pm.globals.get(\"appsCount\");",
+									"",
+									"",
+									"var apps = JSON.parse(appList);",
+									"pm.globals.set(\"appListIndex\",apps.test[appsCount]);",
+									"appsCount--;",
+									"",
+									"",
+									"choice = Math.floor((Math.random() * 5)+1);",
+									"depscount = Math.floor((Math.random() * apps.test.length-1));",
+									"var depsarray=[];",
+									"var app;",
+									"for (app in apps.test) {",
+									"    if (Math.floor((Math.random() * 5)+1)< 3){",
+									"        depsarray.push(apps.test[app]); ",
+									"    }",
+									"}",
+									"pm.globals.set(\"depsarray\",depsarray);",
+									"pm.globals.set(\"appsCount\",appsCount);",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"LOADTESTCUSTOMER\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": \"{{$timestamp}}\",\n    \"deps\": [\"{{depsarray}}\"]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/{{appListIndex}}/assessments",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"applications",
+								"{{appListIndex}}",
+								"assessments"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments",
-					"host": [
-						"{{url}}"
+				{
+					"name": "GetApplicationsAssessmentSummary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
 					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments"
-					]
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applicationAssessmentSummary",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"applicationAssessmentSummary"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "Process Assessment",
-			"event": [
+			"name": "FunctionalTests",
+			"description": "",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "7389353c-5461-4633-925d-2ae41289cb97",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}/process/",
-					"host": [
-						"{{url}}"
+					"name": "Create Pathfinder Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a4cbd31a-574e-4714-a069-6dfe62ee9d21",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"customerID\", jsonData);"
+								]
+							}
+						}
 					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{assessmentID}}",
-						"process",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Assessment",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "8f1a7ea0-ca5b-4792-8b60-ab8474dff777",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{assessmentID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Review",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "9c9b5d92-f6ec-4772-b2d5-e66e34b4771c",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"var jsonData = responseBody;",
-							"postman.setEnvironmentVariable(\"reviewID\", jsonData);"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": {\n    \"rank\": \"REHOST\"\n  },\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\": {\n    \"rank\": \"SMALL\"\n  }\n}"
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Review",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
-					"host": [
-						"{{url}}"
+					"name": "Get Pathfinder Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9afc4129-425a-42eb-ab2f-4d81438a1ba8",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.globals.unset(\"variable_key\");"
+								]
+							}
+						}
 					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review",
-						"{{reviewID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Create Review - Overwrite existing",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "73998a15-e25e-4fdc-8568-93685ebfa9e8",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							"",
-							"pm.test(\"Review id should be the same\", function () {",
-							"    var respData = pm.response.text();",
-							"    console.log(respData);",
-							"    pm.expect(respData).to.eql(pm.environment.get(\"reviewID\"));",
-							"});",
-							"",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": {\n    \"rank\": \"REHOST\"\n  },\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\": {\n    \"rank\": \"SMALL\"\n  }\n}"
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}"
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Applications assessment summary",
-			"event": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
-					"host": [
-						"{{url}}"
+					"name": "Create Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "bbc02ea5-be7a-4aac-93a1-38db4f618370",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"applicationID\", jsonData);"
+								]
+							}
+						}
 					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review",
-						"{{reviewID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Applications assessment progress",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applicationAssessmentProgress",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applicationAssessmentProgress"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Applications",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Minimum values",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "183b42c7-05eb-4b1a-9e10-e9aa3b281923",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/static/minimum",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"static",
-						"minimum"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get specific application",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "72d1cb1b-300d-4d13-81bc-d6fa6a7b6dbe",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Review of Application",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "37f3e17a-b30b-4f6b-a410-443c889daebf",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/reviews",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"reviews"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "List Applications for customer",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "a7f9fef5-b039-4c0f-9966-07fbdc0f7ece",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Questions",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "6ed3a4e2-509c-484c-9071-90ecfe1d5ac6",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/static/questions",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"static",
-						"questions"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Review",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "f853e380-5f6e-405d-a583-41616e435d21",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review",
-						"{{reviewID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Review - review not found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "9c7ae96b-c364-40e5-8952-0cdd76f2adaf",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});",
-							""
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"review",
-						"{{reviewID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Assessment",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "046850f6-cf43-42b9-a4d0-8f4005fc55ca",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{assessmentID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Assessment - Assessment not found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "64776d0e-3d8d-44cd-8d39-dbade0349193",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}",
-						"assessments",
-						"{{assessmentID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Application, Assessment & Review",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "0f4ed244-a46a-4160-bcd1-09eb928c7370",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}",
-						"applications",
-						"{{applicationID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Delete Customer",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "2f835124-15cb-4171-ae6e-4169d12781b0",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "DELETE",
-				"header": [],
-				"body": {},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
-					"host": [
-						"{{url}}"
-					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Get Pathfinder Customer - customer not found",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "288a89a0-8566-4440-8cc5-9c615ef21801",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Customer not found - Status code is 400\", function () {",
-							"    pm.response.to.have.status(400);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Content-Type",
-						"value": "application/json"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"NOCHelpWebPortal5\",\n  \"Description\": \"Customer help web portal\",\n  \"Stereotype\": \"TARGETAPP\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
-					"host": [
-						"{{url}}"
+				{
+					"name": "Create Application Dependency",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "215eccf3-05c6-4f1d-b700-0bf7038eea9e",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"dependencyID\", jsonData);"
+								]
+							}
+						}
 					],
-					"path": [
-						"api",
-						"pathfinder",
-						"customers",
-						"{{customerID}}"
-					]
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"MongoDB\",\n  \"Description\": \"Customer DB\",\n  \"Stereotype\": \"DEPENDENCY\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f5184bef-3d4e-4480-b4cb-1ff5712aa286",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"profileID\", jsonData);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"SimpleWebProfile\",\n  \"Description\": \"SimpleWeb application\",\n  \"Stereotype\": \"PROFILE\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Application - Invalid application type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "3765da10-66d5-45a0-b642-b9c134143e68",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"SimpleWebProfile\",\n  \"Description\": \"SimpleWeb application\",\n  \"Stereotype\": \"FAILURECASE\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Assessments for Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0cd5b351-3bde-48de-8faf-03e2e4db9664",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"assessmentID\", jsonData);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"{{customerID}}\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": null,\n    \"deps\": [\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"assessments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Process Assessment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "7389353c-5461-4633-925d-2ae41289cb97",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}/process/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"assessments",
+								"{{assessmentID}}",
+								"process",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assessment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8f1a7ea0-ca5b-4792-8b60-ab8474dff777",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"assessments",
+								"{{assessmentID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9c9b5d92-f6ec-4772-b2d5-e66e34b4771c",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"postman.setEnvironmentVariable(\"reviewID\", jsonData);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"SMALL\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review - Invalid work effort",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "802cd23b-b0f6-404c-b420-8c2fdfa4e851",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"MINUTE\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review - Invalid decision",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "802cd23b-b0f6-404c-b420-8c2fdfa4e851",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"SHOOTINDAHEAD\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"SMALL\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review",
+								"{{reviewID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Review - Overwrite existing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "73998a15-e25e-4fdc-8568-93685ebfa9e8",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Review id should be the same\", function () {",
+									"    var respData = pm.response.text();",
+									"    console.log(respData);",
+									"    pm.expect(respData).to.eql(pm.environment.get(\"reviewID\"));",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\": \"SMALL\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications assessment summary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applicationAssessmentSummary",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applicationAssessmentSummary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications assessment progress",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applicationAssessmentProgress",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applicationAssessmentProgress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications - Default",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications - Targets",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/?apptype=TARGETS",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							],
+							"query": [
+								{
+									"key": "apptype",
+									"value": "TARGETS"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications - Dependencies",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/?apptype=DEPENDENCIES",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							],
+							"query": [
+								{
+									"key": "apptype",
+									"value": "DEPENDENCIES"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Applications - Profiles",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "685eac6b-7082-4b5b-9bfa-eb8a5c3643be",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/?apptype=PROFILE",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							],
+							"query": [
+								{
+									"key": "apptype",
+									"value": "PROFILE"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Minimum values",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "183b42c7-05eb-4b1a-9e10-e9aa3b281923",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/static/minimum",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"static",
+								"minimum"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get specific application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "72d1cb1b-300d-4d13-81bc-d6fa6a7b6dbe",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review of Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "37f3e17a-b30b-4f6b-a410-443c889daebf",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/reviews",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List Applications for customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a7f9fef5-b039-4c0f-9966-07fbdc0f7ece",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Questions",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6ed3a4e2-509c-484c-9071-90ecfe1d5ac6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/static/questions",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"static",
+								"questions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f853e380-5f6e-405d-a583-41616e435d21",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review",
+								"{{reviewID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Review - review not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9c7ae96b-c364-40e5-8952-0cdd76f2adaf",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review/{{reviewID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"review",
+								"{{reviewID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Assessment",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "046850f6-cf43-42b9-a4d0-8f4005fc55ca",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"assessments",
+								"{{assessmentID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Assessment - Assessment not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "64776d0e-3d8d-44cd-8d39-dbade0349193",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/assessments/{{assessmentID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}",
+								"assessments",
+								"{{assessmentID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Application, Assessment & Review",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f4ed244-a46a-4160-bcd1-09eb928c7370",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{applicationID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Application - Dependency",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f4ed244-a46a-4160-bcd1-09eb928c7370",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{dependencyID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{dependencyID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Application - Profile",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0f4ed244-a46a-4160-bcd1-09eb928c7370",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{profileID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}",
+								"applications",
+								"{{profileID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Customer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2f835124-15cb-4171-ae6e-4169d12781b0",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Pathfinder Customer - customer not found",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "288a89a0-8566-4440-8cc5-9c615ef21801",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Customer not found - Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerID}}"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		}
 	]
 }
