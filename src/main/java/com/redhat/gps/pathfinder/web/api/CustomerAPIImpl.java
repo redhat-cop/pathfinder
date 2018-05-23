@@ -291,7 +291,7 @@ public class CustomerAPIImpl implements CustomersApi {
             CustomerType resp = new CustomerType();
             resp.setCustomerName(myCust.getName());
             resp.setCustomerId(myCust.getId());
-            resp.setCustomerDescription(myCust.getName());
+            resp.setCustomerDescription(myCust.getDescription());
             resp.setCustomerSize(myCust.getSize());
             resp.setCustomerVertical(myCust.getVertical());
             resp.setCustomerRTILink(myCust.getRtilink());
@@ -334,7 +334,9 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setCustomerId(x.getId());
                 resp.setCustomerSize(x.getSize());
                 resp.setCustomerVertical(x.getVertical());
-                
+                resp.setCustomerAssessor(x.getCustomerAssessor());
+                resp.setCustomerRTILink(x.getCustomerRTILink());
+
                 int total=x.getApplications().size();
                 int assessedCount=0;
                 int reviewedCount=0;
@@ -343,7 +345,7 @@ public class CustomerAPIImpl implements CustomersApi {
                     ApplicationAssessmentReview review = app.getReview();
                     // if review is null, then it's not been reviewed
                     reviewedCount+=(review!=null?1:0);
-                    
+
                     List<Assessments> assmList = app.getAssessments();
                     if ((assmList != null) && (!assmList.isEmpty())) {
                       assessedCount+=1;
@@ -356,7 +358,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 }else{
                   resp.setCustomerPercentageComplete(0);
                 }
-                
+
                 response.add(resp);
             }
             return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
