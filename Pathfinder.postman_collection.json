@@ -81,7 +81,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "a9540618-a621-476f-aaef-351fbbbedaff",
+								"id": "cc3a0f0e-00f2-4c74-857a-dffe68906d1c",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
@@ -103,7 +103,7 @@
 									"iterationCount++;",
 									"pm.globals.set(\"iterationCount\",iterationCount);",
 									"console.log(\"iterationCount\", iterationCount);",
-									"if (iterationCount <= 500){",
+									"if (iterationCount <= 10){",
 									"    console.log(\"Next request\");",
 									"    postman.setNextRequest(\"CreateApplications\");",
 									"}else{",
@@ -150,7 +150,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "83b124f1-5cc7-4c0a-84f4-91a9bbdd51c5",
+								"id": "5a4ad233-d432-4853-a6c5-2652aea7439e",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
@@ -161,6 +161,7 @@
 									"var apps = JSON.parse(appList);",
 									"var appsCount = apps.test.length-1;",
 									"pm.globals.set(\"appsCount\",appsCount);",
+									"pm.globals.set(\"appsReviewCount\",appsCount);",
 									"postman.setNextRequest(\"CreateAssessments\");",
 									""
 								]
@@ -194,30 +195,37 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "e0ab38b0-2746-49f6-beb6-1af6a1b1a29d",
+								"id": "2baec27a-e1c4-42ce-a970-f9c88843fa35",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"let appsCount = pm.globals.get(\"appsCount\");",
-									"console.log(\"appsCount\", appsCount);",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"latestAssessment\", jsonData);",
 									"",
-									"if (appsCount >= 0){",
-									"    console.log(\"Next app\");",
-									"    postman.setNextRequest(\"CreateAssessments\");",
-									"}else{",
-									"    console.log(\"Done\");",
-									"    postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
-									"}"
+									"// let appsCount = pm.globals.get(\"appsCount\");",
+									"// console.log(\"appsCount\", appsCount);",
+									"postman.setNextRequest(\"CreateReview\");",
+									"",
+									"",
+									"// while (appsCount >= -1) {",
+									"",
+									"// if (appsCount >= 0){",
+									"//     console.log(\"Next app\");",
+									"//     postman.setNextRequest(\"CreateReview\");",
+									"// }else{",
+									"//     console.log(\"Done\");",
+									"//     postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
+									"// }"
 								]
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "e5ac70a0-4181-40e5-99ff-8dac17e51753",
+								"id": "437f8925-8b60-40f2-8683-9ca2229caf50",
 								"type": "text/javascript",
 								"exec": [
 									"let appList = pm.globals.get(\"appList\");",
@@ -238,7 +246,7 @@
 									"        depsarray.push(apps.test[app]); ",
 									"    }",
 									"}",
-									"pm.globals.set(\"depsarray\",depsarray);",
+									"pm.globals.set(\"depsarray\",JSON.stringify(depsarray));",
 									"pm.globals.set(\"appsCount\",appsCount);",
 									"",
 									""
@@ -256,7 +264,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"LOADTESTCUSTOMER\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": \"{{$timestamp}}\",\n    \"deps\": [\"{{depsarray}}\"]\n}"
+							"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"LOADTESTCUSTOMER\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": \"{{$timestamp}}\",\n    \"deps\": {{depsarray}}\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/{{appListIndex}}/assessments",
@@ -277,17 +285,104 @@
 					"response": []
 				},
 				{
-					"name": "GetApplicationsAssessmentSummary",
+					"name": "CreateReview",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"id": "db717ccb-752b-471b-81c9-6fae9de9ec2d",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
+									"// let appsReviewCount = pm.globals.get(\"appsReviewCount\");",
+									"// console.log(\"appsReviewCount\", appsReviewCount);",
+									"",
+									"// if (appsReviewCount >= 0){",
+									"//     console.log(\"Next app\");",
+									"//     postman.setNextRequest(\"CreateReview\");",
+									"// }else{",
+									"//     console.log(\"Done\");",
+									"//     postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
+									"// }",
+									"",
+									"let appsCount = pm.globals.get(\"appsCount\");",
+									"console.log(\"appsCount\", appsCount);",
+									"if (appsCount >= 0){",
+									"    console.log(\"Next app\");",
+									"    postman.setNextRequest(\"CreateAssessments\");",
+									"}else{",
+									"    console.log(\"Done\");",
+									"    postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
+									"}",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7dc710c8-fde8-496b-8047-72e850dbc80f",
+								"type": "text/javascript",
+								"exec": [
+									"// let appList = pm.globals.get(\"appList\");",
+									"// let appsReviewCount = pm.globals.get(\"appsReviewCount\");",
+									"",
+									"",
+									"// var apps = JSON.parse(appList);",
+									"// pm.globals.set(\"appListIndex\",apps.test[appsReviewCount]);",
+									"// appsReviewCount--;",
+									"",
+									"// pm.globals.set(\"appsReviewCount\",appsReviewCount);"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{latestAssessment}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"SMALL\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/{{appListIndex}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"applications",
+								"{{appListIndex}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplicationsAssessmentSummary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ba289f92-5ca8-45b2-8b0a-b56342e2db48",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"postman.setNextRequest(\"GetApplicationsDependencyTree\");",
 									""
 								]
 							}
@@ -308,6 +403,43 @@
 								"customers",
 								"{{customerIDLT}}",
 								"applicationAssessmentSummary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplicationsDependencyTree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/dependencyTree",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{customerIDLT}}",
+								"dependencyTree"
 							]
 						}
 					},
