@@ -362,6 +362,41 @@ paths:
 
 
 definitions:
+#  ApplicationSterotype:
+#    type: object
+#    properties:
+#      stereotype:
+#        type: string
+#        enum:
+#        - TARGETAPP
+#        - DEPENDENCY
+#        - PROFILE
+
+#  ReviewDecisionType:
+#    type: object
+#    properties:
+#      rank:
+#        type: string
+#        enum:
+#        - REHOST
+#        - REPLATFORM
+#        - REFACTOR
+#        - REPURCHASE
+#        - RETIRE
+#        - RETAIN
+#
+#  ReviewWorkEstimateType:
+#    type: object
+#    properties:
+#      rank:
+#        type: string
+#        enum:
+#        - SMALL
+#        - MEDIUM
+#        - LARGE
+#        - XLarge
+#        - XXLarge
+#        - XXXLarge
 
   ReviewType:
     required:
@@ -369,6 +404,7 @@ definitions:
     - ReviewDecision
     - WorkEffort
     - ReviewNotes
+    - ReviewTimestamp
     - BusinessPriority
     - WorkPriority
     properties:
@@ -387,10 +423,8 @@ definitions:
       ReviewTimestamp:
         type: string
       BusinessPriority:
-        description: Application criticality for the business 1(Low)...10(High)
         type: string
       WorkPriority:
-        description: Priority of work to be performed 1(Low)...10(High)
         type: string
 
   CustomerType:
@@ -414,6 +448,8 @@ definitions:
         type: string
       CustomerRTILink:
         type: string
+      CustomerPercentageComplete:
+        type: integer
 
   ApplicationType:
     required:
@@ -558,7 +594,7 @@ definitions:
       DepsList:
          type: array
          items:
-            $ref: '#/definitions/DepsPairType'
+            $ref: '#/definitions/DepsPairType' 
 
   ApplicationAssessmentProgressType:
     required:
