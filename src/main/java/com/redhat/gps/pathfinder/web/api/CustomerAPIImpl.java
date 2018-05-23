@@ -34,6 +34,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -332,6 +334,32 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setCustomerId(x.getId());
                 resp.setCustomerSize(x.getSize());
                 resp.setCustomerVertical(x.getVertical());
+                
+                // Mats code
+                int total=x.getApplications().size();
+                int assessedCount=0;
+                int reviewedCount=0;
+                if (total>0){
+                  for(Applications app:x.getApplications()){
+                    ApplicationAssessmentReview review = app.getReview();
+                    // if review is null, then it's not been reviewed
+                    reviewedCount+=(review!=null?1:0);
+                    
+                    List<Assessments> assmList = app.getAssessments();
+                    if ((assmList != null) && (!assmList.isEmpty())) {
+                      assessedCount+=1;
+                    }
+                  }
+                  // reviewedCount + assessedCount / potential total (ie. total * 2)
+                  BigDecimal percentageComplete=new BigDecimal(100*(double)(assessedCount+reviewedCount)/(double)(total*2));
+                  percentageComplete.setScale(0,BigDecimal.ROUND_DOWN);
+                  resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
+                }else{
+                  resp.setCustomerPercentageComplete(0);
+                }
+//                resp.setPercentageComplete((assessedCount+reviewedCount)/(total*2));// a merge of assessed & reviewed
+                // /Mats code
+                
                 response.add(resp);
             }
             return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
