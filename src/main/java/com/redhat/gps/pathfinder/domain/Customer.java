@@ -41,68 +41,6 @@ public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Override
-    public String toString() {
-        return "Customer{" +
-            "id='" + id + '\'' +
-            ", name='" + name + '\'' +
-            ", vertical='" + vertical + '\'' +
-            ", size='" + size + '\'' +
-            ", description='" + description + '\'' +
-            ", CustomerAssessor='" + CustomerAssessor + '\'' +
-            ", CustomerRTILink='" + CustomerRTILink + '\'' +
-            ", rtilink='" + rtilink + '\'' +
-            ", Applications=" + Applications +
-            '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Customer customer = (Customer) o;
-        return Objects.equals(id, customer.id) &&
-            Objects.equals(name, customer.name) &&
-            Objects.equals(vertical, customer.vertical) &&
-            Objects.equals(size, customer.size) &&
-            Objects.equals(description, customer.description) &&
-            Objects.equals(CustomerAssessor, customer.CustomerAssessor) &&
-            Objects.equals(CustomerRTILink, customer.CustomerRTILink) &&
-            Objects.equals(rtilink, customer.rtilink) &&
-            Objects.equals(Applications, customer.Applications);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(id, name, vertical, size, description, CustomerAssessor, CustomerRTILink, rtilink, Applications);
-    }
-
-    public String getDescription() {
-
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getCustomerAssessor() {
-        return CustomerAssessor;
-    }
-
-    public void setCustomerAssessor(String customerAssessor) {
-        CustomerAssessor = customerAssessor;
-    }
-
-    public String getCustomerRTILink() {
-        return CustomerRTILink;
-    }
-
-    public void setCustomerRTILink(String customerRTILink) {
-        CustomerRTILink = customerRTILink;
-    }
-
     @Id
     private String id;
 
@@ -119,20 +57,8 @@ public class Customer implements Serializable {
     @Field("description")
     private String description;
 
-    @Field("CustomerAssessor")
-    private String CustomerAssessor;
-
-    @Field("RTILink")
-    private String CustomerRTILink;
-
-    public String getRtilink() {
-
-        return rtilink;
-    }
-
-    public void setRtilink(String rtilink) {
-        this.rtilink = rtilink;
-    }
+    @Field("assessor")
+    private String assessor;
 
     @Field("rtilink")
     private String rtilink;
@@ -140,15 +66,7 @@ public class Customer implements Serializable {
     @DBRef
     private List<Applications> Applications;
 
-    public List<Applications> getApplications() {
-        return Applications;
-    }
 
-    public void setApplications(List<Applications> Applications) {
-        this.Applications = Applications;
-    }
-
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
     }
@@ -161,15 +79,9 @@ public class Customer implements Serializable {
         return name;
     }
 
-    public Customer name(String name) {
-        this.name = name;
-        return this;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
 
     public String getVertical() {
         return vertical;
@@ -187,4 +99,71 @@ public class Customer implements Serializable {
         this.size = size;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getAssessor() {
+        return assessor;
+    }
+
+    public void setAssessor(String assessor) {
+        this.assessor = assessor;
+    }
+
+    public String getRtilink() {
+        return rtilink;
+    }
+
+    public void setRtilink(String rtilink) {
+        this.rtilink = rtilink;
+    }
+
+    public List<com.redhat.gps.pathfinder.domain.Applications> getApplications() {
+        return Applications;
+    }
+
+    public void setApplications(List<com.redhat.gps.pathfinder.domain.Applications> applications) {
+        Applications = applications;
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Customer customer = (Customer) o;
+        return Objects.equals(id, customer.id) &&
+            Objects.equals(name, customer.name) &&
+            Objects.equals(vertical, customer.vertical) &&
+            Objects.equals(size, customer.size) &&
+            Objects.equals(description, customer.description) &&
+            Objects.equals(assessor, customer.assessor) &&
+            Objects.equals(rtilink, customer.rtilink) &&
+            Objects.equals(Applications, customer.Applications);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(id, name, vertical, size, description, assessor, rtilink, Applications);
+    }
+
+    @Override
+    public String toString() {
+        return "Customer{" +
+            "id='" + id + '\'' +
+            ", name='" + name + '\'' +
+            ", vertical='" + vertical + '\'' +
+            ", size='" + size + '\'' +
+            ", description='" + description + '\'' +
+            ", assessor='" + assessor + '\'' +
+            ", rtilink='" + rtilink + '\'' +
+            ", Applications=" + Applications +
+            '}';
+    }
 }

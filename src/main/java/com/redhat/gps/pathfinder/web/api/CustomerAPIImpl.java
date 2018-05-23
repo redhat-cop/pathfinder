@@ -295,6 +295,7 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setCustomerSize(myCust.getSize());
             resp.setCustomerVertical(myCust.getVertical());
             resp.setCustomerRTILink(myCust.getRtilink());
+            resp.setCustomerAssessor(myCust.getAssessor());
             return new ResponseEntity<CustomerType>(resp, HttpStatus.OK);
         }
     }
@@ -307,10 +308,12 @@ public class CustomerAPIImpl implements CustomersApi {
 
         myCust.setId(uuid.toString());
         myCust.setName(body.getCustomerName());
-        myCust.setSize(body.getCustomerVertical());
+        myCust.setDescription(body.getCustomerDescription());
+        myCust.setVertical(body.getCustomerVertical());
         myCust.setSize(body.getCustomerSize());
         myCust.setRtilink(body.getCustomerRTILink());
         myCust.setVertical(body.getCustomerVertical());
+        myCust.setAssessor(body.getCustomerAssessor());
         try {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {
@@ -334,10 +337,10 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setCustomerId(x.getId());
                 resp.setCustomerSize(x.getSize());
                 resp.setCustomerVertical(x.getVertical());
-                
+
                 int total=x.getApplications()!=null?x.getApplications().size():0;
-                resp.setCustomerAssessor(x.getCustomerAssessor());
-                resp.setCustomerRTILink(x.getCustomerRTILink());
+                resp.setCustomerAssessor(x.getAssessor());
+                resp.setCustomerRTILink(x.getRtilink());
 
                 int assessedCount=0;
                 int reviewedCount=0;
