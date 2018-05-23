@@ -414,6 +414,8 @@ definitions:
         type: string
       CustomerRTILink:
         type: string
+      CustomerPercentageComplete:
+        type: integer
 
   ApplicationType:
     required:
