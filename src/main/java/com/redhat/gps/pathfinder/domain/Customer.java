@@ -41,19 +41,6 @@ public class Customer implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Id
-    private String id;
-
-    @NotNull
-    @Field("name")
-    private String name;
-
-    @Field("vertical")
-    private String vertical;
-
-    @Field("size")
-    private String size;
-
     @Override
     public String toString() {
         return "Customer{" +
@@ -61,6 +48,9 @@ public class Customer implements Serializable {
             ", name='" + name + '\'' +
             ", vertical='" + vertical + '\'' +
             ", size='" + size + '\'' +
+            ", description='" + description + '\'' +
+            ", CustomerAssessor='" + CustomerAssessor + '\'' +
+            ", CustomerRTILink='" + CustomerRTILink + '\'' +
             ", rtilink='" + rtilink + '\'' +
             ", Applications=" + Applications +
             '}';
@@ -75,6 +65,9 @@ public class Customer implements Serializable {
             Objects.equals(name, customer.name) &&
             Objects.equals(vertical, customer.vertical) &&
             Objects.equals(size, customer.size) &&
+            Objects.equals(description, customer.description) &&
+            Objects.equals(CustomerAssessor, customer.CustomerAssessor) &&
+            Objects.equals(CustomerRTILink, customer.CustomerRTILink) &&
             Objects.equals(rtilink, customer.rtilink) &&
             Objects.equals(Applications, customer.Applications);
     }
@@ -82,8 +75,55 @@ public class Customer implements Serializable {
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, name, vertical, size, rtilink, Applications);
+        return Objects.hash(id, name, vertical, size, description, CustomerAssessor, CustomerRTILink, rtilink, Applications);
     }
+
+    public String getDescription() {
+
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getCustomerAssessor() {
+        return CustomerAssessor;
+    }
+
+    public void setCustomerAssessor(String customerAssessor) {
+        CustomerAssessor = customerAssessor;
+    }
+
+    public String getCustomerRTILink() {
+        return CustomerRTILink;
+    }
+
+    public void setCustomerRTILink(String customerRTILink) {
+        CustomerRTILink = customerRTILink;
+    }
+
+    @Id
+    private String id;
+
+    @NotNull
+    @Field("name")
+    private String name;
+
+    @Field("vertical")
+    private String vertical;
+
+    @Field("size")
+    private String size;
+
+    @Field("description")
+    private String description;
+
+    @Field("CustomerAssessor")
+    private String CustomerAssessor;
+
+    @Field("RTILink")
+    private String CustomerRTILink;
 
     public String getRtilink() {
 
