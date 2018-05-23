@@ -335,7 +335,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setCustomerSize(x.getSize());
                 resp.setCustomerVertical(x.getVertical());
                 
-                int total=x.getApplications().size();
+                int total=x.getApplications()!=null?x.getApplications().size():0;
                 int assessedCount=0;
                 int reviewedCount=0;
                 if (total>0){
