@@ -29,6 +29,25 @@ objects:
       port: 8778
       protocol: TCP
       targetPort: 8778
+    readinessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /management/health
+        port: 8080
+        scheme: HTTP
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1  
+    livenessProbe:
+      failureThreshold: 3
+      httpGet:
+        path: /management/health
+        port: 8080
+        scheme: HTTP
+      periodSeconds: 10
+      successThreshold: 1
+      timeoutSeconds: 1  
     selector:
       app: pathfinderapp
       deploymentconfig: pathfinderapp
