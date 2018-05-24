@@ -432,7 +432,7 @@ public class CustomerAPIImpl implements CustomersApi {
             }
 
             ApplicationAssessmentReview reviewData = new ApplicationAssessmentReview(
-                body.getReviewTimestamp(),
+                Long.toString(System.currentTimeMillis()),
                 assm,
                 body.getReviewDecision().toString(),
                 body.getWorkEffort().toString(),
