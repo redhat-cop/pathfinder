@@ -27,16 +27,14 @@ spring:
             enabled: false
     data:
         mongodb:
-#            uri: mongodb://dbuser:dbuser12345@mongodb/pathfinder?authSource=admin
             database: pathfinder
-#            authentication-database: pathfinder
     mail:
         host: localhost
         port: 25
         username:
         password:
     thymeleaf:
-        cache: true
+        cache: false
 
 # ===================================================================
 # To enable SSL, generate a certificate using:
@@ -121,4 +119,5 @@ jhipster:
 
 
 keycloak.enabled: false
+
 application:

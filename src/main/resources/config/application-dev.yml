@@ -17,7 +17,8 @@ logging:
     level:
         ROOT: DEBUG
         com.redhat.gps.pathfinder: DEBUG
-        io.github.jhipster: INFO
+        io.github.jhipster: DEBUG
+        org.springframework: INFO
 
 spring:
     profiles:
@@ -141,7 +142,6 @@ keycloak.securityConstraints[1].securityCollections[0].name : admin stuff
 keycloak.securityConstraints[1].securityCollections[0].patterns[0] : /admin
 #keycloak.credentials.secret = 11111111-1111-1111-1111-111111111111
 keycloak.use-resource-role-mappings : true
-
 
 
 application:

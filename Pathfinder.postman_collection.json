@@ -81,7 +81,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "cc3a0f0e-00f2-4c74-857a-dffe68906d1c",
+								"id": "0e34795f-737d-4790-9109-a727a7afd4ca",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
@@ -103,7 +103,7 @@
 									"iterationCount++;",
 									"pm.globals.set(\"iterationCount\",iterationCount);",
 									"console.log(\"iterationCount\", iterationCount);",
-									"if (iterationCount <= 10){",
+									"if (iterationCount <= 100){",
 									"    console.log(\"Next request\");",
 									"    postman.setNextRequest(\"CreateApplications\");",
 									"}else{",
@@ -195,7 +195,7 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "2baec27a-e1c4-42ce-a970-f9c88843fa35",
+								"id": "19214468-fa23-4523-a1bf-665081f97ae2",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
@@ -204,35 +204,24 @@
 									"",
 									"var jsonData = responseBody;",
 									"pm.environment.set(\"latestAssessment\", jsonData);",
-									"",
-									"// let appsCount = pm.globals.get(\"appsCount\");",
-									"// console.log(\"appsCount\", appsCount);",
 									"postman.setNextRequest(\"CreateReview\");",
-									"",
-									"",
-									"// while (appsCount >= -1) {",
-									"",
-									"// if (appsCount >= 0){",
-									"//     console.log(\"Next app\");",
-									"//     postman.setNextRequest(\"CreateReview\");",
-									"// }else{",
-									"//     console.log(\"Done\");",
-									"//     postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
-									"// }"
+									""
 								]
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "437f8925-8b60-40f2-8683-9ca2229caf50",
+								"id": "617df775-18d8-44fc-9d08-a2c29eb3e6cc",
 								"type": "text/javascript",
 								"exec": [
+									"console.log(\"Creating assessment \");",
 									"let appList = pm.globals.get(\"appList\");",
 									"let appsCount = pm.globals.get(\"appsCount\");",
 									"",
 									"",
 									"var apps = JSON.parse(appList);",
+									"var currApp = apps.test[appsCount];",
 									"pm.globals.set(\"appListIndex\",apps.test[appsCount]);",
 									"appsCount--;",
 									"",
@@ -241,11 +230,19 @@
 									"depscount = Math.floor((Math.random() * apps.test.length-1));",
 									"var depsarray=[];",
 									"var app;",
-									"for (app in apps.test) {",
-									"    if (Math.floor((Math.random() * 5)+1)< 3){",
-									"        depsarray.push(apps.test[app]); ",
+									"var depsCount = 0;",
+									"",
+									"    for (app in apps.test) {",
+									"        if (depsCount > 3){",
+									"            break;",
+									"        }",
+									"        if (Math.floor((Math.random() * 5)+1)< 3){",
+									"             if (apps.test[app] != currApp ){",
+									"                depsarray.push(apps.test[app]); ",
+									"             }",
+									"        }",
+									"        depsCount++;",
 									"    }",
-									"}",
 									"pm.globals.set(\"depsarray\",JSON.stringify(depsarray));",
 									"pm.globals.set(\"appsCount\",appsCount);",
 									"",
@@ -290,30 +287,17 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "db717ccb-752b-471b-81c9-6fae9de9ec2d",
+								"id": "b8cd904d-d690-4c32-9c3c-bbbfc34db0d7",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
-									"// let appsReviewCount = pm.globals.get(\"appsReviewCount\");",
-									"// console.log(\"appsReviewCount\", appsReviewCount);",
-									"",
-									"// if (appsReviewCount >= 0){",
-									"//     console.log(\"Next app\");",
-									"//     postman.setNextRequest(\"CreateReview\");",
-									"// }else{",
-									"//     console.log(\"Done\");",
-									"//     postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
-									"// }",
 									"",
 									"let appsCount = pm.globals.get(\"appsCount\");",
-									"console.log(\"appsCount\", appsCount);",
 									"if (appsCount >= 0){",
-									"    console.log(\"Next app\");",
 									"    postman.setNextRequest(\"CreateAssessments\");",
 									"}else{",
-									"    console.log(\"Done\");",
 									"    postman.setNextRequest(\"GetApplicationsAssessmentSummary\");",
 									"}",
 									""
@@ -323,18 +307,29 @@
 						{
 							"listen": "prerequest",
 							"script": {
-								"id": "7dc710c8-fde8-496b-8047-72e850dbc80f",
+								"id": "8faf71b0-6e38-4599-a3cc-1eb4226e2738",
 								"type": "text/javascript",
 								"exec": [
-									"// let appList = pm.globals.get(\"appList\");",
-									"// let appsReviewCount = pm.globals.get(\"appsReviewCount\");",
+									"",
+									"var decisionArr =  [\"REHOST\",\"REPLATFORM\",\"REFACTOR\",\"REPURCHASE\",\"RETIRE\",\"RETAIN\"];",
+									"var sizeArr = [\"SMALL\",\"MEDIUM\",\"LARGE\",\"XLarge\",\"XXLarge\",\"XXXLarge\"];",
+									"",
+									"var decision = decisionArr[Math.floor((Math.random() * 6))];",
+									"var tsize = sizeArr[Math.floor((Math.random() * 6))];",
+									"console.log(\"After decision & tshirt\",decision,tsize);",
+									"",
+									"var workPrio = Math.floor((Math.random() * 10) + 1);",
+									"var businessPrio = Math.floor((Math.random() * 10) + 1);",
+									"",
+									"pm.globals.set(\"reviewDecision\",decision);",
+									"pm.globals.set(\"tSize\",tsize);",
+									"pm.globals.set(\"workPrio\",workPrio);",
+									"pm.globals.set(\"businessPrio\",businessPrio);",
 									"",
 									"",
-									"// var apps = JSON.parse(appList);",
-									"// pm.globals.set(\"appListIndex\",apps.test[appsReviewCount]);",
-									"// appsReviewCount--;",
 									"",
-									"// pm.globals.set(\"appsReviewCount\",appsReviewCount);"
+									"",
+									""
 								]
 							}
 						}
@@ -349,7 +344,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"AssessmentId\": \"{{latestAssessment}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"SMALL\"\n}"
+							"raw": "{\n  \"AssessmentId\": \"{{latestAssessment}}\",\n  \"ReviewDecision\": \"{{reviewDecision}}\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"{{businessPrio}}\",\n  \"WorkPriority\": \"{{workPrio}}\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"{{tSize}}\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/pathfinder/customers/{{customerIDLT}}/applications/{{appListIndex}}/review",
@@ -479,7 +474,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\"\n}"
+							"raw": "{\n  \"CustomerName\": \"Vodatel\",\n  \"CustomerDescription\": \"Vodatel Customer - Test Customer\",\n  \"CustomerAssessor\": \"labs team\",\n  \"CustomerVertical\": \"IT\",\n  \"CustomerRTILink\" : \"http://www.example.com\",\n  \"CustomerPercentageComplete\" : 0,\n  \"CustomerSize\" : \"100-500\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/pathfinder/customers/",
@@ -889,7 +884,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"SMALL\"\n}"
+							"raw": "{\n  \"AssessmentId\": \"{{assessmentID}}\",\n  \"ReviewDecision\": \"REHOST\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"10\",\n  \"WorkPriority\": \"10\",\n  \"WorkEffort\":\"SMALL\"\n}"
 						},
 						"url": {
 							"raw": "{{url}}/api/pathfinder/customers/{{customerID}}/applications/{{applicationID}}/review",
