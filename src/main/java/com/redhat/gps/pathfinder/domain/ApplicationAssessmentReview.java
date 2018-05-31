@@ -72,7 +72,7 @@ public class ApplicationAssessmentReview implements Serializable {
     @DBRef
     private Applications Application;
 
-    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, String ReviewDecision, String ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority, Applications Application) {
+    public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, String ReviewDecision, String ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority) {
         this.ReviewDate = ReviewDate;
         this.Assessments = Assessments;
         this.ReviewDecision = ReviewDecision;
@@ -80,7 +80,6 @@ public class ApplicationAssessmentReview implements Serializable {
         this.ReviewNotes = ReviewNotes;
         this.WorkPriority = WorkPriority;
         this.BusinessPriority = BusinessPriority;
-        this.Application = Application;
     }
 
     public String getId() {
@@ -147,13 +146,6 @@ public class ApplicationAssessmentReview implements Serializable {
         BusinessPriority = businessPriority;
     }
 
-    public Applications getApplication() {
-        return Application;
-    }
-
-    public void setApplication(Applications application) {
-        Application = application;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -167,14 +159,13 @@ public class ApplicationAssessmentReview implements Serializable {
             Objects.equals(ReviewEstimate, that.ReviewEstimate) &&
             Objects.equals(ReviewNotes, that.ReviewNotes) &&
             Objects.equals(WorkPriority, that.WorkPriority) &&
-            Objects.equals(BusinessPriority, that.BusinessPriority) &&
-            Objects.equals(Application, that.Application);
+            Objects.equals(BusinessPriority, that.BusinessPriority);
     }
 
     @Override
     public int hashCode() {
 
-        return Objects.hash(id, ReviewDate, Assessments, ReviewDecision, ReviewEstimate, ReviewNotes, WorkPriority, BusinessPriority, Application);
+        return Objects.hash(id, ReviewDate, Assessments, ReviewDecision, ReviewEstimate, ReviewNotes, WorkPriority, BusinessPriority);
     }
 
     @Override
@@ -188,7 +179,6 @@ public class ApplicationAssessmentReview implements Serializable {
             ", ReviewNotes='" + ReviewNotes + '\'' +
             ", WorkPriority='" + WorkPriority + '\'' +
             ", BusinessPriority='" + BusinessPriority + '\'' +
-            ", Application=" + Application +
             '}';
     }
 }

@@ -34,7 +34,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -66,6 +65,93 @@ public class CustomerAPIImpl implements CustomersApi {
     }
 
     @Timed
+    public ResponseEntity<ApplicationNames> customersCustIdApplicationsAppIdCopyPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Target Application Names") @Valid @RequestBody ApplicationNames body) {
+        log.debug("customersCustIdApplicationsAppIdCopyPost....{} ", body.toString());
+        ApplicationNames appIDS = new ApplicationNames();
+
+        if (body.isEmpty()) {
+            log.error("customersCustIdApplicationsAppIdAssessmentsPost....Empty list of target application names");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            Customer currCust = custRepo.findOne(custId);
+
+            if (currCust == null) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsPost....customer not found " + custId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            Applications currApp = appsRepo.findOne(appId);
+
+            if (currApp == null) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsPost....app not found " + appId);
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            ApplicationAssessmentReview currReview = currApp.getReview();
+
+            if (currReview == null) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsPost....now reviews for app " + appId);
+                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+            }
+
+            List<Assessments> currAssessments = currApp.getAssessments();
+
+            if ((currAssessments == null) || (currAssessments.isEmpty())) {
+                log.error("customersCustIdApplicationsAppIdAssessmentsPost....now assessments for app " + appId);
+                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+            }
+
+            //Copy Assessment (latest only)
+            Assessments latestAssessment = currAssessments.get(currAssessments.size() - 1);
+            Assessments newAssessment = new Assessments();
+            newAssessment.setId(UUID.randomUUID().toString());
+            newAssessment.setDatetime(latestAssessment.getDatetime());
+            if (!latestAssessment.getDeps().isEmpty())
+                newAssessment.setDeps(latestAssessment.getDeps());
+            newAssessment.setResults(latestAssessment.getResults());
+            newAssessment = assmRepo.save(newAssessment);
+
+            //Copy review
+            ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
+                currReview.getReviewDate(),
+                newAssessment,
+                currReview.getReviewDecision(),
+                currReview.getReviewEstimate(),
+                currReview.getReviewNotes(),
+                currReview.getWorkPriority(),
+                currReview.getBusinessPriority());
+            newReview.setId(UUID.randomUUID().toString());
+            newReview = reviewRepository.insert(newReview);
+
+            //Create application
+            List<Assessments> assArray = new ArrayList<>();
+            assArray.add(newAssessment);
+            Applications newApp = new Applications();
+            newApp.setDescription(currApp.getDescription());
+            newApp.setStereotype(currApp.getStereotype());
+            newApp.setAssessments(assArray);
+            newApp.setReview(newReview);
+            newApp.setName(body.get(0));
+            Applications app = new Applications();
+            newApp.setId(UUID.randomUUID().toString());
+            newApp = appsRepo.insert(newApp);
+
+            //Update customer
+            List<Applications> listApps = currCust.getApplications();
+            listApps.add(newApp);
+            currCust.setApplications(listApps);
+            custRepo.save(currCust);
+
+            appIDS.add(newApp.getId());
+        } catch (Exception ex) {
+            log.error("customersCustIdApplicationsAppIdCopyPost...Unable to copy applications for customer ", ex.getMessage(), ex);
+        }
+        return new ResponseEntity<>(appIDS, HttpStatus.OK);
+    }
+
+    @Timed
     public ResponseEntity<AssessmentType> customersCustIdApplicationsAppIdAssessmentsAssessIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("assessId") String assessId) {
         log.debug("customersCustIdApplicationsAppIdAssessmentsAssessIdGet....");
 
@@ -81,13 +167,13 @@ public class CustomerAPIImpl implements CustomersApi {
                     tempPayload.put((String) pair.getKey(), (String) pair.getValue());
                 }
                 resp.setPayload(tempPayload);
-                return new ResponseEntity<AssessmentType>(resp, HttpStatus.OK);
+                return new ResponseEntity<>(resp, HttpStatus.OK);
             } else {
-                return new ResponseEntity<AssessmentType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
             log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdGet", ex.getMessage(), ex);
-            return new ResponseEntity<AssessmentType>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -105,16 +191,16 @@ public class CustomerAPIImpl implements CustomersApi {
                             results.add(x.getId());
                         }
                     }
-                    return new ResponseEntity<List<String>>(results, HttpStatus.OK);
+                    return new ResponseEntity<>(results, HttpStatus.OK);
                 }
             } catch (Exception ex) {
                 log.error("Unable to get assessments for customer ", ex.getMessage(), ex);
             }
-            return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(results, HttpStatus.BAD_REQUEST);
         } catch (Exception ex) {
             log.error("customersCustIdApplicationsAppIdAssessmentsGet", ex.getMessage(), ex);
         }
-        return new ResponseEntity<List<String>>(results, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(results, HttpStatus.BAD_REQUEST);
     }
 
     @Timed
@@ -127,7 +213,7 @@ public class CustomerAPIImpl implements CustomersApi {
         try {
             if (!custRepo.exists(custId)) {
                 log.error("customersCustIdApplicationsAppIdAssessmentsPost....app not found " + appId);
-                return new ResponseEntity<String>("Customer Not found", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Customer Not found", HttpStatus.BAD_REQUEST);
             }
 
             Applications currApp = appsRepo.findOne(appId);
@@ -135,8 +221,7 @@ public class CustomerAPIImpl implements CustomersApi {
             if (currApp != null) {
 
                 Assessments newitem = new Assessments();
-                UUID uuid = UUID.randomUUID();
-                newitem.setId(uuid.toString());
+                newitem.setId(UUID.randomUUID().toString());
                 newitem.setResults(body.getPayload());
                 newitem.setDeps(body.getDeps());
                 newitem.setDatetime(body.getDatetime());
@@ -149,16 +234,16 @@ public class CustomerAPIImpl implements CustomersApi {
                 }
                 assmList.add(newitem);
                 currApp.setAssessments(assmList);
-                currApp = appsRepo.save(currApp);
-                return new ResponseEntity<String>(newitem.getId(), HttpStatus.OK);
+                appsRepo.save(currApp);
+                return new ResponseEntity<>(newitem.getId(), HttpStatus.OK);
             } else {
                 log.error("customersCustIdApplicationsAppIdAssessmentsPost....app not found " + appId);
-                return new ResponseEntity<String>("Application not found", HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>("Application not found", HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
             log.error("customersCustIdApplicationsAppIdAssessmentsPost Unable to create applications for customer ", ex.getMessage(), ex);
         }
-        return new ResponseEntity<String>("Unable to create assessment", HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
 
     @Timed
@@ -178,9 +263,9 @@ public class CustomerAPIImpl implements CustomersApi {
             }
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
-            return new ResponseEntity<ApplicationType>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<ApplicationType>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @Override
@@ -188,12 +273,11 @@ public class CustomerAPIImpl implements CustomersApi {
     public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "TARGETS,DEPENDENCIES,PROFILES") @RequestParam(value = "apptype", required = false) String apptype) {
         log.info("customersCustIdApplicationsGet....[" + custId + "]");
         ArrayList<ApplicationType> response = new ArrayList<>();
-
         try {
             Customer myCust = custRepo.findOne(custId);
             if (myCust == null) {
                 log.error("customersCustIdApplicationsGet....[" + custId + "] customer not found");
-                return new ResponseEntity<List<ApplicationType>>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             List<Applications> resp = custRepo.findOne(custId).getApplications();
             if ((resp != null) && (!resp.isEmpty())) {
@@ -243,9 +327,9 @@ public class CustomerAPIImpl implements CustomersApi {
             }
         } catch (Exception ex) {
             log.error("Unable to list applications for customer ", ex.getMessage(), ex);
-            return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<List<ApplicationType>>(response, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     @Timed
@@ -255,16 +339,15 @@ public class CustomerAPIImpl implements CustomersApi {
         log.debug("customersCustIdApplicationsPost....");
         Customer myCust = custRepo.findOne(custId);
         if (myCust == null) {
-            return new ResponseEntity<String>(custId, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(custId, HttpStatus.BAD_REQUEST);
         } else {
             Applications app = new Applications();
-            UUID uuid = UUID.randomUUID();
-            app.setId(uuid.toString());
+            app.setId(UUID.randomUUID().toString());
             app.setName(body.getName());
             app.setDescription(body.getDescription());
             if (body.getStereotype() == null) {
                 log.warn("customersCustIdApplicationsPost....application stereotype missing ");
-                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             } else {
                 app.setStereotype(body.getStereotype().toString());
             }
@@ -276,7 +359,7 @@ public class CustomerAPIImpl implements CustomersApi {
             appList.add(app);
             myCust.setApplications(appList);
             custRepo.save(myCust);
-            return new ResponseEntity<String>(app.getId(), HttpStatus.OK);
+            return new ResponseEntity<>(app.getId(), HttpStatus.OK);
         }
     }
 
@@ -286,7 +369,7 @@ public class CustomerAPIImpl implements CustomersApi {
         log.debug("customersCustIdGet....{}", custId);
         Customer myCust = custRepo.findOne(custId);
         if (myCust == null) {
-            return new ResponseEntity<CustomerType>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } else {
             CustomerType resp = new CustomerType();
             resp.setCustomerName(myCust.getName());
@@ -296,7 +379,7 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setCustomerVertical(myCust.getVertical());
             resp.setCustomerRTILink(myCust.getRtilink());
             resp.setCustomerAssessor(myCust.getAssessor());
-            return new ResponseEntity<CustomerType>(resp, HttpStatus.OK);
+            return new ResponseEntity<>(resp, HttpStatus.OK);
         }
     }
 
@@ -304,9 +387,8 @@ public class CustomerAPIImpl implements CustomersApi {
     public ResponseEntity<String> customersPost(@ApiParam(value = "") @Valid @RequestBody CustomerType body) {
         log.debug("customersPost....{}", body);
         Customer myCust = new Customer();
-        UUID uuid = UUID.randomUUID();
 
-        myCust.setId(uuid.toString());
+        myCust.setId(UUID.randomUUID().toString());
         myCust.setName(body.getCustomerName());
         myCust.setDescription(body.getCustomerDescription());
         myCust.setVertical(body.getCustomerVertical());
@@ -318,9 +400,9 @@ public class CustomerAPIImpl implements CustomersApi {
             myCust = custRepo.insert(myCust);
         } catch (Exception ex) {
             log.error("Unable to Create customer ", ex.getMessage(), ex);
-            return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<String>(myCust.getId(), HttpStatus.OK);
+        return new ResponseEntity<>(myCust.getId(), HttpStatus.OK);
     }
 
     @Timed
@@ -329,7 +411,7 @@ public class CustomerAPIImpl implements CustomersApi {
         ArrayList<CustomerType> response = new ArrayList<>();
         List<Customer> myCust = custRepo.findAll();
         if (myCust == null) {
-            return new ResponseEntity<List<CustomerType>>(response, HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
             for (Customer x : myCust) {
                 CustomerType resp = new CustomerType();
@@ -338,34 +420,34 @@ public class CustomerAPIImpl implements CustomersApi {
                 resp.setCustomerSize(x.getSize());
                 resp.setCustomerVertical(x.getVertical());
 
-                int total=x.getApplications()!=null?x.getApplications().size():0;
+                int total = x.getApplications() != null ? x.getApplications().size() : 0;
                 resp.setCustomerAssessor(x.getAssessor());
                 resp.setCustomerRTILink(x.getRtilink());
 
-                int assessedCount=0;
-                int reviewedCount=0;
-                if (total>0){
-                  for(Applications app:x.getApplications()){
-                    ApplicationAssessmentReview review = app.getReview();
-                    // if review is null, then it's not been reviewed
-                    reviewedCount+=(review!=null?1:0);
+                int assessedCount = 0;
+                int reviewedCount = 0;
+                if (total > 0) {
+                    for (Applications app : x.getApplications()) {
+                        ApplicationAssessmentReview review = app.getReview();
+                        // if review is null, then it's not been reviewed
+                        reviewedCount += (review != null ? 1 : 0);
 
-                    List<Assessments> assmList = app.getAssessments();
-                    if ((assmList != null) && (!assmList.isEmpty())) {
-                      assessedCount+=1;
+                        List<Assessments> assmList = app.getAssessments();
+                        if ((assmList != null) && (!assmList.isEmpty())) {
+                            assessedCount += 1;
+                        }
                     }
-                  }
-                  // reviewedCount + assessedCount / potential total (ie. total * 2)
-                  BigDecimal percentageComplete=new BigDecimal(100*(double)(assessedCount+reviewedCount)/(double)(total*2));
-                  percentageComplete.setScale(0,BigDecimal.ROUND_DOWN);
-                  resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
-                }else{
-                  resp.setCustomerPercentageComplete(0);
+                    // reviewedCount + assessedCount / potential total (ie. total * 2)
+                    BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount + reviewedCount) / (double) (total * 2));
+                    percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
+                    resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
+                } else {
+                    resp.setCustomerPercentageComplete(0);
                 }
 
                 response.add(resp);
             }
-            return new ResponseEntity<List<CustomerType>>(response, HttpStatus.OK);
+            return new ResponseEntity<>(response, HttpStatus.OK);
         }
     }
 
@@ -383,7 +465,7 @@ public class CustomerAPIImpl implements CustomersApi {
 
             Assessments currAssm = assmRepo.findOne(assessId);
             if (currAssm == null) {
-                return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
             }
 
             List<QuestionMetaData> questionData = questionRepository.findAll();
@@ -410,9 +492,9 @@ public class CustomerAPIImpl implements CustomersApi {
 
         } catch (Exception ex) {
             log.error("Error while processing assessment", ex.getMessage(), ex);
-            return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(resp, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<AssessmentProcessType>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @Timed
@@ -422,13 +504,13 @@ public class CustomerAPIImpl implements CustomersApi {
             Applications app = appsRepo.findOne(appId);
             if (app == null) {
                 log.error("Error while processing review - Unable to find application with id {}", appId);
-                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             Assessments assm = assmRepo.findOne(body.getAssessmentId());
             if (assm == null) {
                 log.error("Error while processing review - Unable to find assessment with id {}", body.getAssessmentId());
-                return new ResponseEntity<String>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             ApplicationAssessmentReview reviewData = new ApplicationAssessmentReview(
@@ -438,14 +520,12 @@ public class CustomerAPIImpl implements CustomersApi {
                 body.getWorkEffort().toString(),
                 body.getReviewNotes(),
                 body.getWorkPriority(),
-                body.getBusinessPriority(),
-                app);
+                body.getBusinessPriority());
 
             if (app.getReview() != null) {
                 reviewData.setId(app.getReview().getId());
             } else {
-                UUID uuid = UUID.randomUUID();
-                reviewData.setId(uuid.toString());
+                reviewData.setId(UUID.randomUUID().toString());
             }
 
 
@@ -453,10 +533,10 @@ public class CustomerAPIImpl implements CustomersApi {
             app.setReview(reviewData);
             appsRepo.save(app);
 
-            return new ResponseEntity<String>(reviewData.getId(), HttpStatus.OK);
+            return new ResponseEntity<>(reviewData.getId(), HttpStatus.OK);
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
-            return new ResponseEntity<String>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -468,20 +548,19 @@ public class CustomerAPIImpl implements CustomersApi {
             Applications app = appsRepo.findOne(appId);
             if (app == null) {
                 log.error("Error while retrieving review - Unable to find application with id {}", appId);
-                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             if (app.getReview() == null) {
                 log.error("Error while retrieving review - no review associated with application {}", reviewId);
-                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-
 
             ApplicationAssessmentReview reviewData = reviewRepository.findOne(app.getReview().getId());
 
             if (reviewData == null) {
                 log.error("Error while retrieving review - Unable to find review for application {}", appId);
-                return new ResponseEntity<ReviewType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             resp.setAssessmentId(reviewData.getAssessments().getId());
@@ -492,15 +571,14 @@ public class CustomerAPIImpl implements CustomersApi {
             resp.setWorkPriority(reviewData.getWorkPriority());
             resp.setBusinessPriority(reviewData.getBusinessPriority());
 
-            return new ResponseEntity<ReviewType>(resp, HttpStatus.OK);
+            return new ResponseEntity<>(resp, HttpStatus.OK);
 
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
-            return new ResponseEntity<ReviewType>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    //This is fugly and needs to be removed at a later stage
     @Timed
     public ResponseEntity<List<ReviewType>> customersCustIdReviewsGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
         log.debug("customersCustIdReviewsGet...." + custId);
@@ -510,21 +588,18 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdReviewsGet....customer not found {}", custId);
-                return new ResponseEntity<List<ReviewType>>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Applications> appList = currCust.getApplications();
             if ((appList == null) || (appList.isEmpty())) {
                 log.error("customersCustIdReviewsGet....no applications for customer {}", custId);
-                return new ResponseEntity<List<ReviewType>>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
-
-            ArrayList<ApplicationAssessmentReview> reviewList = new ArrayList<>();
 
             for (Applications x : appList) {
                 ApplicationAssessmentReview tmpRev = x.getReview();
                 if (tmpRev != null) {
-                    reviewList.add(x.getReview());
                     ReviewType newRev = new ReviewType();
                     newRev.setBusinessPriority(tmpRev.getBusinessPriority());
                     newRev.setWorkPriority(tmpRev.getWorkPriority());
@@ -539,10 +614,10 @@ public class CustomerAPIImpl implements CustomersApi {
 
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
-            return new ResponseEntity<List<ReviewType>>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<List<ReviewType>>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @Timed
@@ -553,13 +628,13 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdApplicationsAppIdDelete....customer not found {}", custId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             Applications delApp = appsRepo.findOne(appId);
             if (delApp == null) {
                 log.error("customersCustIdApplicationsAppIdDelete....application not found {}", appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Applications> currApps = currCust.getApplications();
@@ -577,7 +652,7 @@ public class CustomerAPIImpl implements CustomersApi {
 
             if (!appFound) {
                 log.error("customersCustIdApplicationsAppIdDelete....application not found {} in customer list {}", appId, custId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             currCust.setApplications(newApps);
@@ -593,10 +668,10 @@ public class CustomerAPIImpl implements CustomersApi {
 
         } catch (Exception ex) {
             log.error("Error while deleting application", ex.getMessage(), ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Timed
@@ -607,13 +682,13 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....customer not found {}", custId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             Applications currApp = appsRepo.findOne(appId);
             if (currApp == null) {
                 log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....application not found {}", appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             if (currApp.getReview().getId().equalsIgnoreCase(reviewId)) {
@@ -622,13 +697,13 @@ public class CustomerAPIImpl implements CustomersApi {
                 reviewRepository.delete(reviewId);
             } else {
                 log.error("customersCustIdApplicationsAppIdReviewReviewIdDelete....review {} not found for application", reviewId, appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
             log.error("Error while deleting review", ex.getMessage(), ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Timed
@@ -639,20 +714,20 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....customer not found {}", custId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             Applications currApp = appsRepo.findOne(appId);
             if (currApp == null) {
                 log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....application not found {}", appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Assessments> assmList = currApp.getAssessments();
 
             if ((assmList == null) || (assmList.isEmpty())) {
                 log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....assessment list is null for app {}", appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             boolean assmFound = false;
@@ -672,13 +747,13 @@ public class CustomerAPIImpl implements CustomersApi {
                 appsRepo.save(currApp);
             } else {
                 log.error("customersCustIdApplicationsAppIdAssessmentsAssessIdDelete....assessment not found for app {}", appId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } catch (Exception ex) {
             log.error("Error while deleting assessment", ex.getMessage(), ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Timed
@@ -688,18 +763,18 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdDelete....customer not found {}", custId);
-                return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             if ((currCust.getApplications() != null) && (!currCust.getApplications().isEmpty())) {
                 log.error("Customer {} has applications...not deleting", custId);
-                return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
             custRepo.delete(custId);
         } catch (Exception ex) {
             log.error("Error while deleting customer", ex.getMessage(), ex);
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     @Timed
@@ -710,7 +785,7 @@ public class CustomerAPIImpl implements CustomersApi {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdApplicationAssessmentSummaryGet....customer not found {}", custId);
-                return new ResponseEntity<List<ApplicationSummaryType>>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Applications> apps = currCust.getApplications();
@@ -744,10 +819,10 @@ public class CustomerAPIImpl implements CustomersApi {
             }
         } catch (Exception ex) {
             log.error("Error while processing customersCustIdApplicationAssessmentSummaryGet", ex.getMessage(), ex);
-            return new ResponseEntity<List<ApplicationSummaryType>>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return new ResponseEntity<List<ApplicationSummaryType>>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
     @Timed
@@ -757,12 +832,11 @@ public class CustomerAPIImpl implements CustomersApi {
         ApplicationAssessmentProgressType resp = new ApplicationAssessmentProgressType();
         int appCount = 0, assessedCount = 0, reviewedCount = 0;
 
-
         try {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdApplicationAssessmentProgressGet....customer not found {}", custId);
-                return new ResponseEntity<ApplicationAssessmentProgressType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Applications> apps = currCust.getApplications();
@@ -786,14 +860,14 @@ public class CustomerAPIImpl implements CustomersApi {
             }
         } catch (Exception ex) {
             log.error("Error while processing customersCustIdApplicationAssessmentProgressGet", ex.getMessage(), ex);
-            return new ResponseEntity<ApplicationAssessmentProgressType>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         resp.setAppcount(appCount);
         resp.setAssessed(assessedCount);
         resp.setReviewed(reviewedCount);
 
-        return new ResponseEntity<ApplicationAssessmentProgressType>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
 
@@ -801,12 +875,11 @@ public class CustomerAPIImpl implements CustomersApi {
         log.debug("customersCustIdDependencyTreeGet {}", custId);
         DependenciesListType respDeps = new DependenciesListType();
 
-
         try {
             Customer currCust = custRepo.findOne(custId);
             if (currCust == null) {
                 log.error("customersCustIdDependencyTreeGet....customer not found {}", custId);
-                return new ResponseEntity<DependenciesListType>(HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
             List<Applications> apps = currCust.getApplications();
@@ -839,12 +912,10 @@ public class CustomerAPIImpl implements CustomersApi {
                     }
                 }
             }
-        } catch (Exception ex)
-
-        {
+        } catch (Exception ex) {
             log.error("Error while processing customersCustIdDependencyTreeGet", ex.getMessage(), ex);
-            return new ResponseEntity<DependenciesListType>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<DependenciesListType>(respDeps,HttpStatus.OK);
+        return new ResponseEntity<>(respDeps, HttpStatus.OK);
     }
 }

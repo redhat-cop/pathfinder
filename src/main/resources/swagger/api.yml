@@ -249,6 +249,38 @@ paths:
       type: string
 
 
+  /customers/{custId}/applications/{appId}/copy:
+    post:
+      description: Create applications based on an existing assessed and reviewed application
+      parameters:
+      - name: body
+        in: body
+        description: Target Application Names
+        schema:
+          $ref: '#/definitions/ApplicationNames'
+      responses:
+        200:
+          description: Application Cloned
+          schema:
+            $ref: '#/definitions/ApplicationNames'
+        404:
+          description: Customer or Source Application not found
+        400:
+          description: Bad request empty array of target application names
+        424:
+          description: Failed Dependency source application doesn't have a assessments or reviews
+    parameters:
+    - name: custId
+      in: path
+      required: true
+      type: string
+    - name: appId
+      in: path
+      required: true
+      type: string
+
+
+
   /customers/{custId}/applications/{appId}/assessments/{assessId}:
     get:
       description: Get Application Assessment for an appliation for a customer
@@ -362,6 +394,11 @@ paths:
 
 
 definitions:
+
+  ApplicationNames:
+    type: array
+    items:
+      type: string
 
   ReviewType:
     required:
