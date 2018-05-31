@@ -443,6 +443,719 @@
 			]
 		},
 		{
+			"name": "CopyApplication",
+			"description": "",
+			"item": [
+				{
+					"name": "CreateCustomer",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e1fb9aea-7e5d-43c7-92b1-4807c7c59508",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"copyCustomerID\", jsonData);",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "440716e4-7a09-4cde-918c-27cb333d10c6",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"CustomerName\": \"LoadTestCustomer{{$randomInt}}\",\n  \"CustomerDescription\": \"LoadTestCustomerDesc{{$randomInt}}\",\n  \"CustomerAssessor\": \"Load test\",\n  \"CustomerVertical\": \"Load test\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateApplications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "0012dbfc-f51b-4f67-8c82-6efc12adf40b",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"sourceAppID\", jsonData);",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"Name\": \"LoadTestApplication{{$randomInt}}\",\n  \"Description\": \"Customer application\",\n  \"Stereotype\": \"TARGETAPP\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAssessments",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "19214468-fa23-4523-a1bf-665081f97ae2",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"latestAssessment\", jsonData);",
+									"postman.setNextRequest(\"CreateReview\");",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "c9cd5ab3-0634-4df6-a2b4-e5fd8df2e363",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"payload\": {\n        \"CONTAINERS\": \"0\",\n        \"STATE\": \"0\",\n        \"COMPLIANCE\": \"3\",\n        \"LOGS\": \"3\",\n        \"ARCHTYPE\": \"1\",\n        \"CONFIG\": \"4\",\n        \"NOTES\": \"sdfsdfsdf\",\n        \"OWNER\": \"5\",\n        \"DEPS3RD\": \"2\",\n        \"DEPSIN\": \"4\",\n        \"COMMS\": \"2\",\n        \"DEPSOS\": \"2\",\n        \"RESILIENCY\": \"4\",\n        \"PROFILE\": \"4\",\n        \"CUSTNAME\": \"LOADTESTCUSTOMER\",\n        \"HEALTH\": \"4\",\n        \"CLUSTER\": \"4\",\n        \"DEPLOY\": \"4\",\n        \"DEPSOUT\": \"5\",\n        \"METRICS\": \"3\",\n        \"DEPSHW\": \"1\",\n        \"BUSPRIORITY\": \"7\",\n        \"TEST\": \"3\",\n        \"SECURITY\": \"3\",\n        \"HA\": \"3\"\n    },\n    \"datetime\": \"{{$timestamp}}\",\n    \"deps\": [\"this should be copied\"]\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/{{sourceAppID}}/assessments",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"{{sourceAppID}}",
+								"assessments"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateReview",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f3f93e34-3c8b-4b06-8401-e090fafaa98e",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"copyReviewID\", jsonData);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8faf71b0-6e38-4599-a3cc-1eb4226e2738",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"var decisionArr =  [\"REHOST\",\"REPLATFORM\",\"REFACTOR\",\"REPURCHASE\",\"RETIRE\",\"RETAIN\"];",
+									"var sizeArr = [\"SMALL\",\"MEDIUM\",\"LARGE\",\"XLarge\",\"XXLarge\",\"XXXLarge\"];",
+									"",
+									"var decision = decisionArr[Math.floor((Math.random() * 6))];",
+									"var tsize = sizeArr[Math.floor((Math.random() * 6))];",
+									"console.log(\"After decision & tshirt\",decision,tsize);",
+									"",
+									"var workPrio = Math.floor((Math.random() * 10) + 1);",
+									"var businessPrio = Math.floor((Math.random() * 10) + 1);",
+									"",
+									"pm.globals.set(\"reviewDecision\",decision);",
+									"pm.globals.set(\"tSize\",tsize);",
+									"pm.globals.set(\"workPrio\",workPrio);",
+									"pm.globals.set(\"businessPrio\",businessPrio);",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"AssessmentId\": \"{{latestAssessment}}\",\n  \"ReviewDecision\": \"{{reviewDecision}}\",\n  \"ReviewNotes\": \"this is a testagain1924\",\n  \"BusinessPriority\": \"{{businessPrio}}\",\n  \"WorkPriority\": \"{{workPrio}}\",\n  \"ReviewTimestamp\": \"2234567890\",\n  \"WorkEffort\":\"{{tSize}}\"\n}"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/{{sourceAppID}}/review",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"{{sourceAppID}}",
+								"review"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplicationsAssessmentSummary",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a0698834-31b3-4937-97cb-24b0aa6354c3",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applicationAssessmentSummary",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applicationAssessmentSummary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplicationsDependencyTree",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c1505725-c058-457c-9db4-17a7032cb8e5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/dependencyTree",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"dependencyTree"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CopyApplications - No target app names",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b4fa15e3-58b2-4595-8054-8300b19fd9b5",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "94addeeb-3f27-4592-aa5e-f1000e487e2d",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[]"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/{{sourceAppID}}/copy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"{{sourceAppID}}",
+								"copy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CopyApplications - CustomerNotFound",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ce2f73e8-5437-4190-acd7-5b9d27a74ac1",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "bbaec277-20d3-4c8e-9299-aaa3ecdfb0c7",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  \"TargetApp\"\n]"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/12345/applications/{{sourceAppID}}/copy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"12345",
+								"applications",
+								"{{sourceAppID}}",
+								"copy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CopyApplications - SourceAppNotFound",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "ce2f73e8-5437-4190-acd7-5b9d27a74ac1",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(404);",
+									"});",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ba749987-9717-4911-8d5a-049f2f99556d",
+								"type": "text/javascript",
+								"exec": [
+									"",
+									"",
+									"",
+									"",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  \"TargetApp\"\n]"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/12345/copy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"12345",
+								"copy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CopyApplications - SingleCopy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "731e25a9-3049-4f2d-a6d7-a0cdc0412af6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"newAPPS\", jsonData);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68fc28dd-de1c-4d1b-b0fb-e9feae13d53c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  \"CLONEApp\"\n]"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/{{sourceAppID}}/copy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"{{sourceAppID}}",
+								"copy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9da2b1bc-e284-4246-9129-1558718aa12c",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CopyApplications - MultipleCopy",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "731e25a9-3049-4f2d-a6d7-a0cdc0412af6",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = responseBody;",
+									"pm.environment.set(\"newAPPS\", jsonData);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "68fc28dd-de1c-4d1b-b0fb-e9feae13d53c",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\n  \"CLONEApp\"\n]"
+						},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/{{sourceAppID}}/copy",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								"{{sourceAppID}}",
+								"copy"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApplications",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9da2b1bc-e284-4246-9129-1558718aa12c",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{url}}/api/pathfinder/customers/{{copyCustomerID}}/applications/",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"pathfinder",
+								"customers",
+								"{{copyCustomerID}}",
+								"applications",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "FunctionalTests",
 			"description": "",
 			"item": [

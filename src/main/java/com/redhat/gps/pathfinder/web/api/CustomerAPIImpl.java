@@ -102,49 +102,54 @@ public class CustomerAPIImpl implements CustomersApi {
                 log.error("customersCustIdApplicationsAppIdAssessmentsPost....now assessments for app " + appId);
                 return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
             }
-
-            //Copy Assessment (latest only)
             Assessments latestAssessment = currAssessments.get(currAssessments.size() - 1);
-            Assessments newAssessment = new Assessments();
-            newAssessment.setId(UUID.randomUUID().toString());
-            newAssessment.setDatetime(latestAssessment.getDatetime());
-            if (!latestAssessment.getDeps().isEmpty())
-                newAssessment.setDeps(latestAssessment.getDeps());
-            newAssessment.setResults(latestAssessment.getResults());
-            newAssessment = assmRepo.save(newAssessment);
 
-            //Copy review
-            ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
-                currReview.getReviewDate(),
-                newAssessment,
-                currReview.getReviewDecision(),
-                currReview.getReviewEstimate(),
-                currReview.getReviewNotes(),
-                currReview.getWorkPriority(),
-                currReview.getBusinessPriority());
-            newReview.setId(UUID.randomUUID().toString());
-            newReview = reviewRepository.insert(newReview);
+            List<Applications> listApps = currCust.getApplications();
 
-            //Create application
-            List<Assessments> assArray = new ArrayList<>();
-            assArray.add(newAssessment);
-            Applications newApp = new Applications();
-            newApp.setDescription(currApp.getDescription());
-            newApp.setStereotype(currApp.getStereotype());
-            newApp.setAssessments(assArray);
-            newApp.setReview(newReview);
-            newApp.setName(body.get(0));
-            Applications app = new Applications();
-            newApp.setId(UUID.randomUUID().toString());
-            newApp = appsRepo.insert(newApp);
+            body.forEach((appName)-> {
+                log.debug("Creating application "+appName);
+                //Copy Assessment (latest only)
+                Assessments newAssessment = new Assessments();
+                newAssessment.setId(UUID.randomUUID().toString());
+                newAssessment.setDatetime(latestAssessment.getDatetime());
+                if (!latestAssessment.getDeps().isEmpty())
+                    newAssessment.setDeps(latestAssessment.getDeps());
+                newAssessment.setResults(latestAssessment.getResults());
+                newAssessment = assmRepo.save(newAssessment);
+
+                //Copy review
+                ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
+                    currReview.getReviewDate(),
+                    newAssessment,
+                    currReview.getReviewDecision(),
+                    currReview.getReviewEstimate(),
+                    currReview.getReviewNotes(),
+                    currReview.getWorkPriority(),
+                    currReview.getBusinessPriority());
+                newReview.setId(UUID.randomUUID().toString());
+                newReview = reviewRepository.insert(newReview);
+
+                //Create application
+                List<Assessments> assArray = new ArrayList<>();
+                assArray.add(newAssessment);
+                Applications newApp = new Applications();
+                newApp.setDescription(currApp.getDescription());
+                newApp.setStereotype(currApp.getStereotype());
+                newApp.setAssessments(assArray);
+                newApp.setReview(newReview);
+                newApp.setName(appName);
+                Applications app = new Applications();
+                newApp.setId(UUID.randomUUID().toString());
+                newApp = appsRepo.insert(newApp);
+
+                listApps.add(newApp);
+                appIDS.add(newApp.getId());
+            });
 
             //Update customer
-            List<Applications> listApps = currCust.getApplications();
-            listApps.add(newApp);
             currCust.setApplications(listApps);
             custRepo.save(currCust);
 
-            appIDS.add(newApp.getId());
         } catch (Exception ex) {
             log.error("customersCustIdApplicationsAppIdCopyPost...Unable to copy applications for customer ", ex.getMessage(), ex);
         }
