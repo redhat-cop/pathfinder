@@ -1,80 +1,49 @@
-var defaultThemeColors = Survey
-    .StylesManager
-    .ThemeColors["default"];
-
-defaultThemeColors["$main-color"] = "#a30000";
-defaultThemeColors["$main-hover-color"] = "#820000";
-defaultThemeColors["$text-color"] = "#4a4a4a";
-defaultThemeColors["$header-color"] = "#ffffff";
-defaultThemeColors["$header-background-color"] = "#820000";
-defaultThemeColors["$body-container-background-color"] = "#f8f8f8";
-defaultThemeColors["$error-color"]="#a30000";
-defaultThemeColors["$border-color"]="#820000";
-
-
-// "$error-background-color": "#fd6575"
-
-
-
-
-Survey
-    .StylesManager
-    .applyTheme();
 
 var json = {
     title: "Application Assessment",
-    showProgressBar: "bottom",
-    pages: [{
+    sendResultOnPageNext: "true",
+     requiredText: "",
+   showProgressBar: "bottom",
+    pages: [
+//    {
+//        "title": "Customer Details",
+//        "questions": [
+//            {
+//                type: "dropdown",
+//                "name": "CUSTNAME",
+//                title: "Select the Customer...",
+//                isRequired: false,
+//                choicesByUrl: {
+////                      url: "api/pathfinder/customers/",
+////                      url: "/api/pathfinder/customers/",
+//                      valueName: "CustomerId",
+//                      titleName: "CustomerName"
+//                }
+//            }
+//        ]
+//    },
+    {
         "title": "Application Details",
         "questions": [
-//        {
-//                name: "ASSMENTNAME",
-//                type: "text",
-//                title: "Application Name:",
-//                placeHolder: "......",
-//                isRequired: true
-//            },
             {
                 type: "dropdown",
-                name: "ASSMENTNAME",
+                "name": "ASSMENTNAME",
                 title: "Select the application to be assessed....",
-                isRequired: true,
+                isRequired: false,
                 choicesByUrl: {
-                        url: "api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/",
-                            valueName: "Name"
+                        // Ignore the URL this will be replaced by the event handler
+                        //url: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/",
+                        valueName: "Id",
+                        titleName: "Name"
                 }
             },
             {
-                type: "radiogroup",
-                name: "GROUPS",
-                title: "Grouping",
-                isRequired: true,
-                colCount: 2,
-                choices: [
-                    "1|Individual Application",
-                    "2| Suite of Applications"
-                ]
-            },
-            {
-                "type": "panel",
-                "innerIndent": 2,
-                "name": "appsuitecount",
-                "title": "How many applications in the application suite",
-                "visibleIf": "{GROUPS} > 1",
-                "elements": [
-                    {
-                        name: "APPCOUNT",
-                        type: "text",
-                        title: "Please enter the number of applications:",
-                        placeHolder: "1",
-                        isRequired: true
-                    }
-                ]
-            },
-            {
                 type: "rating",
-                name: "BUSPRIORITY",
+                "name": "BUSPRIORITY",
                 title: "Whats the level of business criticality of this application?",
+                rateMin: 1,
+                rateMax: 10,
+                rateStep: 1,
                 minRateDescription: "End of Life",
                 maxRateDescription: "Core Business Critical"
             },
@@ -89,18 +58,26 @@ var json = {
             },
             {
                 "type": "radiogroup",
+                "name": "COMPLIANCE",
+                "title": "Compliance",
+                "comment": "Does the application have any legal compliance requirements e.g. PCI, HIPPA etc Does the application have any licensing requirements e.g. per core licensing",
+                "isRequired": true,
+                "colCount": 1,
+                "choices": ["0|Unknown","1|High compliance requirements - both Legal and licensing", "2|Licensing compliance -  licensing servers", "3|Legal compliance - distinct hardware, isolated clusters, compliance certification","4| None"]
+            }
+        ]
+    }, {
+        "title": "Application Dependencies",
+        questions: [
+            {
+                "type": "radiogroup",
                 "name": "ARCHTYPE",
                 "comment": "Does the app architecture suitable for containerisation e.g. would a VM be better approach",
                 "title": "Architectural Suitability",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0|Unknown","1|Massive Monolith (high memory, high CPU) singleton deployment", "2|Massive Monolith (high memory, high CPU) , non singleton, difficult to scale", "3|Complex Monolith -  strict runtime dependency startup order, non resilient architecture", "4|Modern resilient monolith e.g. retries, circuit breaker etc", "5|Independently deployable microservices"]
-            }
-
-        ]
-    }, {
-        "title": "Application Dependencies",
-        questions: [
+            },
             {
                 "type": "radiogroup",
                 "name": "DEPSHW",
@@ -108,7 +85,7 @@ var json = {
                 "comment": "Does the application require specific hardware features to run on",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Non X86 CPU requirements", "2|Custom or legacy hardware required", "3|X86 CPU architecture based", "4|GPU, specific worker node hardware requirements"]
+                "choices": ["0|Unknown","1|Non X86 CPU requirements", "2|Custom or legacy hardware required", "3|GPU, specific worker node hardware requirements", "4|X86 CPU architecture based"]
             },
             {
                 "type": "radiogroup",
@@ -145,7 +122,17 @@ var json = {
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0|Unknown","1|Availability only verified when processing traffic", "2|Complex strict startup order required", "3|Application not ready until dependencies are available ", "4|Limited processing available if dependencies are unavailable", "5|No dependencies"]
-            }
+            },
+         {
+             "type": "tagbox",
+             "isRequired": false,
+             "choicesByUrl": {
+                 // Ignore the URL this will be replaced by the event handler
+                 "url": "api/pathfinder/customers/12345/applications/"
+             },
+             "name": "DEPSOUTLIST",
+             "title": "Please add southbound dependencies..."
+         }
         ]
     }, {
         "title": "Application Architecture",
@@ -179,11 +166,20 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "HA",
-                "title": "High Availability/Discovery",
-                "comment": "Does the application have any unusual concerns around clustering or service discovery?",
+                "title": "Discovery",
+                "comment": "Does the application have any unusual concerns around service discovery?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Uses Clustering/Discovery technologies that are not k8s suitable e.g. hardcoded ip addresses, custom cluster manager", "2|Application needs restart on cluster changes", "3|Service discovery layered ontop of k8s e.g. hashicorp consul, netflix eureka", "4|Standard k8s DNS name resolution, application resilient to cluster changes "]
+                "choices": ["0|Unknown","1|Uses Discovery technologies that are not k8s suitable e.g. hardcoded ip addresses, custom cluster manager", "2|Application needs restart on cluster changes", "3|Service discovery layered ontop of k8s e.g. hashicorp consul, netflix eureka", "4|Standard k8s DNS name resolution, application resilient to cluster changes "]
+            },
+            {
+                "type": "radiogroup",
+                "name": "CLUSTER",
+                "title": "Application Clustering",
+                "comment": "How is the application clustered ?",
+                "isRequired": true,
+                "colCount": 1,
+                "choices": ["0|Unknown","1|Application cluster mechanism tightly coupled to application design & implementation", "2|Application cluster provided by common runtime dependencies of application binaries", "3|Application clustering mostly provided by application runtime platform, with application integrating with these mechanisms through runtime dependencies", "4|Loosely coupled bespoke clustering solution", "5|Memberless and stateless runtimes"]
             },
             {
                 "type": "radiogroup",
@@ -231,21 +227,11 @@ var json = {
                 "comment": "How is the application configured ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|Compiled/Patched into application at installation time", "2|Externally stored and loaded using specific key e.g. hostname, ip address", "3|Configuration baked into container image and enabled via system property at runtime", "4|Configuration files loaded from shared disk", "5|Configuration files loaded by application from mounted files, environment variables"]
-            },
-
-            {
-                "type": "radiogroup",
-                "name": "DEPLOY",
-                "title": "Deployment Complexity",
-                "comment": "Does the application have any unusual concerns around clustering or service discovery?",
-                "isRequired": true,
-                "colCount": 1,
-                "choices": ["0|Unknown","1|Manual documented steps", "2|Manual documented steps, some basic automation", "3|Simple automated deployment scripts", "4|Automated deployment, but manual, slow, promotion through stages", "5|Full CD Pipeline in place, promoting Applications through the stages;  B/G + Canary capable"]
+                "choices": ["0|Unknown","1|Compiled/Patched into application at installation time", "2|Externally stored and loaded using specific key e.g. hostname, ip address", "3|Configuration baked into application and enabled via system property at runtime", "4|Configuration files loaded from shared disk", "5|Configuration files loaded by application from mounted files, environment variables"]
             }
         ]
     }, {
-        "title": "Application Observability",
+        "title": "Application Cross-Cutting concerns",
         questions: [{
                 "type": "radiogroup",
                 "name": "TEST",
@@ -257,15 +243,6 @@ var json = {
             },
             {
                 "type": "radiogroup",
-                "name": "COMPLIANCE",
-                "title": "Compliance",
-                "comment": "Does the application have any legal compliance requirements e.g. PCI, HIPPA etc Does the application have any licensing requirements e.g. per core licensing",
-                "isRequired": true,
-                "colCount": 1,
-                "choices": ["0|Unknown","1|High compliance requirements - both Legal and licensing", "2|Licensing compliance -  licensing servers", "3|Legal compliance - distinct hardware, isolated clusters, compliance certification"]
-            },
-            {
-                "type": "radiogroup",
                 "name": "SECURITY",
                 "title": "Application Security",
                 "comment": "How is the application secured ?",
@@ -274,49 +251,31 @@ var json = {
                 "choices": ["0|Unknown","1|HSM, hardware based encryption devices", "2|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3|Keys/Certs compiled into application", "4|Certificates/Keys loaded via shared disk", "5|Certificates/Keys loaded via files"]
             },
             {
+                "type": "radiogroup",
+                "name": "DEPLOY",
+                "title": "Deployment Complexity",
+                "comment": "Does the application have any unusual concerns around clustering or service discovery?",
+                "isRequired": true,
+                "colCount": 1,
+                "choices": ["0|Unknown","1|Manual documented steps", "2|Manual documented steps, some basic automation", "3|Simple automated deployment scripts", "4|Automated deployment, but manual, slow, promotion through stages", "5|Full CD Pipeline in place, promoting Applications through the stages;  B/G + Canary capable"]
+            },
+            {
+                "type": "radiogroup",
+                "name": "CONTAINERS",
+                "title": "Containerisation Process",
+                "comment": "Is the application already available as a container image? How well suited to cloud native is the existing containerisation.",
+                "isRequired": true,
+                "colCount": 1,
+                "choices": ["0|Unknown","1|Desktop-led container implementation designed to support running app on a laptop. Container treated like a VM with multiple services", "2|Use of a init process within the container to manage multiple container processes that run independently but are tightly integrated", "3|Running process id agnostic", "4|High overhead health checks", "5|Fast graceful shutdown behaviour"]
+            },
+            {
                 type: "comment",
-                name: "NOTES",
+                "name": "NOTES",
                 title: "Additional notes or comments"
             }
         ]
     }
-    // , {
-    //     "title": "Assessment notes",
-    //     questions: [{
-    //             "type": "radiogroup",
-    //             "name": "WORKTYPE",
-    //             "title": "Application Testing",
-    //             "comment": "What kind of testing does the application undergo ?",
-    //             "isRequired": true,
-    //             "colCount": 1,
-    //             "choices": ["1|Manual testing only", "2|Minimal automated testing, UI focused only ", "3|Automated unit & regression testing, basic CI pipelines", "4|Highly repeatable automated testing - Unit, Integration, smoke tests before production deployment, modern test practices followed", "5|Chaos Engineering principlals followed. Testing in production e.g. A/B, experimentation"]
-    //         },
-    //         {
-    //             type: "comment",
-    //             name: "NOTES",
-    //             title: "Additional notes or comments"
-    //         }
-    //     ]
-    // }
-    ]
+    ],
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href=index.php>Here</a> to return to the main page."
 }
 
-window.survey = new Survey.Model(json);
-
-survey
-    .onComplete
-    .add(function (result) {
-//        document
-//            .querySelector('#surveyResult')
-//            .innerHTML = "result: " + JSON.stringify(result.data);
-            var xmlhttp = new XMLHttpRequest();   // new HttpRequest instance
-            xmlhttp.open("POST", "/api/pathfinder/customers/5a90207a7556dc1ab597f07f/applications/5a90515bfd4fbe22a9ff6539/assessments");
-            xmlhttp.setRequestHeader("Content-Type", "application/json");
-            myObj = { "payload": result.data};
-            xmlhttp.send(JSON.stringify(myObj));
-
-    });
-
-$("#surveyElement").Survey({
-    model: survey
-});

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Red Hat Pathfinder</title>
+        <title>Red Hat Pathfinder.........</title>
         <script src="https://unpkg.com/jquery"></script>
         <script src="https://surveyjs.azureedge.net/1.0.13/survey.jquery.js"></script>
         <link href="https://surveyjs.azureedge.net/1.0.13/survey.css" type="text/css" rel="stylesheet"/>
@@ -22,7 +22,15 @@
     <body>
         <div id="surveyElement"></div>
         <div id="surveyResult"></div>
-
+        <script type="text/javascript" src="keycloak.js"></script>
+        <script>
+            var keycloak = Keycloak();
+            keycloak.init(initOptions).success(function(authenticated) {
+                output('Init Success (' + (authenticated ? 'Authenticated' : 'Not Authenticated') + ')');
+            }).error(function() {
+                output('Init Error');
+            });
+        </script>
         <script type="text/javascript" src="./content/application-survey.js"></script>
 
     </body>

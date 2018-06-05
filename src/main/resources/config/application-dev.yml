@@ -127,19 +127,19 @@ database-admin-password: 12345
 dbhostname: localhost
 dbhostport: 27017
 
-keycloak.enabled: false
-keycloak.realm: PathfinderRealm
-keycloak.auth-server-url: https://secure-sso-pathfinder.6923.rh-us-east-1.openshiftapps.com/auth
+keycloak.enabled: true
+keycloak.realm: pathfinder
+keycloak.auth-server-url: http://sso-pathfinder.192.168.99.100.nip.io/auth
 keycloak.ssl-required: external
 keycloak.resource: pathfinderclient
 keycloak.securityConstraints[0].authRoles[0]: pathfinderAdmin
 keycloak.securityConstraints[0].authRoles[1]: pathfinderUser
 keycloak.securityConstraints[0].securityCollections[0].name : insecure stuff
-keycloak.securityConstraints[0].securityCollections[0].patterns[0] : /
+keycloak.securityConstraints[0].securityCollections[0].patterns[0] : /api/
 
 keycloak.securityConstraints[1].authRoles[0] : pathfinderAdmin
 keycloak.securityConstraints[1].securityCollections[0].name : admin stuff
-keycloak.securityConstraints[1].securityCollections[0].patterns[0] : /admin
+keycloak.securityConstraints[1].securityCollections[0].patterns[0] : /api/pathfinder/customers/
 #keycloak.credentials.secret = 11111111-1111-1111-1111-111111111111
 keycloak.use-resource-role-mappings : true
 
