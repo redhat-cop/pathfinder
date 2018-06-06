@@ -2,26 +2,9 @@
 var json = {
     title: "Application Assessment",
     sendResultOnPageNext: "true",
-     requiredText: "",
-   showProgressBar: "bottom",
+    requiredText: "",
+    showProgressBar: "bottom",
     pages: [
-//    {
-//        "title": "Customer Details",
-//        "questions": [
-//            {
-//                type: "dropdown",
-//                "name": "CUSTNAME",
-//                title: "Select the Customer...",
-//                isRequired: false,
-//                choicesByUrl: {
-////                      url: "api/pathfinder/customers/",
-////                      url: "/api/pathfinder/customers/",
-//                      valueName: "CustomerId",
-//                      titleName: "CustomerName"
-//                }
-//            }
-//        ]
-//    },
     {
         "title": "Application Details",
         "questions": [
@@ -29,10 +12,8 @@ var json = {
                 type: "dropdown",
                 "name": "ASSMENTNAME",
                 title: "Select the application to be assessed....",
-                isRequired: false,
+                isRequired: true,
                 choicesByUrl: {
-                        // Ignore the URL this will be replaced by the event handler
-                        //url: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/",
                         valueName: "Id",
                         titleName: "Name"
                 }
@@ -276,6 +257,6 @@ var json = {
         ]
     }
     ],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href=index.php>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href=index.html>Here</a> to return to the main page."
 }
 

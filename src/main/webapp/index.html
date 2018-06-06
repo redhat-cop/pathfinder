@@ -52,7 +52,17 @@
 
             window.survey = new Survey.Model(json);
 
-            console.log("Adding oncomplete handler");
+            survey.	onAfterRenderSurvey.add(function(){
+                console.log("Started");
+                var tmp = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
+                var q = survey.getQuestionByName('ASSMENTNAME');
+
+                q.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
+                q.choicesByUrl.valueName = "Id";
+                q.choicesByUrl.titleName = "Name";
+                q.choicesByUrl.run();
+                });
+
             survey
                 .onComplete
                 .add(function (result) {
@@ -69,7 +79,6 @@
                         xmlhttp.send(JSON.stringify(myObj));
                 });
 
-            console.log("Adding onPartialSend handler");
             survey
                 .onPartialSend
                 .add(function (result) {
@@ -81,14 +90,6 @@
                     v.choicesByUrl.valueName = "Id";
                     v.choicesByUrl.titleName = "Name";
                     v.choicesByUrl.run();
-
-                    var q = survey.getQuestionByName('ASSMENTNAME');
-
-                    q.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
-                    q.choicesByUrl.valueName = "Id";
-                    q.choicesByUrl.titleName = "Name";
-                    q.choicesByUrl.run();
-
 
                 });
 
