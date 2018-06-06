@@ -22,12 +22,11 @@ package com.redhat.gps.pathfinder.config;
  * #L%
  */
 
-import com.redhat.gps.pathfinder.security.*;
-
+import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
 import io.github.jhipster.config.JHipsterProperties;
-import io.github.jhipster.security.*;
-
-import org.springframework.beans.factory.BeanInitializationException;
+import io.github.jhipster.security.AjaxAuthenticationFailureHandler;
+import io.github.jhipster.security.AjaxAuthenticationSuccessHandler;
+import io.github.jhipster.security.AjaxLogoutSuccessHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -38,16 +37,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.RememberMeServices;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.web.filter.CorsFilter;
 import org.zalando.problem.spring.web.advice.security.SecurityProblemSupport;
-
-import javax.annotation.PostConstruct;
 
 @Configuration
 @Import(SecurityProblemSupport.class)
@@ -149,10 +143,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 //            .logoutUrl("/api/logout")
 //            .logoutSuccessHandler(ajaxLogoutSuccessHandler())
 //            .permitAll()
-        .and()
-            .headers()
-            .frameOptions()
-            .disable()
+//        .and()
+//            .headers()
+//            .frameOptions()
+//            .disable()
         .and()
             .authorizeRequests()
             .antMatchers("/api/register").permitAll()

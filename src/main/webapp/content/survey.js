@@ -123,16 +123,16 @@ var json = {
                 "colCount": 1,
                 "choices": ["0|Unknown","1|Availability only verified when processing traffic", "2|Complex strict startup order required", "3|Application not ready until dependencies are available ", "4|Limited processing available if dependencies are unavailable", "5|No dependencies"]
             },
-         {
-             "type": "tagbox",
-             "isRequired": false,
-             "choicesByUrl": {
-                 // Ignore the URL this will be replaced by the event handler
-                 "url": "api/pathfinder/customers/12345/applications/"
-             },
-             "name": "DEPSOUTLIST",
-             "title": "Please add southbound dependencies..."
-         }
+            {
+                "type": "tagbox",
+                "name": "DEPSOUTLIST",
+                "isRequired": true,
+                "title": "Please add southbound dependencies...",
+                "choicesByUrl": {
+                           valueName: "Id",
+                           titleName: "Name"
+                }
+            }
         ]
     }, {
         "title": "Application Architecture",
