@@ -25,73 +25,78 @@
         <script>
             var keycloak = Keycloak();
             keycloak.init({ onLoad: 'login-required' }).success(function(authenticated) {
+
                 console.log('Init Success (' + (authenticated ? 'Authenticated' : 'Not Authenticated') + ')');
-            var defaultThemeColors = Survey
-                .StylesManager
-                .ThemeColors["default"];
 
-            defaultThemeColors["$main-color"] = "#a30000";
-            defaultThemeColors["$main-hover-color"] = "#820000";
-            defaultThemeColors["$text-color"] = "#4a4a4a";
-            defaultThemeColors["$header-color"] = "#ffffff";
-            defaultThemeColors["$header-background-color"] = "#cc0000";
-            defaultThemeColors["$body-container-background-color"] = "#f8f8f8";
-            defaultThemeColors["$error-color"]="#a30000";
-            defaultThemeColors["$border-color"]="#cc0000";
+                var defaultThemeColors = Survey
+                    .StylesManager
+                    .ThemeColors["default"];
 
-            Survey
-                .StylesManager
-                .applyTheme();
+                defaultThemeColors["$main-color"] = "#a30000";
+                defaultThemeColors["$main-hover-color"] = "#820000";
+                defaultThemeColors["$text-color"] = "#4a4a4a";
+                defaultThemeColors["$header-color"] = "#ffffff";
+                defaultThemeColors["$header-background-color"] = "#cc0000";
+                defaultThemeColors["$body-container-background-color"] = "#f8f8f8";
+                defaultThemeColors["$error-color"]="#a30000";
+                defaultThemeColors["$border-color"]="#cc0000";
 
-            Survey.requiredText = "AA";
+                Survey
+                    .StylesManager
+                    .applyTheme();
 
-            Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
-                    options.request.setRequestHeader("Content-Type", "application/json");
-            };
+                Survey.requiredText = "AA";
+
+                Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
+                        options.request.setRequestHeader('Accept', 'application/json');
+                        options.request.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
+                        options.request.setRequestHeader("Content-Type", "application/json");
+                };
 
 
-            window.survey = new Survey.Model(json);
+                window.survey = new Survey.Model(json);
 
-            survey.	onAfterRenderSurvey.add(function(){
-                console.log("Started");
-                var tmp = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
-                var q = survey.getQuestionByName('ASSMENTNAME');
-
-                q.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
-                q.choicesByUrl.valueName = "Id";
-                q.choicesByUrl.titleName = "Name";
-                q.choicesByUrl.run();
-                });
-
-            survey
-                .onComplete
-                .add(function (result) {
-                        var xmlhttp = new XMLHttpRequest();
-                        tmpResult = result.data;
-                        var cust = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
-                        var assm = tmpResult.ASSMENTNAME;
-                        //dependencies array needs special handling
-                        var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
-                        delete tmpResult.DEPSOUTLIST;
-                        xmlhttp.open("POST", "/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
-                        xmlhttp.setRequestHeader("Content-Type", "application/json");
-                        myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
-                        xmlhttp.send(JSON.stringify(myObj));
-                });
-
-            survey
-                .onPartialSend
-                .add(function (result) {
-
+                survey.	onAfterRenderSurvey.add(function(){
+                    console.log("Started");
                     var tmp = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
+                    var q = survey.getQuestionByName('ASSMENTNAME');
 
-                    var v = survey.getQuestionByName('DEPSOUTLIST');
-                    v.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
-                    v.choicesByUrl.valueName = "Id";
-                    v.choicesByUrl.titleName = "Name";
-                    v.choicesByUrl.run();
+                    q.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
+                    q.choicesByUrl.valueName = "Id";
+                    q.choicesByUrl.titleName = "Name";
+                    q.choicesByUrl.run();
+                    });
 
-                });
+                survey
+                    .onComplete
+                    .add(function (result) {
+                            var xmlhttp = new XMLHttpRequest();
+                            tmpResult = result.data;
+                            var cust = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
+                            var assm = tmpResult.ASSMENTNAME;
+                            //dependencies array needs special handling
+                            var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
+                            delete tmpResult.DEPSOUTLIST;
+                            xmlhttp.open("POST", "/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
+                            xmlhttp.setRequestHeader("Content-Type", "application/json");
+                            xmlhttp.setRequestHeader('Authorization', 'Bearer ' + keycloak.token);
+                            myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
+                            xmlhttp.send(JSON.stringify(myObj));
+                    });
+
+                survey
+                    .onPartialSend
+                    .add(function (result) {
+
+                        var tmp = 'c64d8a69-e0a9-4916-9d5f-8d3149293ee6';
+
+                        var v = survey.getQuestionByName('DEPSOUTLIST');
+                        v.choicesByUrl.url = "/api/pathfinder/customers/"+tmp+"/applications/";
+                        v.choicesByUrl.valueName = "Id";
+                        v.choicesByUrl.titleName = "Name";
+                        v.choicesByUrl.run();
+
+                    });
 
                 $("#surveyElement").Survey({
                     model: survey
