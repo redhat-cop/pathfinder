@@ -2,8 +2,7 @@
     "realm": "pathfinder",
     "auth-server-url": "http://sso-pathfinder.192.168.99.100.nip.io/auth",
     "ssl-required": "external",
-    "resource": "pathfinderclient",
+    "resource": "PathfinderWebUI",
     "public-client": true,
-    "use-resource-role-mappings": true,
     "confidential-port": 0
 }
