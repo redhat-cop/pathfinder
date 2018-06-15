@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.redhat.gps.pathfinder</groupId>
-    <artifactId>pathfinder</artifactId>
+    <artifactId>pathfinder3</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>Pathfinder</name>
@@ -311,6 +311,17 @@
             <version>RELEASE</version>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+
+				<dependency>
+					<groupId>org.sharegov</groupId>
+					<artifactId>mjson</artifactId>
+					<version>1.4.0</version>
+				</dependency>
+				<dependency>
+					<groupId>org.codehaus.jackson</groupId>
+					<artifactId>jackson-mapper-asl</artifactId>
+					<version>1.9.4</version>
+				</dependency>
     </dependencies>
 
     <build>

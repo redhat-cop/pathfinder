@@ -1,5 +1,7 @@
 package com.redhat.gps.pathfinder.web.api;
 
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+
 /*-
  * #%L
  * Pathfinder
@@ -22,23 +24,55 @@ package com.redhat.gps.pathfinder.web.api;
  * #L%
  */
 
-import com.codahale.metrics.annotation.Timed;
-import com.redhat.gps.pathfinder.domain.*;
-import com.redhat.gps.pathfinder.repository.*;
-import com.redhat.gps.pathfinder.web.api.model.*;
-import io.swagger.annotations.ApiParam;
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import javax.validation.Valid;
+
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.validation.Valid;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import com.codahale.metrics.annotation.Timed;
+import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
+import com.redhat.gps.pathfinder.domain.Applications;
+import com.redhat.gps.pathfinder.domain.Assessments;
+import com.redhat.gps.pathfinder.domain.Customer;
+import com.redhat.gps.pathfinder.domain.QuestionMetaData;
+import com.redhat.gps.pathfinder.domain.QuestionWeights;
+import com.redhat.gps.pathfinder.repository.ApplicationsRepository;
+import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
+import com.redhat.gps.pathfinder.repository.CustomerRepository;
+import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
+import com.redhat.gps.pathfinder.repository.ReviewsRepository;
+import com.redhat.gps.pathfinder.web.api.model.ApplicationAssessmentProgressType;
+import com.redhat.gps.pathfinder.web.api.model.ApplicationNames;
+import com.redhat.gps.pathfinder.web.api.model.ApplicationSummaryType;
+import com.redhat.gps.pathfinder.web.api.model.ApplicationType;
+import com.redhat.gps.pathfinder.web.api.model.AssessmentProcessQuestionResultsType;
+import com.redhat.gps.pathfinder.web.api.model.AssessmentProcessType;
+import com.redhat.gps.pathfinder.web.api.model.AssessmentResponse;
+import com.redhat.gps.pathfinder.web.api.model.AssessmentType;
+import com.redhat.gps.pathfinder.web.api.model.CustomerType;
+import com.redhat.gps.pathfinder.web.api.model.DependenciesListType;
+import com.redhat.gps.pathfinder.web.api.model.DepsPairType;
+import com.redhat.gps.pathfinder.web.api.model.ReviewType;
+
+import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/api/pathfinder")
@@ -63,7 +97,108 @@ public class CustomerAPIImpl implements CustomersApi {
         this.questionRepository = questionRepository;
         this.reviewRepository = reviewRepository;
     }
-
+    
+    
+    // Non-Swagger api - returns the survey payload
+    @RequestMapping(value="/survey", method=GET, produces={APPLICATION_JSON_VALUE})
+    public String getSurvey() throws IOException {
+      return getSurveyContent();
+    }
+    
+    private String getSurveyContent() throws IOException{
+      return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("application-survey.js"), "UTF-8");
+    }
+    
+    
+    
+    // Non-Swagger api - returns payload for the assessment summary page
+    @RequestMapping(value="/customers/{customerId}/applications/{appId}/assessments/{assessmentId}/viewAssessmentSummary", method=GET, produces={APPLICATION_JSON_VALUE})
+    public String viewAssessmentSummary(@PathVariable("customerId") String customerId, @PathVariable("appId") String appId, @PathVariable("assessmentId") String assessmentId) throws IOException{
+      class ApplicationAssessmentSummary{
+        public ApplicationAssessmentSummary(String q, String a, String r){
+          this.question=q;
+          this.answer=a;
+          this.rating=r;
+        }
+        private String question; public String getQuestion() {return question;}
+        private String answer;   public String getAnswer()   {return answer;}
+        private String rating;   public String getRating()   {return rating;}
+      }
+      log.debug("viewAssessmentSummary....");
+      
+      // Get the survey json content (and fiddle with it so it's readable)
+      String raw=getSurveyContent();
+      int start=raw.indexOf("pages: [{")+7;
+      int end=raw.indexOf("}],")+2;
+      String x=raw.substring(start, end);
+      
+      mjson.Json surveyJson=mjson.Json.read(x);
+      
+      // Find the assessment in mongo
+      Assessments assessment = assmRepo.findOne(assessmentId);
+      if (null==assessment){
+        log.error("Unable to find assessment: "+assessmentId);
+        return null;
+      }
+      
+      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
+      
+      for(mjson.Json page:surveyJson.asJsonList()){
+        for(mjson.Json question:page.at("questions").asJsonList()){
+          
+          if (question.at("type").asString().equals("radiogroup")){
+            
+            Map<String, String> answerRankingMap=new HashMap<String, String>();
+            for(mjson.Json a:question.at("choices").asJsonList())
+              answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
+            
+            String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+            
+            String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
+            String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
+            String questionText=question.at("title").asString();
+            
+            log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
+            
+            result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
+            
+          }else if (question.at("type").asString().equals("rating")){
+            // leave this out since it's things like "Select the app..."
+          }
+        }
+      }
+      return Json.newObjectMapper(true).writeValueAsString(result);
+    }
+    
+    ////// ###############
+//    public void dummy(){
+//      Assessments currAssm = assmRepo.findOne(assessId);
+//      if (currAssm == null) {
+//          return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
+//      }
+//
+//      List<QuestionMetaData> questionData = questionRepository.findAll();
+//
+//
+//      for (QuestionMetaData currQuestion : questionData) {
+//          String res = (String) currAssm.getResults().get(currQuestion.getId());
+//          AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
+//          vals.setQuestionTag(currQuestion.getId());
+//
+//          QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(Integer.parseInt(res)).getRank();
+//          vals.setQuestionRank(answerRank.ordinal());
+//          assessResults.add(vals);
+//
+//          log.debug(currQuestion.getId() + ": value=" + res + " RANK " + answerRank.toString());
+//
+//      }
+//      resp.setAssessResults(assessResults);
+//      resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
+//      resp.setDependencies(currAssm.getDeps());
+//      resp.setBusinessPriority(currAssm.getResults().get("BUSPRIORITY"));
+//    }
+    ///// ###################
+    
     @Timed
     public ResponseEntity<ApplicationNames> customersCustIdApplicationsAppIdCopyPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Target Application Names") @Valid @RequestBody ApplicationNames body) {
         log.debug("customersCustIdApplicationsAppIdCopyPost....{} ", body.toString());
@@ -481,9 +616,7 @@ public class CustomerAPIImpl implements CustomersApi {
                 AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
                 vals.setQuestionTag(currQuestion.getId());
 
-                QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(
-                    Integer.parseInt(res)
-                ).getRank();
+                QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(Integer.parseInt(res)).getRank();
                 vals.setQuestionRank(answerRank.ordinal());
                 assessResults.add(vals);
 
