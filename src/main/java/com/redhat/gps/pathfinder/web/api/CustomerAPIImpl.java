@@ -102,13 +102,12 @@ public class CustomerAPIImpl implements CustomersApi {
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value="/survey", method=GET, produces={APPLICATION_JSON_VALUE})
     public String getSurvey() throws IOException {
-      return getSurveyContent();
+      return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"");
     }
     
     private String getSurveyContent() throws IOException{
       return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("application-survey.js"), "UTF-8");
     }
-    
     
     
     // Non-Swagger api - returns payload for the assessment summary page

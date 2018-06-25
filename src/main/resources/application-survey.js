@@ -35,8 +35,7 @@ var json = {
                 "title": "Select the Customer...",
                 "isRequired": true,
                 "choicesByUrl": {
-                      "url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/",
-                      //"url": "http://localhost:8080/api/pathfinder/customers/",
+                      "url": "SERVER_URL/api/pathfinder/customers/",
                       "valueName": "CustomerId",
                       "titleName": "CustomerName"
                 }
@@ -297,7 +296,7 @@ var json = {
             }
         ]
     }],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href='/'>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href='/pathfinder-ui'>Here</a> to return to the main page."
 };
 
 window.survey = new Survey.Model(json);
@@ -336,6 +335,10 @@ survey
 //		.onLoadChoicesFromServer
     .add(function (result) {
     		console.log("FIRED!");
+    		
+    		//if (undefined!=document.getElementById("returnlink")){
+				//  document.getElementById("returnlink").href=document.getElementById("returnlink").href+Utils.getParameterByName("customerId");
+				//}
     		
     		//console.log("result="+JSON.stringify(result));
     		

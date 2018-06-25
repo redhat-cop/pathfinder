@@ -107,9 +107,9 @@ public class SecurityKeycloakConfig extends KeycloakWebSecurityConfigurerAdapter
 //            .and()
             .authorizeRequests()
             .antMatchers("/management/health").permitAll()
-            .antMatchers(HttpMethod.POST, "/api/pathfinder/customers/").hasRole(AuthoritiesConstants.ADMIN)
-            .antMatchers(HttpMethod.DELETE, "/api/pathfinder/customers/*").hasRole(AuthoritiesConstants.ADMIN)
-            .antMatchers("/api/pathfinder/customers/**/*").hasRole(AuthoritiesConstants.USER)
+//            .antMatchers(HttpMethod.POST, "/api/pathfinder/customers/").hasRole(AuthoritiesConstants.ADMIN)
+//            .antMatchers(HttpMethod.DELETE, "/api/pathfinder/customers/*").hasRole(AuthoritiesConstants.ADMIN)
+            .antMatchers("/api/pathfinder/customers/**/*").anonymous()// hasRole(AuthoritiesConstants.USER)
             .anyRequest().authenticated();
     }
 }
