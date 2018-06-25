@@ -1,3 +1,20 @@
+# Pathfinder - Setup DEV environment on OSE (incl. minishift)
+
+
+The following commands will create a new project and deploy a mongo, pathfinder-server and pathfinder-ui instance into your environment
+```
+oc new-project <your-new-project-name>
+./deploy.sh
+```
+
+If you deployed on Red Hat's IT Open PaaS, then your url for the UI will be http://pathfinder-ui-<your-new-project-name>.int.open.paas.redhat.com/pathfinder-ui
+
+
+
+# Below here is older instructions that need to be verified with Noel
+
+
+
 # pathfinder
 This application was generated using JHipster 4.14.0, you can find documentation and help at [http://www.jhipster.tech/documentation-archive/v4.14.0](http://www.jhipster.tech/documentation-archive/v4.14.0).
 
