@@ -97,10 +97,12 @@
     </dependencyManagement>
 
     <dependencies>
+    <!-- 
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-spring-security-adapter</artifactId>
         </dependency>
+     -->
 
         <!--<dependency>-->
             <!--<groupId>org.keycloak</groupId>-->
