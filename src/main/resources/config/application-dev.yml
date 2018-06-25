@@ -121,14 +121,17 @@ jhipster:
 # ===================================================================
 
 #Used when not running in ose/k8s environment
-database-user: dbuser
-database-password: dbuser12345
+#database-user: dbuser
+#database-password: dbuser12345
+database-user: userS1K
+database-password: JBf2ibxFbqYAmAv0
+
 database-name: pathfinder
 database-admin-password: 12345
 dbhostname: localhost
-dbhostport: 27017
+dbhostport: 9191
 
-keycloak.enabled: true
+keycloak.enabled: false
 keycloak.configurationFile: classpath:keycloak.json
 #keycloak.realm: pathfinder
 #keycloak.auth-server-url: http://sso-pathfinder.192.168.99.100.nip.io/auth
