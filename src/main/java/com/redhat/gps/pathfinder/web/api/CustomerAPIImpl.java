@@ -151,15 +151,22 @@ public class CustomerAPIImpl implements CustomersApi {
             for(mjson.Json a:question.at("choices").asJsonList())
               answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
             
-            String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-            
-            String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-            String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-            String questionText=question.at("title").asString();
-            
-            log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
-            
-            result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
+            try{
+              String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+              String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
+              String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
+              String questionText=question.at("title").asString();
+              
+              log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
+              
+              result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
+              
+            }catch(Exception e){
+              log.error(e.getMessage(), e);
+              log.error("Error on: assessment.results="+assessment.getResults());
+              log.error("Error on: question.name="+question.at("name").asString());
+              log.error("Error on: assessment.results[question.name]="+assessment.getResults().get(question.at("name").asString()));
+            }
             
           }else if (question.at("type").asString().equals("rating")){
             // leave this out since it's things like "Select the app..."
