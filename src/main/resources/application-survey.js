@@ -308,10 +308,10 @@ window.survey = new Survey.Model(json);
 
 // ### this pre-selects the customer
 if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
-	survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
+//  survey.data.CUSTNAME=Utils.getParameterByName("customerId");
+//  survey.data.ASSMENTNAME=Utils.getParameterByName("applicationId");
+  survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
 }
-
-//survey.data={"CUSTNAME":"Vodatel"};
 
 survey
     .onComplete
@@ -326,7 +326,9 @@ survey
             xmlhttp.open("POST", Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
             xmlhttp.setRequestHeader("Content-Type", "application/json");
             myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
-            xmlhttp.send(JSON.stringify(myObj));
+            var payload=JSON.stringify(myObj);
+            console.log("payload="+payload);
+            xmlhttp.send(payload);
     });
 
 survey
@@ -334,13 +336,16 @@ survey
 		.onAfterRenderPage
 //		.onLoadChoicesFromServer
     .add(function (result) {
-    		console.log("FIRED!");
+    		//console.log("FIRED!");
     		
     		//if (undefined!=document.getElementById("returnlink")){
 				//  document.getElementById("returnlink").href=document.getElementById("returnlink").href+Utils.getParameterByName("customerId");
 				//}
-    		
-    		//console.log("result="+JSON.stringify(result));
+//if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
+//  survey.data.CUSTNAME=Utils.getParameterByName("customerId");
+//  survey.data.ASSMENTNAME=Utils.getParameterByName("applicationId");
+//}    		
+    		console.log("result="+JSON.stringify(survey.data));
     		
 //        var c = survey.getQuestionByName('CUSTNAME');
 //        c.choicesByUrl.url = Utils.SERVER+"/api/pathfinder/customers/";
@@ -361,10 +366,15 @@ survey
 	        q.choicesByUrl.run();
 	        // ### this pre-selects the application
 	        if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
-	        	survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
+	        	if (undefined==survey.data.ASSMENTNAME){
+	        		survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
+	        	}
+	        	//survey.data.CUSTNAME=Utils.getParameterByName("customerId");
+	        	//survey.data.ASSMENTNAME=Utils.getParameterByName("applicationId");
+	        	//survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
 	        }
 	        q.disabled=true;
-				}
+        }
 				
         if (result.data.CUSTNAME!=undefined){
 		      var v = survey.getQuestionByName('DEPSOUTLIST');
