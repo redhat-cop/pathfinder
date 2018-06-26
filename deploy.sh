@@ -1,6 +1,7 @@
 #!/bin/sh
 
-NAMESPACE=`oc project -q`
+PROJECT_NAME=`oc project -q`
+NAMESPACE=$PROJECT_NAME
 
 #echo "PROJECT_NAME    =$PROJECT_NAME"
 #echo "APPLICATION_NAME=$APPLICATION_NAME"
@@ -21,7 +22,7 @@ NAMESPACE=`oc project -q`
 
 oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 
-sleep 5
+sleep 10
 
 # pathfinder-server cleanup (need to do some funky scripting to determine if this needs to execute first)
 #oc delete -f local-pathfinder-server-build.yaml
@@ -29,15 +30,14 @@ sleep 5
 #oc delete all --selector="app=pathfinder-server"
 
 # pathfinder-server build
-oc create -f pathfinder-server-build.yaml
-oc new-app --template=pathfinder-server-build --param=APPLICATION_NAME=pathfinder-server
+oc process --param=APPLICATION_NAME=pathfinder-server -f pathfinder-server-build.yaml | oc apply -f-
 
 # pathfinder-server deployments
-oc create -f pathfinder-server-deployment.yaml
-oc new-app --template=pathfinder-server-deployment --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-server
+oc process --param=NAMESPACE=$NAMESPACE -f pathfinder-server-deployment.yaml | oc apply -f-
 
+#cat pathfinder-server-deployment.yaml pathfinder-server-deployment.yaml | oc process --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-server | oc apply -f-
 
-sleep 20
+sleep 30
 
 # pathfinder-ui cleanup (need to do some funky scripting to determine if this needs to execute first)
 #oc delete -f local-pathfinder-ui-build.yaml
@@ -45,10 +45,8 @@ sleep 20
 #oc delete all --selector="app=pathfinder-ui"
 
 # pathfinder-ui build
-oc create -f pathfinder-ui-build.yaml
-oc new-app --template=pathfinder-ui-build --param=APPLICATION_NAME=pathfinder-ui
+oc process --param=APPLICATION_NAME=pathfinder-ui -f pathfinder-ui-build.yaml | oc apply -f-
 
 # pathfinder-ui deployments
-oc create -f pathfinder-ui-deployment.yaml
-oc new-app --template=pathfinder-ui-deployment --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-ui --param=SERVER_APPLICATION_NAME=pathfinder-server
+oc process --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-ui --param=SERVER_APPLICATION_NAME=pathfinder-server -f pathfinder-ui-deployment.yaml | oc apply -f-
 

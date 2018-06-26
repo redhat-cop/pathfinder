@@ -1,4 +1,4 @@
-# Pathfinder - Setup REMOTE DEV environment on OSE (incl. minishift)
+# Setup REMOTE DEV environment on OSE (incl. minishift)
 
 
 The following commands will create a new project and deploy a mongo, pathfinder-server and pathfinder-ui instance into your environment
@@ -10,7 +10,7 @@ oc new-project <your-new-project-name>
 If you deployed on Red Hat's IT Open PaaS, then your url for the UI will be [http://pathfinder-ui-<your-new-project-name>.int.open.paas.redhat.com/pathfinder-ui](http://pathfinder-ui-<your-new-project-name>.int.open.paas.redhat.com/pathfinder-ui)
 
 
-# Pathfinder - Setup LOCAL DEV environment (with Mongo on OSE)
+# Setup LOCAL DEV environment (with Mongo on OSE)
 
 
 Deploy a MongoDB on OSE (incl. minishift)
@@ -25,19 +25,19 @@ Startup Pathfinder and/or Pathfinder-UI locally
 ```
 
 
-Configure local project to be able to login to MongoDB (since the new-app mongo will create random user/password in the OSE secret)
+Configure local pathfinder to be able to login to MongoDB (since the new-app mongo will create random user/password in an OSE secret)
 ```
 ./print-mongo-creds.sh
 ```
-update the file "src/main/resources/config/application-dev.yml" with the mongo database user credentials.
+update the file "pathfinder/src/main/resources/config/application-dev.yml" with the mongo database user credentials.
 
-Then port forward to post 9191 so that the local pathfinder can find the remote mongo.
+Then port forward to 9191 so that the local pathfinder can find the remote mongo (this script keeps dropping out so you many need to restart it from time to time).
 ```
 ./pathfinder-port-forward.sh
 ```
 
 
-# Pathfinder - how to contribute code
+# How to contribute code
 
 * In Github, fork the [https://github.com/redhat-cop/pathfinder](pathfinder) or [https://github.com/redhat-cop/pathfinder-ui](pathfinder-ui) project into your github account.
 * Clone your forked project to your local machine
