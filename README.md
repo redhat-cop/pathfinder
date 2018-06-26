@@ -7,7 +7,7 @@ oc new-project <your-new-project-name>
 ./deploy.sh
 ```
 
-If you deployed on Red Hat's IT Open PaaS, then your url for the UI will be [http://pathfinder-ui-<your-new-project-name>.int.open.paas.redhat.com/pathfinder-ui](http://pathfinder-ui-<your-new-project-name>.int.open.paas.redhat.com/pathfinder-ui)
+If you deployed on Red Hat's IT Open PaaS, then your url for the UI will be [http://pathfinder-ui-YOURNAME.int.open.paas.redhat.com/pathfinder-ui](http://pathfinder-ui-YOURNAME.int.open.paas.redhat.com/pathfinder-ui)
 
 
 # Setup LOCAL DEV environment (with Mongo on OSE)
