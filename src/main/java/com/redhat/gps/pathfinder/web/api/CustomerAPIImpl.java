@@ -233,62 +233,69 @@ public class CustomerAPIImpl implements CustomersApi {
             ApplicationAssessmentReview currReview = currApp.getReview();
 
             if (currReview == null) {
-                log.error("customersCustIdApplicationsAppIdAssessmentsPost....now reviews for app " + appId);
-                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+                log.warn("customersCustIdApplicationsAppIdAssessmentsPost....no reviews for app " + appId);
+//                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
             }
 
             List<Assessments> currAssessments = currApp.getAssessments();
 
             if ((currAssessments == null) || (currAssessments.isEmpty())) {
-                log.error("customersCustIdApplicationsAppIdAssessmentsPost....now assessments for app " + appId);
-                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
+                log.warn("customersCustIdApplicationsAppIdAssessmentsPost....now assessments for app " + appId);
+//                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
             }
-            Assessments latestAssessment = currAssessments.get(currAssessments.size() - 1);
+            Assessments latestAssessment = currAssessments==null?null:currAssessments.get(currAssessments.size() - 1);
 
-            List<Applications> listApps = currCust.getApplications();
+//            List<Applications> listApps = currCust.getApplications();
 
             body.forEach((appName)-> {
                 log.debug("Creating application "+appName);
-                //Copy Assessment (latest only)
-                Assessments newAssessment = new Assessments();
-                newAssessment.setId(UUID.randomUUID().toString());
-                newAssessment.setDatetime(latestAssessment.getDatetime());
-                if (!latestAssessment.getDeps().isEmpty())
-                    newAssessment.setDeps(latestAssessment.getDeps());
-                newAssessment.setResults(latestAssessment.getResults());
-                newAssessment = assmRepo.save(newAssessment);
-
-                //Copy review
-                ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
-                    currReview.getReviewDate(),
-                    newAssessment,
-                    currReview.getReviewDecision(),
-                    currReview.getReviewEstimate(),
-                    currReview.getReviewNotes(),
-                    currReview.getWorkPriority(),
-                    currReview.getBusinessPriority());
-                newReview.setId(UUID.randomUUID().toString());
-                newReview = reviewRepository.insert(newReview);
-
+                
                 //Create application
-                List<Assessments> assArray = new ArrayList<>();
-                assArray.add(newAssessment);
                 Applications newApp = new Applications();
+                newApp.setId(UUID.randomUUID().toString());
+                newApp.setName(appName);
                 newApp.setDescription(currApp.getDescription());
                 newApp.setStereotype(currApp.getStereotype());
-                newApp.setAssessments(assArray);
-                newApp.setReview(newReview);
-                newApp.setName(appName);
-                Applications app = new Applications();
-                newApp.setId(UUID.randomUUID().toString());
+                
+                //Copy Assessment (latest only)
+                if (latestAssessment!=null){
+                  Assessments newAssessment = new Assessments();
+                  newAssessment.setId(UUID.randomUUID().toString());
+                  newAssessment.setDatetime(latestAssessment.getDatetime());
+                  if (!latestAssessment.getDeps().isEmpty())
+                    newAssessment.setDeps(latestAssessment.getDeps());
+                  newAssessment.setResults(latestAssessment.getResults());
+                  newAssessment = assmRepo.save(newAssessment);
+                  if (newApp.getAssessments()==null) newApp.setAssessments(new ArrayList<>());
+                  newApp.getAssessments().add(newAssessment);
+                  
+                  //Copy review
+                  if (currReview!=null) {
+                    ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
+                        currReview.getReviewDate(),
+                        newAssessment,
+                        currReview.getReviewDecision(),
+                        currReview.getReviewEstimate(),
+                        currReview.getReviewNotes(),
+                        currReview.getWorkPriority(),
+                        currReview.getBusinessPriority());
+                    newReview.setId(UUID.randomUUID().toString());
+                    newReview = reviewRepository.insert(newReview);
+                    newApp.setReview(newReview);
+                  }
+                  
+                }
+                
                 newApp = appsRepo.insert(newApp);
-
-                listApps.add(newApp);
+                
+                currCust.getApplications().add(newApp);
+                
+//                listApps.add(newApp);
                 appIDS.add(newApp.getId());
             });
 
             //Update customer
-            currCust.setApplications(listApps);
+//            currCust.setApplications(listApps);
             custRepo.save(currCust);
 
         } catch (Exception ex) {
@@ -414,6 +421,74 @@ public class CustomerAPIImpl implements CustomersApi {
         return new ResponseEntity<>(resp, HttpStatus.OK);
     }
 
+    
+    @Override
+    @Timed
+    public ResponseEntity<String> customersCustIdApplicationsDelete(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Target Application Names") @Valid @RequestBody ApplicationNames body) {
+      log.info("customersCustIdApplicationsGet....[" + custId + "]");
+      
+      try {
+        Customer currCust = custRepo.findOne(custId);
+        if (currCust == null) {
+            log.error("customersCustIdApplicationsDelete....customer not found {}", custId);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        
+        for(String appId: body){
+          
+          try{
+            
+            Applications delApp = appsRepo.findOne(appId);
+            if (delApp == null) {
+              log.error("customersCustIdApplicationsDelete....application not found {}", appId);
+              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            
+            List<Applications> currApps = currCust.getApplications();
+            
+            List<Applications> newApps = new ArrayList<>();
+            boolean appFound = false;
+            
+            for (Applications x : currApps) {
+              if (x.getId().equalsIgnoreCase(appId)) {
+                appFound = true;
+              } else {
+                newApps.add(x);
+              }
+            }
+            
+            if (!appFound) {
+              log.error("customersCustIdApplicationsAppIdDelete....application not found {} in customer list {}", appId, custId);
+              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            
+            currCust.setApplications(newApps);
+            custRepo.save(currCust);
+            
+            if (delApp.getReview() != null)
+              reviewRepository.delete(delApp.getReview());
+            
+            if (delApp.getAssessments() != null)
+              assmRepo.delete(delApp.getAssessments());
+            
+            appsRepo.delete(appId);
+            
+          
+          } catch (Exception ex) {
+            log.error("Error while deleting application ["+appId+"]", ex.getMessage(), ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+          }
+          
+        }
+
+      } catch (Exception ex) {
+          log.error("Error with customer ["+custId+"] while deleting application(s)", ex.getMessage(), ex);
+          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+      return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
+    
     @Override
     @Timed
     public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "TARGETS,DEPENDENCIES,PROFILES") @RequestParam(value = "apptype", required = false) String apptype) {
@@ -617,18 +692,18 @@ public class CustomerAPIImpl implements CustomersApi {
             List<QuestionMetaData> questionData = questionRepository.findAll();
 
 
-            for (QuestionMetaData currQuestion : questionData) {
-                String res = (String) currAssm.getResults().get(currQuestion.getId());
-                AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
-                vals.setQuestionTag(currQuestion.getId());
-
-                QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(Integer.parseInt(res)).getRank();
-                vals.setQuestionRank(answerRank.ordinal());
-                assessResults.add(vals);
-
-                log.debug(currQuestion.getId() + ": value=" + res + " RANK " + answerRank.toString());
-
-            }
+//            for (QuestionMetaData currQuestion : questionData) {
+//                String res = (String) currAssm.getResults().get(currQuestion.getId());
+//                AssessmentProcessQuestionResultsType vals = new AssessmentProcessQuestionResultsType();
+//                vals.setQuestionTag(currQuestion.getId());
+//
+//                QuestionWeights.QuestionRank answerRank = currQuestion.getMetaData().get(Integer.parseInt(res)).getRank();
+//                vals.setQuestionRank(answerRank.ordinal());
+//                assessResults.add(vals);
+//
+//                log.debug(currQuestion.getId() + ": value=" + res + " RANK " + answerRank.toString());
+//
+//            }
             resp.setAssessResults(assessResults);
             resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
             resp.setDependencies(currAssm.getDeps());

@@ -191,6 +191,23 @@ paths:
             type: array
             items:
               $ref: '#/definitions/ApplicationType'
+    delete:
+      description: Delete application(s)
+      parameters:
+      - name: body
+        in: body
+        description: Target Application Names
+        schema:
+          $ref: '#/definitions/ApplicationNames'
+      - name: custId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Application(s) deleted
+          schema:
+            type: string
     post:
       description: Create an Application for a customer
       parameters:
