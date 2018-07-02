@@ -296,8 +296,10 @@ var json = {
             }
         ]
     }],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href='/pathfinder-ui'>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/pathfinder-ui/assessments-v2.jsp?customerId={CUSTID}'>Here</a> to return to the main page."
 };
+
+//$('surveyCompleteLink').attr('href', '/pathfinder-ui/assessments-v2.jsp?customerId='+Utils.getParameterByName("customerId"));
 
 window.survey = new Survey.Model(json);
 
@@ -305,6 +307,8 @@ window.survey = new Survey.Model(json);
 //console.log(Utils.getParameterByName("applicationId"));
 
 //survey.data={"CUSTNAME":Utils.getParameterByName("customerId")};
+
+//survey.data.RETURN=Utils.getParameterByName("customerId");
 
 // ### this pre-selects the customer
 if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
@@ -329,6 +333,13 @@ survey
             var payload=JSON.stringify(myObj);
             console.log("payload="+payload);
             xmlhttp.send(payload);
+            
+            console.log("CUST="+cust);
+            console.log("link="+$('#surveyCompleteLink'));
+            
+            if (undefined!=$('#surveyCompleteLink')){
+            	$('#surveyCompleteLink').attr('href', '/pathfinder-ui/assessments-v2.jsp?customerId='+Utils.getParameterByName("customerId"));
+            }
     });
 
 survey
@@ -377,6 +388,7 @@ survey
         }
 				
         if (result.data.CUSTNAME!=undefined){
+          result.data.CUSTID=result.data.CUSTNAME;
 		      var v = survey.getQuestionByName('DEPSOUTLIST');
 	        v.choicesByUrl.url = Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/";
 	        v.choicesByUrl.valueName = "Id";
