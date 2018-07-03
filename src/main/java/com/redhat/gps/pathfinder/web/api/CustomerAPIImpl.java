@@ -25,6 +25,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
+import static org.springframework.web.bind.annotation.RequestMethod.DELETE;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -37,6 +39,7 @@ import java.util.UUID;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -662,9 +665,12 @@ public class CustomerAPIImpl implements CustomersApi {
                     BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount + reviewedCount) / (double) (total * 2));
                     percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
                     resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
+                    
                 } else {
                     resp.setCustomerPercentageComplete(0);
                 }
+                
+                resp.setCustomerAppCount(x.getApplications()==null?0:x.getApplications().size());
 
                 response.add(resp);
             }
@@ -672,6 +678,64 @@ public class CustomerAPIImpl implements CustomersApi {
         }
     }
 
+    
+//    @RequestMapping(path="/customers/", method=DELETE)
+//    public String customersDelete2(@RequestBody String body) {
+//      System.out.println("body="+body);
+//      List<Object> list=mjson.Json.read(body).asList();
+//      System.out.println("list="+list);
+////      Json.newObjectMapper(false).readValue(body, new TypeReference<ArrayList<String>>() {});
+//      ApplicationNames x=new ApplicationNames();
+//      for(Object app:list)
+//        x.add((String)app);
+//      return customersDelete(x).;
+//      //return customersDelete(body);
+//    }
+    @Timed
+    public ResponseEntity<Void> customersDelete(@ApiParam(value = "Target Customer Names") @Valid @RequestBody ApplicationNames body) {
+        log.debug("customersDelete....");
+        
+        for(String customerId: body){
+          log.debug("customersDelete: deleting customer [{}]", customerId);
+          try{
+            
+            Customer c=custRepo.findOne(customerId);
+            if (c==null){
+              log.error("customersDelete....customer not found {}", customerId);
+              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+            
+            log.debug("customersDelete: customer [{}] had "+(c.getApplications()!=null?c.getApplications().size():0)+" apps", customerId);
+            if (null!=c.getApplications()){
+              for (Applications app:c.getApplications()){
+                log.debug("customersDelete: deleting customer [{}] application [{}]", customerId, app.getId());
+                
+                if (null!=app.getAssessments()){
+                  for(Assessments ass:app.getAssessments()){
+                    log.debug("customersDelete: deleting customer [{}] application [{}] assessment [{}]", customerId, app.getId(), ass.getId());
+                    
+                    assmRepo.delete(ass.getId());
+                  }
+                }
+                
+                if (null!=app.getReview()){
+                  reviewRepository.delete(app.getReview().getId());
+                }
+                
+                appsRepo.delete(app.getId());
+              }
+            }
+            
+            custRepo.delete(customerId);
+            
+          }catch(Exception e){
+            log.error("Error deleting customer ["+customerId+"] ", e.getMessage(), e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+          }
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+    
     @Timed
     public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet
         (@ApiParam(value = "", required = true) @PathVariable("custId") String

@@ -42,6 +42,18 @@ paths:
             type: string
         400:
           description: Unable to create customer
+    delete:
+      parameters:
+      - name: body
+        in: body
+        description: Target Customer Names
+        schema:
+          $ref: '#/definitions/ApplicationNames'
+      responses:
+        200:
+          description: Customers deleted
+        404:
+          description: Customers Not deleted
 
   /customers/{custId}:
     get:
@@ -469,6 +481,8 @@ definitions:
       CustomerRTILink:
         type: string
       CustomerPercentageComplete:
+        type: integer
+      CustomerAppCount:
         type: integer
 
   ApplicationType:
