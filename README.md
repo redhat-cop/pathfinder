@@ -1,3 +1,5 @@
+[![Waffle.io - Kanban board &amp; card count](https://badge.waffle.io/redhat-cop/pathfinder.svg?columns=all)](https://waffle.io/redhat-cop/pathfinder)
+
 # Setup REMOTE DEV environment on OSE (incl. minishift)
 
 
