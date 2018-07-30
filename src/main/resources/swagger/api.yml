@@ -668,6 +668,8 @@ definitions:
     - WorkEffort
     - ReviewDate
     - LatestAssessmentId
+    - CompleteAnswersCount
+    - IncompleteAnswersCount
     properties:
       Id:
         type: string
@@ -692,6 +694,13 @@ definitions:
       LatestAssessmentId:
         description: Associated assessment id
         type: string
+      CompleteAnswersCount:
+        description: Number of questions with non-'Unknown' answers
+        type: integer
+      IncompleteAnswersCount:
+        description: Number of questions with 'Unknown' answers
+        type: integer
+      
 
   DepsPairType:
     required:

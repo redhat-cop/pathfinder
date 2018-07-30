@@ -31,10 +31,12 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -57,6 +59,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Function;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
@@ -70,6 +78,7 @@ import com.redhat.gps.pathfinder.repository.MembersRepository;
 import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
 import com.redhat.gps.pathfinder.repository.ReviewsRepository;
 import com.redhat.gps.pathfinder.service.util.Json;
+import com.redhat.gps.pathfinder.service.util.Tuple;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationAssessmentProgressType;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationNames;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationSummaryType;
@@ -1168,7 +1177,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-
+    
+    // Get assessment summary data for UI's assessment summary screen
+    // GET: /api/pathfinder/customers/{customerId}/applicationAssessmentSummary
     @Timed
     public ResponseEntity<List<ApplicationSummaryType>> customersCustIdApplicationAssessmentSummaryGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
         log.debug("customersCustIdApplicationAssessmentSummaryGet {}", custId);
@@ -1203,6 +1214,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                         Assessments currAssm = assmList.get(assmList.size() - 1);
                         item.assessed(true);
                         item.setLatestAssessmentId(currAssm.getId());
+                        
+                        item.setIncompleteAnswersCount(Collections.frequency(currAssm.getResults().values(), "0-UNKNOWN"));
+                        item.setCompleteAnswersCount(currAssm.getResults().size()-item.getIncompleteAnswersCount());
                     } else {
                         item.assessed(false);
                     }
