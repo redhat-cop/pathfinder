@@ -1,5 +1,11 @@
 package com.redhat.gps.pathfinder.domain;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Objects;
+
+import javax.validation.constraints.NotNull;
+
 /*-
  * #%L
  * Pathfinder
@@ -24,14 +30,8 @@ package com.redhat.gps.pathfinder.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.data.mongodb.core.mapping.Document;
-import javax.validation.constraints.*;
-
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 /**
  * A Customer.
@@ -63,6 +63,9 @@ public class Customer implements Serializable {
     @Field("rtilink")
     private String rtilink;
 
+    @DBRef
+    private List<Member> members;
+    
     @DBRef
     private List<Applications> Applications;
 
@@ -131,6 +134,13 @@ public class Customer implements Serializable {
         Applications = applications;
     }
 
+    public List<com.redhat.gps.pathfinder.domain.Member> getMembers() {
+      return members;
+    }
+  
+    public void setMembers(List<com.redhat.gps.pathfinder.domain.Member> members) {
+      this.members = members;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -144,12 +154,12 @@ public class Customer implements Serializable {
             Objects.equals(description, customer.description) &&
             Objects.equals(assessor, customer.assessor) &&
             Objects.equals(rtilink, customer.rtilink) &&
+            Objects.equals(members, customer.members) &&
             Objects.equals(Applications, customer.Applications);
     }
 
     @Override
     public int hashCode() {
-
         return Objects.hash(id, name, vertical, size, description, assessor, rtilink, Applications);
     }
 
@@ -164,6 +174,7 @@ public class Customer implements Serializable {
             ", assessor='" + assessor + '\'' +
             ", rtilink='" + rtilink + '\'' +
             ", Applications=" + Applications +
+            ", Members=" + members +
             '}';
     }
 }

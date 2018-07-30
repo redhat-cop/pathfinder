@@ -1,5 +1,5 @@
 ---
-swagger: 2.0
+swagger: "2.0"
 info:
   title: Pathfinder Application Assessment
   description: Pathfinder Assessment API
@@ -182,7 +182,57 @@ paths:
       required: true
       type: string
 
-
+  /customers/{custId}/members/:
+    get:
+      description: Get list of members for a customer
+      parameters:
+      - name: custId
+        in: path
+        required: true
+        type: string
+      responses:
+        200:
+          description: Members List
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/MemberType'
+    delete:
+      description: Delete members(s)
+      parameters:
+      - name: body
+        in: body
+        description: Target member IDs
+        schema:
+          $ref: '#/definitions/IdentifierList'
+      - name: custId
+        in: path
+        description: Customer Identifier
+        required: true
+        type: string
+      responses:
+        200:
+          description: Member(s) deleted
+          schema:
+            type: string
+    post:
+      description: Create a Member for a customer
+      parameters:
+      - name: custId
+        in: path
+        description: Customer Identifier
+        required: true
+        type: string
+      - name: body
+        in: body
+        description: Member Details
+        schema:
+          $ref: '#/definitions/MemberType'
+      responses:
+        200:
+          description: Member Created
+          schema:
+            type: string
 
   /customers/{custId}/applications/:
     get:
@@ -429,6 +479,31 @@ definitions:
     items:
       type: string
 
+  IdentifierList:
+    type: array
+    items:
+      type: string
+
+  MemberType:
+    required:
+    - Username
+    - Email
+    - Password
+    properties:
+      Id:
+        type: string
+      Username:
+        type: string
+      Email:
+        type: string
+      Password:
+        type: string
+      DisplayName:
+        type: string
+      CustomerId:
+        type: string
+      
+      
   ReviewType:
     required:
     - AssessmentId
@@ -484,6 +559,13 @@ definitions:
         type: integer
       CustomerAppCount:
         type: integer
+      CustomerMemberCount:
+        type: integer
+      CustomerMembers:
+         type: array
+         items:
+            $ref: '#/definitions/MemberType'
+        
 
   ApplicationType:
     required:

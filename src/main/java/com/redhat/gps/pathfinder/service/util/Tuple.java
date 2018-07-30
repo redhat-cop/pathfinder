@@ -1,4 +1,4 @@
-package com.redhat.gps.pathfinder.web.api;
+package com.redhat.gps.pathfinder.service.util;
 
 /*-
  * #%L
@@ -22,14 +22,17 @@ package com.redhat.gps.pathfinder.web.api;
  * #L%
  */
 
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.SerializationConfig;
-
-public class Json {
-
-  public static ObjectMapper newObjectMapper(boolean pretty){
-    ObjectMapper mapper = new ObjectMapper();
-    mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT,pretty);
-    return mapper;
+public class Tuple<X, Y> {
+  private Object[] values;
+  public Tuple(X first, Y second) {
+    values=new Object[]{first, second};
+  }
+  @SuppressWarnings("unchecked")
+  public X getFirst() {
+      return (X)values[0];
+  }
+  @SuppressWarnings("unchecked")
+  public Y getSecond() {
+      return (Y)values[1];
   }
 }
