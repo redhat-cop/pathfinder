@@ -57,6 +57,8 @@ public class CustomAuthenticationProvider implements AuthenticationManager {
         
         Member user=userRepository.findOne(name);
         
+        if (null==user) return null;
+        
         log.debug("CustomAuthenticationProvider::authenticate():: user={}, password match?=", name, (password.equals(user.getPassword())));
         
         if (password.equals(user.getPassword())){
