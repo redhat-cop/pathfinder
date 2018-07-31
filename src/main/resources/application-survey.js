@@ -98,7 +98,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPLOYFREQ",
-                "title": "Lead Time",
+                "title": "Deployment time",
                 "comment": "How often do you deploy software to production?",
                 "isRequired": true,
                 "colCount": 1,
