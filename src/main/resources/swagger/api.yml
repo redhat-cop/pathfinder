@@ -71,6 +71,20 @@ paths:
           description: Customer deleted
         404:
           description: Customer Not deleted
+    post:
+      description: Update the details of a customer
+      parameters:
+      - name: body
+        in: body
+        schema:
+          $ref: '#/definitions/CustomerType'
+      responses:
+        200:
+          description: Customer updated
+          schema:
+            type: string
+        400:
+          description: Unable to update customer
     parameters:
     - name: custId
       in: path
@@ -170,6 +184,21 @@ paths:
           description: Application deleted
         404:
           description: Application Not Found
+    post:
+      description: Update the details of an application
+      parameters:
+      - name: body
+        in: body
+        description: Application Definition
+        schema:
+          $ref: '#/definitions/ApplicationType'
+      responses:
+        200:
+          description: Application updated
+          schema:
+            type: string
+        400:
+          description: Unable to update application
     parameters:
     - name: custId
       in: path

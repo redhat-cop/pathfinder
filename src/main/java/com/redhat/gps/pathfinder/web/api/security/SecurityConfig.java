@@ -99,6 +99,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
       http.authorizeRequests()
           .antMatchers("/api/pathfinder/survey").permitAll()
           .antMatchers("/auth").permitAll()
+          .antMatchers("/management/health").permitAll()
           .antMatchers("/api/pathfinder/login").permitAll()
           .antMatchers("/api/pathfinder/**").access("hasAnyAuthority('SUPER','ADMIN','USER')")
 //          .antMatchers("/api/pathfinder/").permitAll()
