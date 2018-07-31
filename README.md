@@ -49,10 +49,6 @@ cd /<path to local /pathfinder-ui repo>
 Validate pathfinder is running by hitting  http:localhost:8043/pathfinder-ui
 
 
-
-```
-
-
 # How to contribute code
 
 * In Github, fork the [https://github.com/redhat-cop/pathfinder](pathfinder) or [https://github.com/redhat-cop/pathfinder-ui](pathfinder-ui) project into your github account.
