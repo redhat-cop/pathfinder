@@ -29,6 +29,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -935,6 +936,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             appsRepo.save(app);
 
             return new ResponseEntity<>(reviewData.getId(), HttpStatus.OK);
+//            return ResponseEntity.status(302).location(new URI(""));
+            
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
