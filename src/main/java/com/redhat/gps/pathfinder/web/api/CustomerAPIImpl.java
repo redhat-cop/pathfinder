@@ -1299,7 +1299,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 for (Applications currApp : apps) {
                     List<Assessments> currAssmList = currApp.getAssessments();
 
-                    if (currAssmList.size() == 0) {
+                    if (currAssmList==null || currAssmList.size() == 0) {
                         log.info("Application {} has no assessments...", currApp.getId());
                     } else {
 
