@@ -329,7 +329,7 @@ survey
             var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
             delete tmpResult.DEPSOUTLIST;
             xmlhttp.open("POST", addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments"));
-            xmlhttp.setRequestHeader("Content-Type", "application/javascript");
+            xmlhttp.setRequestHeader("Content-Type", "application/json");
             myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
             var payload=JSON.stringify(myObj);
             console.log("payload="+payload);
