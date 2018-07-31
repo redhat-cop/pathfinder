@@ -97,6 +97,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
       http.addFilterAfter(new JwtAuthorizationTokenFilter(userDetailsService,jwtTokenUtil,"Authorization"), BasicAuthenticationFilter.class);
       
       http.authorizeRequests()
+          .antMatchers("/api/pathfinder/survey").permitAll()
           .antMatchers("/api/pathfinder/**").access("hasAnyAuthority('SUPER','ADMIN','USER')")
 //          .antMatchers("/api/pathfinder/").permitAll()
 ////          .antMatchers("/api/pathfinder/auth").permitAll()

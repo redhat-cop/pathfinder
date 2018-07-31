@@ -18,14 +18,15 @@ Survey
 Survey.requiredText = "AA";
 
 Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
-        options.request.setRequestHeader("Content-Type", "application/json");
+        options.request.setRequestHeader("Content-Type", "application/javascript");
+        //options.request.setRequestHeader("Authorization", "Bearer "+jwtToken);
 };
 
 var json = {
     title: "Application Assessment",
     sendResultOnPageNext: "true",
-     requiredText: "",
-   showProgressBar: "bottom",
+    requiredText: "",
+    showProgressBar: "bottom",
     pages: [{
         "title": "Customer Details",
         "questions": [
@@ -35,7 +36,7 @@ var json = {
                 "title": "Select the Customer...",
                 "isRequired": true,
                 "choicesByUrl": {
-                      "url": "SERVER_URL/api/pathfinder/customers/",
+                      "url": "SERVER_URL/api/pathfinder/customers/?_t="+jwtToken,
                       "valueName": "CustomerId",
                       "titleName": "CustomerName"
                 }
@@ -327,8 +328,8 @@ survey
             //dependencies array needs special handling
             var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
             delete tmpResult.DEPSOUTLIST;
-            xmlhttp.open("POST", Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments");
-            xmlhttp.setRequestHeader("Content-Type", "application/json");
+            xmlhttp.open("POST", addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments"));
+            xmlhttp.setRequestHeader("Content-Type", "application/javascript");
             myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
             var payload=JSON.stringify(myObj);
             console.log("payload="+payload);
@@ -371,7 +372,7 @@ survey
         
         if (result.data.CUSTNAME!=undefined){
 	        var q = survey.getQuestionByName('ASSMENTNAME');
-	        q.choicesByUrl.url = Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/";
+	        q.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
 	        q.choicesByUrl.valueName = "Id";
 	        q.choicesByUrl.titleName = "Name";
 	        q.choicesByUrl.run();
@@ -390,7 +391,7 @@ survey
         if (result.data.CUSTNAME!=undefined){
           result.data.CUSTID=result.data.CUSTNAME;
 		      var v = survey.getQuestionByName('DEPSOUTLIST');
-	        v.choicesByUrl.url = Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/";
+	        v.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
 	        v.choicesByUrl.valueName = "Id";
 	        v.choicesByUrl.titleName = "Name";
 	        v.choicesByUrl.run();
