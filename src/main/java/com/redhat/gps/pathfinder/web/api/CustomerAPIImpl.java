@@ -129,7 +129,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value="/survey", method=GET, produces={"application/javascript"})
     public String getSurvey() throws IOException {
-      return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"");
+      return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"").replaceAll("JWT_TOKEN", "\"+jwtToken+\"") ;
     }
     
     private String getSurveyContent() throws IOException{

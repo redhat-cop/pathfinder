@@ -36,7 +36,7 @@ var json = {
                 "title": "Select the Customer...",
                 "isRequired": true,
                 "choicesByUrl": {
-                      "url": "SERVER_URL/api/pathfinder/customers/?_t="+jwtToken,
+                      "url": "SERVER_URL/api/pathfinder/customers/?_t=JWT_TOKEN",
                       "valueName": "CustomerId",
                       "titleName": "CustomerName"
                 }
