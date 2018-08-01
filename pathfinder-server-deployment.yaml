@@ -109,21 +109,11 @@ objects:
       xpaas: 1.4.12
     name: ${APPLICATION_NAME}
   spec:
-    host: ${APPLICATION_NAME}-${NAMESPACE}.int.open.paas.redhat.com
     to:
       kind: Service
       name: ${APPLICATION_NAME}
       weight: 100
     wildcardPolicy: None
-  status:
-    ingress:
-    - conditions:
-      - lastTransitionTime: 2018-06-20T17:23:28Z
-        status: "True"
-        type: Admitted
-      host: ${APPLICATION_NAME}-${NAMESPACE}.int.open.paas.redhat.com
-      routerName: router-prod-internal-a3
-      wildcardPolicy: None
 - apiVersion: v1
   kind: Service
   metadata:
