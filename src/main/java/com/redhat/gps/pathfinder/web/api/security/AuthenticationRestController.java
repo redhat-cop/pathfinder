@@ -44,6 +44,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -84,7 +85,7 @@ public class AuthenticationRestController {
     private UserDetailsService userDetailsService;
 
     @RequestMapping(value = "/auth", method = RequestMethod.POST)
-    public ResponseEntity<?> createAuthToken(@RequestBody String authRequest) throws RuntimeException, URISyntaxException {
+    public ResponseEntity<?> createAuthToken(@RequestBody String authRequest) throws RuntimeException, URISyntaxException, CredentialsException {
         Json jsonReq=Json.read(authRequest);
         String username=jsonReq.at("username").asString();
         String password=jsonReq.at("password").asString();
@@ -102,18 +103,23 @@ public class AuthenticationRestController {
           if (null==authenticationManager) authenticationManager=new CustomAuthenticationProvider(membersRepository);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
         } catch (DisabledException e) {
-            throw new RuntimeException("User is disabled!", e);
+            throw new CredentialsException("User is disabled!", e);
         } catch (BadCredentialsException e) {
-            throw new RuntimeException("Bad credentials!", e);
+            throw new CredentialsException("Bad credentials!", e);
         }
         
         // Reload password post-security so we can generate the token
-        final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        final String token = jwtTokenUtil.generateToken(userDetails);
+        try{
+          final UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+          final String token = jwtTokenUtil.generateToken(userDetails);
+          
+          Member member=membersRepository.findOne(username);
+          
+          return buildResult(token, member);
+        }catch(UsernameNotFoundException e){
+          throw new CredentialsException("No user with the name "+username);
+        }
         
-        Member member=membersRepository.findOne(username);
-        
-        return buildResult(token, member);
     }
 
     @RequestMapping(value = "/refresh", method = RequestMethod.GET)

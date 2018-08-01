@@ -75,7 +75,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
         if (authToken!=null && authToken.startsWith("Bearer "))
           authToken=authToken.substring(7);
         
-        logger.debug("Discovered token: \"{}\"", authToken);
+        logger.debug("Discovered token: {}", authToken);
         
 //        if (authToken==null || "".equals(authToken))
 //          throw new AccessDeniedException("Access is denied");
