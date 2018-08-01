@@ -121,8 +121,8 @@ jhipster:
 # ===================================================================
 
 #Used when not running in ose/k8s environment
-#database-user: dbuser
-#database-password: dbuser12345
+database-user: dbuser
+database-password: dbuser12345
 #database-user: userS1K
 #database-password: JBf2ibxFbqYAmAv0
 
@@ -131,8 +131,8 @@ jhipster:
 #database-password: hhVJurwHQQJdEUco
 
 #pathfinder-dev
-database-user: userU11
-database-password: maaGjyFEpITyQYB3
+#database-user: userU11
+#database-password: maaGjyFEpITyQYB3
 
 #pathfinder-local
 #dbhostport: 27017
@@ -140,7 +140,7 @@ database-password: maaGjyFEpITyQYB3
 database-name: pathfinder
 database-admin-password: 12345
 dbhostname: localhost
-dbhostport: 9191
+dbhostport: 27017
 
 
 
