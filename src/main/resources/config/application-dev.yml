@@ -125,15 +125,24 @@ jhipster:
 #database-password: dbuser12345
 #database-user: userS1K
 #database-password: JBf2ibxFbqYAmAv0
-database-user: userK47
-database-password: hhVJurwHQQJdEUco
 
+# vft-dashboard
+#database-user: userK47
+#database-password: hhVJurwHQQJdEUco
 
+#pathfinder-dev
+database-user: userU11
+database-password: maaGjyFEpITyQYB3
+
+#pathfinder-local
+#dbhostport: 27017
 
 database-name: pathfinder
 database-admin-password: 12345
 dbhostname: localhost
 dbhostport: 9191
+
+
 
 keycloak.enabled: false
 keycloak.configurationFile: classpath:keycloak.json

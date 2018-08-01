@@ -303,10 +303,12 @@
             <!--<artifactId>spring-cloud-spring-service-connector</artifactId>-->
         <!--</dependency>-->
         <!-- Security -->
+        <!-- 
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-data</artifactId>
         </dependency>
+         -->
         <dependency>
             <groupId>io.fabric8</groupId>
             <artifactId>spring-cloud-starter-kubernetes</artifactId>
@@ -314,16 +316,39 @@
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
 
-				<dependency>
-					<groupId>org.sharegov</groupId>
-					<artifactId>mjson</artifactId>
-					<version>1.4.0</version>
-				</dependency>
-				<dependency>
-					<groupId>org.codehaus.jackson</groupId>
-					<artifactId>jackson-mapper-asl</artifactId>
-					<version>1.9.4</version>
-				</dependency>
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.9.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.sharegov</groupId>
+			<artifactId>mjson</artifactId>
+			<version>1.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.jackson</groupId>
+			<artifactId>jackson-mapper-asl</artifactId>
+			<version>1.9.4</version>
+		</dependency>
+		<!-- 
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-web</artifactId>
+		</dependency>
+		 -->
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-config</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security.oauth</groupId>
+			<artifactId>spring-security-oauth2</artifactId>
+		</dependency>
+		<dependency>
+		    <groupId>org.springframework.security</groupId>
+		    <artifactId>spring-security-jwt</artifactId>
+		</dependency>
     </dependencies>
 
     <build>

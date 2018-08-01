@@ -40,7 +40,7 @@ objects:
           - name: JWS_ADMIN_PASSWORD
             value: xfnfyTKW
           - name: PATHFINDER_SERVER
-            value: http://${SERVER_APPLICATION_NAME}-${NAMESPACE}.int.open.paas.redhat.com
+            value: ${PATHFINDER_SERVER}
           image: docker-registry.default.svc:5000/${NAMESPACE}/${APPLICATION_NAME}@sha256:e0f4677bc857ed2039efeab172df7d04ec9fb7b5e08bd8c111024b9cf8bf4813
           imagePullPolicy: Always
           name: ${APPLICATION_NAME}
@@ -103,21 +103,11 @@ objects:
       xpaas: 1.4.12
     name: ${APPLICATION_NAME}
   spec:
-    host: ${APPLICATION_NAME}-${NAMESPACE}.int.open.paas.redhat.com
     to:
       kind: Service
       name: ${APPLICATION_NAME}
       weight: 100
     wildcardPolicy: None
-  status:
-    ingress:
-    - conditions:
-      - lastTransitionTime: 2018-06-20T18:25:40Z
-        status: "True"
-        type: Admitted
-      host: ${APPLICATION_NAME}-${NAMESPACE}.int.open.paas.redhat.com
-      routerName: router-prod-internal-a3
-      wildcardPolicy: None
 - apiVersion: v1
   kind: Service
   metadata:
@@ -157,3 +147,9 @@ parameters:
   name: NAMESPACE
   required: true
   value: openshift
+- description: The host name for the Pathfinder server
+  displayName: The Host Name of the Pathfinder Server
+  name: PATHFINDER_SERVER
+  required: true
+
+

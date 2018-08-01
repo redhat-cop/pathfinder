@@ -3,6 +3,7 @@
 PROJECT_NAME=`oc project -q`
 NAMESPACE=$PROJECT_NAME
 
+
 #echo "PROJECT_NAME    =$PROJECT_NAME"
 #echo "APPLICATION_NAME=$APPLICATION_NAME"
 #echo "NAMESPACE       =$NAMESPACE"
@@ -44,9 +45,17 @@ sleep 30
 #oc delete -f local-pathfinder-ui-deployment.yaml
 #oc delete all --selector="app=pathfinder-ui"
 
+
+
 # pathfinder-ui build
+#oc get routes --template='{{range .items}}{{if eq .metadata.name "pathfinder-server"}}{{.spec.host}}{{end}}{{end}}'
+
+PATHFINDER_SERVER=http://`oc get routes --template='{{range .items}}{{if eq .metadata.name "pathfinder-server"}}{{.spec.host}}{{end}}{{end}}'`
+
+echo "PATHFINDER_SERVER   =$PATHFINDER_SERVER" 
+
 oc process --param=APPLICATION_NAME=pathfinder-ui -f pathfinder-ui-build.yaml | oc apply -f-
 
 # pathfinder-ui deployments
-oc process --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-ui --param=SERVER_APPLICATION_NAME=pathfinder-server -f pathfinder-ui-deployment.yaml | oc apply -f-
+oc process --param=NAMESPACE=$NAMESPACE --param=APPLICATION_NAME=pathfinder-ui --param=SERVER_APPLICATION_NAME=pathfinder-server --param=PATHFINDER_SERVER=$PATHFINDER_SERVER -f pathfinder-ui-deployment.yaml | oc apply -f-
 
