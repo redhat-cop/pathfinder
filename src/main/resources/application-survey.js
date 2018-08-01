@@ -98,7 +98,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPLOYFREQ",
-                "title": "Deployment time",
+                "title": "Deployment frequency",
                 "comment": "How often do you deploy software to production?",
                 "isRequired": true,
                 "colCount": 1,
@@ -302,10 +302,10 @@ var json = {
                 "type": "radiogroup",
                 "name": "SECURITY",
                 "title": "Application sensitive data handling",
-                "comment": "How is the application provided with sensitive data e.g. certs/passwords etc?",
+                "comment": "How is the application provided with sensitive data e.g. certificates/passwords etc?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|HSM, hardware based encryption devices", "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3-AMBER|Keys/Certs compiled into application", "4-GREEN|Certificates/Keys loaded via shared disk", "5-GREEN|Certificates/Keys loaded via files or vault integration"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|HSM, hardware based encryption devices", "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3-AMBER|Keys/Certs compiled into application", "4-GREEN|Certificates/Keys loaded via shared disk", "5-GREEN|Certificates/Keys loaded via files or vault integration","5-GREEN|None"]
             },
             {
                 "type": "radiogroup",
