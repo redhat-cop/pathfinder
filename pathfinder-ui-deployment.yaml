@@ -103,6 +103,7 @@ objects:
       xpaas: 1.4.12
     name: ${APPLICATION_NAME}
   spec:
+    path: "/pathfinder-ui" 
     to:
       kind: Service
       name: ${APPLICATION_NAME}
