@@ -199,7 +199,7 @@ var json = {
                 "comment": "How easy is it to determine how the application is performing and how to get information from it.",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0|Unknown","1|No health or readyiness probes available", "2|Custom watchdog process monitoring and managing the application", "3|Basic application health requires semi-complex scripting", "4|Scriptable liveness and readyiness probes", "5|Probes execute synthetic transactions to verify application health"]
+                "choices": ["0|Unknown","1|No health or readiness probes available", "2|Custom watchdog process monitoring and managing the application", "3|Basic application health requires semi-complex scripting", "4|Scriptable liveness and readyiness probes", "5|Probes execute synthetic transactions to verify application health"]
             },
             {
                 "type": "radiogroup",
