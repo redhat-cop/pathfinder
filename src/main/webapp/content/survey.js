@@ -257,6 +257,6 @@ var json = {
         ]
     }
     ],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href=index.html>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a href=index.html><b>Here</b></a> to return to the main page."
 }
 
