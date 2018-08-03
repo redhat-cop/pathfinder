@@ -50,6 +50,9 @@ public class Applications implements Serializable {
     @Field("Description")
     private String Description;
 
+    @Field("Owner")
+    private String owner;
+    
     @Field("stereotype")
     private String stereotype;
 
@@ -59,6 +62,7 @@ public class Applications implements Serializable {
             "id='" + id + '\'' +
             ", name='" + name + '\'' +
             ", Description='" + Description + '\'' +
+            ", Owner='" + owner + '\'' +
             ", stereotype='" + stereotype + '\'' +
             ", Assessments=" + Assessments +
             ", review=" + review +
@@ -73,6 +77,7 @@ public class Applications implements Serializable {
         return Objects.equals(id, that.id) &&
             Objects.equals(name, that.name) &&
             Objects.equals(Description, that.Description) &&
+            Objects.equals(owner, that.owner) &&
             Objects.equals(stereotype, that.stereotype) &&
             Objects.equals(Assessments, that.Assessments) &&
             Objects.equals(review, that.review);
@@ -80,12 +85,10 @@ public class Applications implements Serializable {
 
     @Override
     public int hashCode() {
-
-        return Objects.hash(id, name, Description, stereotype, Assessments, review);
+        return Objects.hash(id, name, Description, owner, stereotype, Assessments, review);
     }
 
     public String getStereotype() {
-
         return stereotype;
     }
 
@@ -143,6 +146,17 @@ public class Applications implements Serializable {
 
     public void setDescription(String description) {
         Description = description;
+    }
+    
+    public String getOwner() {
+      return owner;
+    }
+    public void setOwner(String value) {
+      owner = value;
+    }
+    public Applications owner(String value) {
+      this.owner = value;
+      return this;
     }
 
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove

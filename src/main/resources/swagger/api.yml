@@ -610,6 +610,9 @@ definitions:
       Description:
         description: Application Description
         type: string
+      Owner:
+        description: Application Owner
+        type: string
       Review:
         description: ID of review, ignored on post
         type: string

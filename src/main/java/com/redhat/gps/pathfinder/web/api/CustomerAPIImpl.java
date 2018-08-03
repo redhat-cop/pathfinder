@@ -25,34 +25,29 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.UUID;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.config.http.HttpSecurityBeanDefinitionParser;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,12 +55,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
-import com.google.common.base.Function;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ListMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
@@ -79,7 +68,6 @@ import com.redhat.gps.pathfinder.repository.MembersRepository;
 import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
 import com.redhat.gps.pathfinder.repository.ReviewsRepository;
 import com.redhat.gps.pathfinder.service.util.Json;
-import com.redhat.gps.pathfinder.service.util.Tuple;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationAssessmentProgressType;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationNames;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationSummaryType;
@@ -94,7 +82,6 @@ import com.redhat.gps.pathfinder.web.api.model.DepsPairType;
 import com.redhat.gps.pathfinder.web.api.model.IdentifierList;
 import com.redhat.gps.pathfinder.web.api.model.MemberType;
 import com.redhat.gps.pathfinder.web.api.model.ReviewType;
-import com.redhat.gps.pathfinder.web.api.security.JwtTokenUtil;
 
 import io.swagger.annotations.ApiParam;
 
@@ -126,6 +113,88 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         this.membersRepo=membersRepository;
     }
     
+    
+    // Non-Swagger api - report page content
+    @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin
+    public String getReport(@PathVariable("custId") String custId) throws IOException {
+      log.debug("getReport()...");
+      //classes for a specific json structure
+//      class Summary{
+//        String name;        String getName() {return name;}              void setName(String v){this.name=v;}
+//        String percentage;  String getPercentage() {return percentage;}  void setPercentage(String v){this.percentage=v;}
+//      }
+      class Report{
+        Map<String,Double> s;
+        public Map<String,Double> getAssessmentSummary() {
+          if (null==s) s=new HashMap<String,Double>(); return s;
+        }
+        Map<String,List<String>> risks;
+        public Map<String,List<String>> getRisks() {
+          if (null==risks) risks=new HashMap<>(); return risks;
+        }
+      }
+      
+      Report result=new Report();
+      
+      Customer customer=custRepo.findOne(custId);
+      
+      Map<String,Integer> overallStatusCount=new HashMap<>();
+      overallStatusCount.put("GREEN",0);
+      overallStatusCount.put("AMBER",0);
+      overallStatusCount.put("RED",0);
+      int assessmentTotal=0;
+      for(Applications app:customer.getApplications()){
+        if (null==app.getAssessments()) continue;
+        Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
+        
+//        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId());
+        
+        String assessmentOverallStatus="GREEN";
+        int mediumCount=0;
+        for(Entry<String, String> e:assessment.getResults().entrySet()){
+//          System.out.println(e.getKey() +"="+ e.getValue());
+          
+          // If ANY answers were RED, then the status is RED
+          if (e.getValue().contains("-RED")){
+            assessmentOverallStatus="RED";
+            
+            // add the RED item to the risk list and add the app name to the risk
+            if (result.getRisks().containsKey(e.getKey())){
+              result.getRisks().get(e.getKey()).add(app.getName());
+            }else{
+              List<String> l=new ArrayList<>();
+              l.add(app.getName());
+              result.getRisks().put(e.getKey(), l);
+            }
+          }
+          
+          if (e.getValue().contains("-AMBER"))
+            mediumCount=mediumCount+1;
+          
+          // If more than 30% of answers were AMBER, then overall rating is AMBER
+          if ((mediumCount/assessment.getResults().size())>0.3)
+            assessmentOverallStatus="AMBER";
+        }
+        
+        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
+        
+        assessmentTotal=assessmentTotal+1;
+        overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus)+1);
+        
+        System.out.println("getReport():: overallStatusCount="+overallStatusCount);
+      }
+      
+      result.getAssessmentSummary().put("Easy",  Double.valueOf(overallStatusCount.get("GREEN")/assessmentTotal));
+      result.getAssessmentSummary().put("Medium",Double.valueOf(overallStatusCount.get("AMBER")/assessmentTotal));
+      result.getAssessmentSummary().put("Hard",  Double.valueOf(overallStatusCount.get("RED")/assessmentTotal));
+      
+      System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
+      
+      System.out.println("RETURNING THE REPORT.....");
+      
+      return Json.newObjectMapper(true).writeValueAsString(result);
+    }
     
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value="/survey", method=GET, produces={"application/javascript"})
@@ -522,23 +591,24 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     @Timed
     public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId) {
         log.debug("customersCustIdApplicationsAppIdGet cid {} app {}", custId, appId);
-        ApplicationType resp = new ApplicationType();
+        ApplicationType response = new ApplicationType();
         //TODO : Check customer exists and owns application as well as application
         try {
             Applications details = appsRepo.findOne(appId);
-            resp.setDescription(details.getDescription());
+            response.setDescription(details.getDescription());
             if (details.getReview() != null)
-                resp.setReview(details.getReview().getId());
-            resp.setName(details.getName());
-            resp.setId(appId);
+                response.setReview(details.getReview().getId());
+            response.setName(details.getName());
+            response.setOwner(details.getOwner());
+            response.setId(appId);
             if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
-                resp.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
+                response.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
             }
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(resp, HttpStatus.OK);
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     
@@ -627,32 +697,34 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             if (isAuthorizedFor(customer)){
                 if ((resp != null) && (!resp.isEmpty())) {
                     for (Applications x : resp) {
-                        ApplicationType lapp = new ApplicationType();
-                        lapp.setName(x.getName());
-                        lapp.setId(x.getId());
+                        ApplicationType app = new ApplicationType();
+                        app.setName(x.getName());
+                        app.setId(x.getId());
                         if (x.getReview() != null) {
-                            lapp.setReview(x.getReview().getId());
+                            app.setReview(x.getReview().getId());
                         }
-                        lapp.setDescription(x.getDescription());
+                        app.setDescription(x.getDescription());
+                        app.setOwner(x.getOwner());
+                        
                         if (x.getStereotype() != null) {
                             if (apptype != null) {
                                 switch (apptype) {
                                     case "TARGETS":  //Explicit targets
                                         if (x.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())) {
-                                            lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
-                                            response.add(lapp);
+                                            app.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
+                                            response.add(app);
                                         }
                                         break;
                                     case "DEPENDENCIES": //Dependencies - Everything but Profiles
                                         if (!x.getStereotype().equals(ApplicationType.StereotypeEnum.DEPENDENCY.toString())) {
-                                            lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
-                                            response.add(lapp);
+                                            app.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
+                                            response.add(app);
                                         }
                                         break;
                                     case "PROFILES": //Explicit Profiles
                                         if (x.getStereotype().equals(ApplicationType.StereotypeEnum.PROFILE.toString())) {
-                                            lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
-                                            response.add(lapp);
+                                            app.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
+                                            response.add(app);
                                         }
                                         break;
                                     default:
@@ -661,12 +733,12 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                             } else {
                                 //maintain backward compatibility with initial api when no apptype is passed - All Dependencies
                                 if (!x.getStereotype().equals(ApplicationType.StereotypeEnum.PROFILE.toString())) {
-                                    lapp.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
-                                    response.add(lapp);
+                                    app.setStereotype(ApplicationType.StereotypeEnum.fromValue(x.getStereotype()));
+                                    response.add(app);
                                 }
                             }
                         } else {
-                            response.add(lapp);
+                            response.add(app);
                         }
                     }
                 }
@@ -709,6 +781,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         
         app.setName(body.getName());
         app.setDescription(body.getDescription());
+        app.setOwner(body.getOwner());
+        
         if (body.getStereotype() == null) {
             log.warn("createOrUpdateApplication....application stereotype missing ");
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
