@@ -173,7 +173,7 @@ paths:
       description: Get details of an Application for a customer
       parameters:
       - in: query
-        name: assessmentFields
+        name: custom
         type: string
       responses:
         200:
@@ -620,7 +620,7 @@ definitions:
       Review:
         description: ID of review, ignored on post
         type: string
-      AssessmentFields:
+      CustomFields:
         $ref: '#/definitions/AssessmentResponse'
       Stereotype:
         description: TARGETAPP, DEPENDENCY, PROFILE

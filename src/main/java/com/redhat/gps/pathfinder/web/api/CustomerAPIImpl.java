@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -592,14 +594,49 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return new ResponseEntity<>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
 
+    private AssessmentResponse populateCustomAssessmentFields(String custom, List<Assessments> assList, AssessmentResponse r){
+      if (r==null) r=new AssessmentResponse();
+      
+      if (assList!=null && assList.size()<=1){
+        Assessments a=assList.get(assList.size()-1);
+        for(String f:custom.split(",")){
+          if (a.getResults().containsKey(f)){
+            r.put(f, a.getResults().get(f));
+          }
+        }
+      }
+      return r;
+    }
+    private AssessmentResponse populateCustomCustomerFields(String custom, Customer c, AssessmentResponse r){
+      if (r==null) r=new AssessmentResponse();
+      for(String f:custom.split(",")){
+        if (f.contains("customer.")){
+          if (f.equalsIgnoreCase("customer.name")){
+            r.put("customer.name", c.getName());
+          }else if (f.equalsIgnoreCase("customer.id")){
+            r.put("customer.id", c.getId());
+          }else
+            log.error("Skipping/Unable to find custom field: "+f);
+        }
+      }
+      return r;
+    }
+    
     // Get Application
     // GET: /customers/{customerId}/applications/{applicationId}
     //
     @Timed
-    public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId, @RequestParam(value = "assessmentFields", required = false) String assessmentFields) {
+    public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId, @RequestParam(value = "custom", required = false) String custom) {
         log.debug("customersCustIdApplicationsAppIdGet cid {} app {}", custId, appId);
         ApplicationType response = new ApplicationType();
         //TODO : Check customer exists and owns application as well as application
+        
+        Customer customer=custRepo.findOne(custId);
+        if (customer==null) {
+            log.error("customersCustIdApplicationsAppIdGet....customer not found " + custId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
         try {
             Applications details = appsRepo.findOne(appId);
             response.setDescription(details.getDescription());
@@ -612,22 +649,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 response.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
             }
             
-//            String assessmentFields="BUSPRIORITY";
-//            System.out.println("ASSFIELDS="+assessmentFields);
-            if (null!=assessmentFields){
-              if (details.getAssessments()!=null && details.getAssessments().size()<=1){
-                Assessments assessment=details.getAssessments().get(details.getAssessments().size()-1);
-                for(String f:assessmentFields.split(",")){
-                  if (assessment.getResults().containsKey(f)){
-                    
-                    // init (doing it in here so we dont create and return this in the json unless we have fields
-                    if (response.getAssessmentFields()==null)
-                      response.setAssessmentFields(new AssessmentResponse());
-                    
-                    response.getAssessmentFields().put(f, assessment.getResults().get(f));
-                  }
-                }
-              }
+            if (null!=custom){
+              AssessmentResponse customFields=populateCustomCustomerFields(custom, customer, null);
+              customFields=populateCustomAssessmentFields(custom, details.getAssessments(), customFields);
+              response.setCustomFields(customFields);
             }
             
         } catch (Exception ex) {
@@ -907,8 +932,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 if (isAuthorizedFor(customer)){
                   // then add the customer to the response
                   CustomerType resp = new CustomerType();
-                  resp.setCustomerName(customer.getName());
                   resp.setCustomerId(customer.getId());
+                  resp.setCustomerName(customer.getName());
+                  resp.setCustomerDescription(customer.getDescription());
                   resp.setCustomerSize(customer.getSize());
                   resp.setCustomerVertical(customer.getVertical());
   
@@ -1322,7 +1348,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     // Get assessment summary data for UI's assessment summary screen
     // GET: /api/pathfinder/customers/{customerId}/applicationAssessmentSummary
     @Timed
-    public ResponseEntity<List<ApplicationSummaryType>> customersCustIdApplicationAssessmentSummaryGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+    public ResponseEntity<List<ApplicationSummaryType>> customersCustIdApplicationAssessmentSummaryGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId) {
         log.debug("customersCustIdApplicationAssessmentSummaryGet {}", custId);
         List<ApplicationSummaryType> resp = new ArrayList<>();
         try {
