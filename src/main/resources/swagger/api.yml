@@ -171,6 +171,10 @@ paths:
   /customers/{custId}/applications/{appId}:
     get:
       description: Get details of an Application for a customer
+      parameters:
+      - in: query
+        name: assessmentFields
+        type: string
       responses:
         200:
           description: Application Details
@@ -616,11 +620,12 @@ definitions:
       Review:
         description: ID of review, ignored on post
         type: string
+      AssessmentFields:
+        $ref: '#/definitions/AssessmentResponse'
       Stereotype:
         description: TARGETAPP, DEPENDENCY, PROFILE
         type: string
         enum: [TARGETAPP, DEPENDENCY, PROFILE]
-
 
   AssessmentResponse:
     description: map
@@ -732,7 +737,6 @@ definitions:
       IncompleteAnswersCount:
         description: Number of questions with 'Unknown' answers
         type: integer
-      
 
   DepsPairType:
     required:
@@ -768,5 +772,3 @@ definitions:
         Reviewed:
           description: number of applications reviewed
           type: integer
-
-

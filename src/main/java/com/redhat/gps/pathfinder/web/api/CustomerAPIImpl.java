@@ -249,20 +249,24 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
               answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
             
             try{
-              String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-              String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-              String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-              String questionText=question.at("title").asString();
-              
-              log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
-              
-              result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
+              if (assessment.getResults().containsKey(question.at("name").asString())){
+                
+                String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+                String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
+                String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
+                String questionText=question.at("title").asString();
+                
+//                log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
+                
+                result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
+              }
               
             }catch(Exception e){
               log.error(e.getMessage(), e);
               log.error("Error on: assessment.results="+assessment.getResults());
+              log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
               log.error("Error on: question.name="+question.at("name").asString());
-              log.error("Error on: assessment.results[question.name]="+assessment.getResults().get(question.at("name").asString()));
+              log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
             }
             
           }else if (question.at("type").asString().equals("rating")){
@@ -588,8 +592,11 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return new ResponseEntity<>("Unable to create assessment", HttpStatus.BAD_REQUEST);
     }
 
+    // Get Application
+    // GET: /customers/{customerId}/applications/{applicationId}
+    //
     @Timed
-    public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId) {
+    public ResponseEntity<ApplicationType> customersCustIdApplicationsAppIdGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId, @RequestParam(value = "assessmentFields", required = false) String assessmentFields) {
         log.debug("customersCustIdApplicationsAppIdGet cid {} app {}", custId, appId);
         ApplicationType response = new ApplicationType();
         //TODO : Check customer exists and owns application as well as application
@@ -604,6 +611,25 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
                 response.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
             }
+            
+//            String assessmentFields="BUSPRIORITY";
+//            System.out.println("ASSFIELDS="+assessmentFields);
+            if (null!=assessmentFields){
+              if (details.getAssessments()!=null && details.getAssessments().size()<=1){
+                Assessments assessment=details.getAssessments().get(details.getAssessments().size()-1);
+                for(String f:assessmentFields.split(",")){
+                  if (assessment.getResults().containsKey(f)){
+                    
+                    // init (doing it in here so we dont create and return this in the json unless we have fields
+                    if (response.getAssessmentFields()==null)
+                      response.setAssessmentFields(new AssessmentResponse());
+                    
+                    response.getAssessmentFields().put(f, assessment.getResults().get(f));
+                  }
+                }
+              }
+            }
+            
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
