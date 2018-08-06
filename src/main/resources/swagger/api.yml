@@ -165,6 +165,12 @@ paths:
       description: Customer Identifier
       required: true
       type: string
+    - in: query
+      name: direction
+      type: string
+      required: true
+      description: Specify the depedency direction from the applications persepctive NORTHBOUND = incoming to, SOUTHBOUND = outgoing from
+      enum: [NORTHBOUND,SOUTHBOUND]
 
 
 
@@ -644,13 +650,18 @@ definitions:
     type: object
     required:
     - payload
-    - deps
+    - depsOUT
+    - depsIN
     properties:
       payload:
         $ref: '#/definitions/AssessmentResponse'
       datetime:
         type: string
-      deps:
+      depsOUT:
+        type: array
+        items:
+          type: string
+      depsIN:
         type: array
         items:
           type: string
@@ -666,10 +677,14 @@ definitions:
          type: string
       BusinessPriority:
          type: string
-      Dependencies:
+      DependenciesIN:
          type: array
          items:
             type: string
+      DependenciesOUT:
+          type: array
+          items:
+              type: string
       AssessResults:
          type: array
          items:

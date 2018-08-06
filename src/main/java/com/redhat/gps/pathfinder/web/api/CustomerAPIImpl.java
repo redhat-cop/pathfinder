@@ -40,6 +40,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -87,7 +88,7 @@ import io.swagger.annotations.ApiParam;
 
 @RestController
 @RequestMapping("/api/pathfinder")
-public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
+public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
     private final Logger log = LoggerFactory.getLogger(CustomerAPIImpl.class);
 
@@ -100,7 +101,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     private final QuestionMetaDataRepository questionRepository;
 
     private final ReviewsRepository reviewRepository;
-    
+
     private final MembersRepository membersRepo;
 
     public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository, ReviewsRepository reviewRepository, MembersRepository membersRepository) {
@@ -110,261 +111,281 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         this.assmRepo = assmRepo;
         this.questionRepository = questionRepository;
         this.reviewRepository = reviewRepository;
-        this.membersRepo=membersRepository;
+        this.membersRepo = membersRepository;
     }
-    
-    
+
+
     // Non-Swagger api - report page content
-    @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/customers/{custId}/report", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
     public String getReport(@PathVariable("custId") String custId) throws IOException {
-      log.debug("getReport()...");
-      //classes for a specific json structure
+        log.debug("getReport()...");
+        //classes for a specific json structure
 //      class Summary{
 //        String name;        String getName() {return name;}              void setName(String v){this.name=v;}
 //        String percentage;  String getPercentage() {return percentage;}  void setPercentage(String v){this.percentage=v;}
 //      }
-      class Report{
-        Map<String,Double> s;
-        public Map<String,Double> getAssessmentSummary() {
-          if (null==s) s=new HashMap<String,Double>(); return s;
+        class Report {
+            Map<String, Double> s;
+
+            public Map<String, Double> getAssessmentSummary() {
+                if (null == s) s = new HashMap<String, Double>();
+                return s;
+            }
+
+            Map<String, List<String>> risks;
+
+            public Map<String, List<String>> getRisks() {
+                if (null == risks) risks = new HashMap<>();
+                return risks;
+            }
         }
-        Map<String,List<String>> risks;
-        public Map<String,List<String>> getRisks() {
-          if (null==risks) risks=new HashMap<>(); return risks;
-        }
-      }
-      
-      Report result=new Report();
-      
-      Customer customer=custRepo.findOne(custId);
-      
-      Map<String,Integer> overallStatusCount=new HashMap<>();
-      overallStatusCount.put("GREEN",0);
-      overallStatusCount.put("AMBER",0);
-      overallStatusCount.put("RED",0);
-      int assessmentTotal=0;
-      for(Applications app:customer.getApplications()){
-        if (null==app.getAssessments()) continue;
-        Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
-        
+
+        Report result = new Report();
+
+        Customer customer = custRepo.findOne(custId);
+
+        Map<String, Integer> overallStatusCount = new HashMap<>();
+        overallStatusCount.put("GREEN", 0);
+        overallStatusCount.put("AMBER", 0);
+        overallStatusCount.put("RED", 0);
+        int assessmentTotal = 0;
+        for (Applications app : customer.getApplications()) {
+            if (null == app.getAssessments()) continue;
+            Assessments assessment = app.getAssessments().get(app.getAssessments().size() - 1);
+
 //        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId());
-        
-        String assessmentOverallStatus="GREEN";
-        int mediumCount=0;
-        for(Entry<String, String> e:assessment.getResults().entrySet()){
+
+            String assessmentOverallStatus = "GREEN";
+            int mediumCount = 0;
+            for (Entry<String, String> e : assessment.getResults().entrySet()) {
 //          System.out.println(e.getKey() +"="+ e.getValue());
-          
-          // If ANY answers were RED, then the status is RED
-          if (e.getValue().contains("-RED")){
-            assessmentOverallStatus="RED";
-            
-            // add the RED item to the risk list and add the app name to the risk
-            if (result.getRisks().containsKey(e.getKey())){
-              result.getRisks().get(e.getKey()).add(app.getName());
-            }else{
-              List<String> l=new ArrayList<>();
-              l.add(app.getName());
-              result.getRisks().put(e.getKey(), l);
+
+                // If ANY answers were RED, then the status is RED
+                if (e.getValue().contains("-RED")) {
+                    assessmentOverallStatus = "RED";
+
+                    // add the RED item to the risk list and add the app name to the risk
+                    if (result.getRisks().containsKey(e.getKey())) {
+                        result.getRisks().get(e.getKey()).add(app.getName());
+                    } else {
+                        List<String> l = new ArrayList<>();
+                        l.add(app.getName());
+                        result.getRisks().put(e.getKey(), l);
+                    }
+                }
+
+                if (e.getValue().contains("-AMBER"))
+                    mediumCount = mediumCount + 1;
+
+                // If more than 30% of answers were AMBER, then overall rating is AMBER
+                if ((mediumCount / assessment.getResults().size()) > 0.3)
+                    assessmentOverallStatus = "AMBER";
             }
-          }
-          
-          if (e.getValue().contains("-AMBER"))
-            mediumCount=mediumCount+1;
-          
-          // If more than 30% of answers were AMBER, then overall rating is AMBER
-          if ((mediumCount/assessment.getResults().size())>0.3)
-            assessmentOverallStatus="AMBER";
+
+            System.out.println("getReport():: customer=" + customer.getName() + ", assessment=" + assessment.getId() + ", status=" + assessmentOverallStatus);
+
+            assessmentTotal = assessmentTotal + 1;
+            overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus) + 1);
+
+            System.out.println("getReport():: overallStatusCount=" + overallStatusCount);
         }
-        
-        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
-        
-        assessmentTotal=assessmentTotal+1;
-        overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus)+1);
-        
-        System.out.println("getReport():: overallStatusCount="+overallStatusCount);
-      }
-      
-      result.getAssessmentSummary().put("Easy",  Double.valueOf(overallStatusCount.get("GREEN")/assessmentTotal));
-      result.getAssessmentSummary().put("Medium",Double.valueOf(overallStatusCount.get("AMBER")/assessmentTotal));
-      result.getAssessmentSummary().put("Hard",  Double.valueOf(overallStatusCount.get("RED")/assessmentTotal));
-      
-      System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
-      
-      System.out.println("RETURNING THE REPORT.....");
-      
-      return Json.newObjectMapper(true).writeValueAsString(result);
+
+        result.getAssessmentSummary().put("Easy", Double.valueOf(overallStatusCount.get("GREEN") / assessmentTotal));
+        result.getAssessmentSummary().put("Medium", Double.valueOf(overallStatusCount.get("AMBER") / assessmentTotal));
+        result.getAssessmentSummary().put("Hard", Double.valueOf(overallStatusCount.get("RED") / assessmentTotal));
+
+        System.out.println("getReport():: SummaryList=" + result.getAssessmentSummary());
+
+        System.out.println("RETURNING THE REPORT.....");
+
+        return Json.newObjectMapper(true).writeValueAsString(result);
     }
-    
+
     // Non-Swagger api - returns the survey payload
-    @RequestMapping(value="/survey", method=GET, produces={"application/javascript"})
+    @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
     public String getSurvey() throws IOException {
-      return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"").replaceAll("JWT_TOKEN", "\"+jwtToken+\"") ;
+        return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"").replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
     }
-    
-    private String getSurveyContent() throws IOException{
-      return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("application-survey.js"), "UTF-8");
+
+    private String getSurveyContent() throws IOException {
+        return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("application-survey.js"), "UTF-8");
     }
-    
-    
+
+
     // Non-Swagger api - returns payload for the assessment summary page
-    @RequestMapping(value="/customers/{customerId}/applications/{appId}/assessments/{assessmentId}/viewAssessmentSummary", method=GET, produces={APPLICATION_JSON_VALUE})
-    public String viewAssessmentSummary(@PathVariable("customerId") String customerId, @PathVariable("appId") String appId, @PathVariable("assessmentId") String assessmentId) throws IOException{
-      class ApplicationAssessmentSummary{
-        public ApplicationAssessmentSummary(String q, String a, String r){
-          this.question=q;
-          this.answer=a;
-          this.rating=r;
-        }
-        private String question; public String getQuestion() {return question;}
-        private String answer;   public String getAnswer()   {return answer;}
-        private String rating;   public String getRating()   {return rating;}
-      }
-      log.debug("viewAssessmentSummary....");
-      
-      // Get the survey json content (and fiddle with it so it's readable)
-      String raw=getSurveyContent();
-      int start=raw.indexOf("pages: [{")+7;
-      int end=raw.indexOf("}],")+2;
-      String x=raw.substring(start, end);
-      
-      mjson.Json surveyJson=mjson.Json.read(x);
-      
-      // Find the assessment in mongo
-      Assessments assessment = assmRepo.findOne(assessmentId);
-      if (null==assessment){
-        log.error("Unable to find assessment: "+assessmentId);
-        return null;
-      }
-      
-      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
-      
-      for(mjson.Json page:surveyJson.asJsonList()){
-        for(mjson.Json question:page.at("questions").asJsonList()){
-          
-          if (question.at("type").asString().equals("radiogroup")){
-            
-            Map<String, String> answerRankingMap=new HashMap<String, String>();
-            for(mjson.Json a:question.at("choices").asJsonList())
-              answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
-            
-            try{
-              String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-              String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-              String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-              String questionText=question.at("title").asString();
-              
-              log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
-              
-              result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
-              
-            }catch(Exception e){
-              log.error(e.getMessage(), e);
-              log.error("Error on: assessment.results="+assessment.getResults());
-              log.error("Error on: question.name="+question.at("name").asString());
-              log.error("Error on: assessment.results[question.name]="+assessment.getResults().get(question.at("name").asString()));
+    @RequestMapping(value = "/customers/{customerId}/applications/{appId}/assessments/{assessmentId}/viewAssessmentSummary", method = GET, produces = {APPLICATION_JSON_VALUE})
+    public String viewAssessmentSummary(@PathVariable("customerId") String customerId, @PathVariable("appId") String appId, @PathVariable("assessmentId") String assessmentId) throws IOException {
+        class ApplicationAssessmentSummary {
+            public ApplicationAssessmentSummary(String q, String a, String r) {
+                this.question = q;
+                this.answer = a;
+                this.rating = r;
             }
-            
-          }else if (question.at("type").asString().equals("rating")){
-            // leave this out since it's things like "Select the app..."
-          }
+
+            private String question;
+
+            public String getQuestion() {
+                return question;
+            }
+
+            private String answer;
+
+            public String getAnswer() {
+                return answer;
+            }
+
+            private String rating;
+
+            public String getRating() {
+                return rating;
+            }
         }
-      }
-      return Json.newObjectMapper(true).writeValueAsString(result);
+        log.debug("viewAssessmentSummary....");
+
+        // Get the survey json content (and fiddle with it so it's readable)
+        String raw = getSurveyContent();
+        int start = raw.indexOf("pages: [{") + 7;
+        int end = raw.indexOf("}],") + 2;
+        String x = raw.substring(start, end);
+
+        mjson.Json surveyJson = mjson.Json.read(x);
+
+        // Find the assessment in mongo
+        Assessments assessment = assmRepo.findOne(assessmentId);
+        if (null == assessment) {
+            log.error("Unable to find assessment: " + assessmentId);
+            return null;
+        }
+
+        List<ApplicationAssessmentSummary> result = new ArrayList<ApplicationAssessmentSummary>();
+
+        for (mjson.Json page : surveyJson.asJsonList()) {
+            for (mjson.Json question : page.at("questions").asJsonList()) {
+
+                if (question.at("type").asString().equals("radiogroup")) {
+
+                    Map<String, String> answerRankingMap = new HashMap<String, String>();
+                    for (mjson.Json a : question.at("choices").asJsonList())
+                        answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
+
+                    try {
+                        String answerOrdinal = ((String) assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+                        String answerRating = answerRankingMap.get(answerOrdinal).split("\\|")[0];
+                        String answerText = answerRankingMap.get(answerOrdinal).split("\\|")[1];
+                        String questionText = question.at("title").asString();
+
+                        log.debug("questionText=" + questionText + ", answerOrdinal=" + answerOrdinal + ", answerText=" + answerText + ", rating=" + answerRating);
+
+                        result.add(new ApplicationAssessmentSummary(question.at("title").asString(), answerText, answerRating));
+
+                    } catch (Exception e) {
+                        log.error(e.getMessage(), e);
+                        log.error("Error on: assessment.results=" + assessment.getResults());
+                        log.error("Error on: question.name=" + question.at("name").asString());
+                        log.error("Error on: assessment.results[question.name]=" + assessment.getResults().get(question.at("name").asString()));
+                    }
+
+                } else if (question.at("type").asString().equals("rating")) {
+                    // leave this out since it's things like "Select the app..."
+                }
+            }
+        }
+        return Json.newObjectMapper(true).writeValueAsString(result);
     }
-    
+
     // Get Members
     // GET: /api/pathfinder/customers/{customerId}/member/
-    public ResponseEntity<List<MemberType>> customersCustIdMembersGet(@ApiParam(value="", required=true) @PathVariable("custId") String custId){
-      List<MemberType> result=new ArrayList<MemberType>();
-  
-      Customer customer=custRepo.findOne(custId);
-  
-      if (customer == null) {
-        log.error("customersCustIdMembersGet....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      
-      for(Member m:customer.getMembers()){
-        MemberType member=new MemberType();
-        member.setUsername(m.getUsername());
-        member.setDisplayName(m.getDisplayName());
+    public ResponseEntity<List<MemberType>> customersCustIdMembersGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId) {
+        List<MemberType> result = new ArrayList<MemberType>();
+
+        Customer customer = custRepo.findOne(custId);
+
+        if (customer == null) {
+            log.error("customersCustIdMembersGet....customer not found " + custId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        if (null == customer.getMembers())
+            customer.setMembers(new ArrayList<>());
+
+        for (Member m : customer.getMembers()) {
+            MemberType member = new MemberType();
+            member.setUsername(m.getUsername());
+            member.setDisplayName(m.getDisplayName());
 //        member.setId(m.getId());
-        member.setEmail(m.getEmail());
-        member.setPassword(m.getPassword());
-        member.setCustomerId(customer.getId());
+            member.setEmail(m.getEmail());
+            member.setPassword(m.getPassword());
+            member.setCustomerId(customer.getId());
 //        member.setCustomer(m.get);
-        result.add(member);
-      }
-      
-      return new ResponseEntity<>(result, HttpStatus.OK);
+            result.add(member);
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
-    
-    
+
+
     // Create Member
     // POST: /api/pathfinder/customers/{customerId}/members/
-    public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
-      
-      Customer customer=custRepo.findOne(custId);
-      
-      if (customer == null) {
-        log.error("customersCustIdMembersPost....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      
-      Member newMember=new Member();
+    public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Member Details") @Valid @RequestBody MemberType body) {
+
+        Customer customer = custRepo.findOne(custId);
+
+        if (customer == null) {
+            log.error("customersCustIdMembersPost....customer not found " + custId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+
+        Member newMember = new Member();
 //      newMember.setId(UUID.randomUUID().toString());
-      newMember.setUsername(body.getUsername());
-      newMember.setDisplayName(body.getDisplayName());
-      newMember.setPassword(body.getPassword());
-      newMember.setEmail(body.getEmail());
-      newMember.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
-      newMember.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
-      
-      
-      newMember.setCustomer(customer);
-      membersRepo.save(newMember);
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      customer.getMembers().add(newMember);
-      custRepo.save(customer);
-      
-      return new ResponseEntity<String>(HttpStatus.OK);
+        newMember.setUsername(body.getUsername());
+        newMember.setDisplayName(body.getDisplayName());
+        newMember.setPassword(body.getPassword());
+        newMember.setEmail(body.getEmail());
+        newMember.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
+        newMember.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
+
+
+        newMember.setCustomer(customer);
+        membersRepo.save(newMember);
+
+        if (null == customer.getMembers())
+            customer.setMembers(new ArrayList<>());
+        customer.getMembers().add(newMember);
+        custRepo.save(customer);
+
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
     // Delete Member(s)
-    public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Target member IDs"  )  @Valid @RequestBody IdentifierList body) {
-      
-      Customer customer=custRepo.findOne(custId);
-      
-      if (customer == null) {
-        log.error("customersCustIdMembersPost....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      
-      body.forEach((id)-> {
-        log.debug("Deleting Member "+id);
-        List<Member> newMembers=new ArrayList<>();
-        for(Member m:customer.getMembers()){
-          if (!m.getUsername().equals(id))
-            newMembers.add(m);
+    public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Target member IDs") @Valid @RequestBody IdentifierList body) {
+
+        Customer customer = custRepo.findOne(custId);
+
+        if (customer == null) {
+            log.error("customersCustIdMembersPost....customer not found " + custId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        customer.setMembers(newMembers);
-      });
-      custRepo.save(customer);
-      
-      return new ResponseEntity<String>(HttpStatus.OK);
+
+        if (null == customer.getMembers())
+            customer.setMembers(new ArrayList<>());
+
+        body.forEach((id) -> {
+            log.debug("Deleting Member " + id);
+            List<Member> newMembers = new ArrayList<>();
+            for (Member m : customer.getMembers()) {
+                if (!m.getUsername().equals(id))
+                    newMembers.add(m);
+            }
+            customer.setMembers(newMembers);
+        });
+        custRepo.save(customer);
+
+        return new ResponseEntity<String>(HttpStatus.OK);
     }
 
-    
+
     ////// ###############
 //    public void dummy(){
 //      Assessments currAssm = assmRepo.findOne(assessId);
@@ -393,7 +414,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 //      resp.setBusinessPriority(currAssm.getResults().get("BUSPRIORITY"));
 //    }
     ///// ###################
-    
+
     @Timed
     public ResponseEntity<ApplicationNames> customersCustIdApplicationsAppIdCopyPost(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Target Application Names") @Valid @RequestBody ApplicationNames body) {
         log.debug("customersCustIdApplicationsAppIdCopyPost....{} ", body.toString());
@@ -432,53 +453,55 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 log.warn("customersCustIdApplicationsAppIdAssessmentsPost....now assessments for app " + appId);
 //                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
             }
-            Assessments latestAssessment = currAssessments==null?null:currAssessments.get(currAssessments.size() - 1);
+            Assessments latestAssessment = currAssessments == null ? null : currAssessments.get(currAssessments.size() - 1);
 
 //            List<Applications> listApps = currCust.getApplications();
 
-            body.forEach((appName)-> {
-                log.debug("Creating application "+appName);
-                
+            body.forEach((appName) -> {
+                log.debug("Creating application " + appName);
+
                 //Create application
                 Applications newApp = new Applications();
                 newApp.setId(UUID.randomUUID().toString());
                 newApp.setName(appName);
                 newApp.setDescription(currApp.getDescription());
                 newApp.setStereotype(currApp.getStereotype());
-                
+
                 //Copy Assessment (latest only)
-                if (latestAssessment!=null){
-                  Assessments newAssessment = new Assessments();
-                  newAssessment.setId(UUID.randomUUID().toString());
-                  newAssessment.setDatetime(latestAssessment.getDatetime());
-                  if (!latestAssessment.getDeps().isEmpty())
-                    newAssessment.setDeps(latestAssessment.getDeps());
-                  newAssessment.setResults(latestAssessment.getResults());
-                  newAssessment = assmRepo.save(newAssessment);
-                  if (newApp.getAssessments()==null) newApp.setAssessments(new ArrayList<>());
-                  newApp.getAssessments().add(newAssessment);
-                  
-                  //Copy review
-                  if (currReview!=null) {
-                    ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
-                        currReview.getReviewDate(),
-                        newAssessment,
-                        currReview.getReviewDecision(),
-                        currReview.getReviewEstimate(),
-                        currReview.getReviewNotes(),
-                        currReview.getWorkPriority(),
-                        currReview.getBusinessPriority());
-                    newReview.setId(UUID.randomUUID().toString());
-                    newReview = reviewRepository.insert(newReview);
-                    newApp.setReview(newReview);
-                  }
-                  
+                if (latestAssessment != null) {
+                    Assessments newAssessment = new Assessments();
+                    newAssessment.setId(UUID.randomUUID().toString());
+                    newAssessment.setDatetime(latestAssessment.getDatetime());
+                    if (!latestAssessment.getDepsIN().isEmpty())
+                        newAssessment.setDepsIN(latestAssessment.getDepsIN());
+                    if (!latestAssessment.getDepsOUT().isEmpty())
+                        newAssessment.setDepsOUT(latestAssessment.getDepsOUT());
+                    newAssessment.setResults(latestAssessment.getResults());
+                    newAssessment = assmRepo.save(newAssessment);
+                    if (newApp.getAssessments() == null) newApp.setAssessments(new ArrayList<>());
+                    newApp.getAssessments().add(newAssessment);
+
+                    //Copy review
+                    if (currReview != null) {
+                        ApplicationAssessmentReview newReview = new ApplicationAssessmentReview(
+                            currReview.getReviewDate(),
+                            newAssessment,
+                            currReview.getReviewDecision(),
+                            currReview.getReviewEstimate(),
+                            currReview.getReviewNotes(),
+                            currReview.getWorkPriority(),
+                            currReview.getBusinessPriority());
+                        newReview.setId(UUID.randomUUID().toString());
+                        newReview = reviewRepository.insert(newReview);
+                        newApp.setReview(newReview);
+                    }
+
                 }
-                
+
                 newApp = appsRepo.insert(newApp);
-                
+
                 currCust.getApplications().add(newApp);
-                
+
 //                listApps.add(newApp);
                 appIDS.add(newApp.getId());
             });
@@ -501,7 +524,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         try {
             Assessments currAssm = assmRepo.findOne(assessId);
             if (currAssm != null) {
-                resp.setDeps(currAssm.getDeps());
+                resp.setDepsIN(currAssm.getDepsIN());
+                resp.setDepsOUT(currAssm.getDepsOUT());
                 AssessmentResponse tempPayload = new AssessmentResponse();
 
                 for (Object o : currAssm.getResults().entrySet()) {
@@ -565,7 +589,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 Assessments newitem = new Assessments();
                 newitem.setId(UUID.randomUUID().toString());
                 newitem.setResults(body.getPayload());
-                newitem.setDeps(body.getDeps());
+                newitem.setDepsIN(body.getDepsIN());
+                newitem.setDepsOUT(body.getDepsOUT());
                 newitem.setDatetime(body.getDatetime());
 
                 newitem = assmRepo.insert(newitem);
@@ -611,74 +636,73 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    
+
     @Override
     @Timed
     public ResponseEntity<String> customersCustIdApplicationsDelete(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Target Application Names") @Valid @RequestBody ApplicationNames body) {
-      log.info("customersCustIdApplicationsDelete....[" + custId + "]");
-      
-      try {
-        Customer currCust = custRepo.findOne(custId);
-        if (currCust == null) {
-            log.error("customersCustIdApplicationsDelete....customer not found {}", custId);
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        
-        for(String appId: body){
-          
-          try{
-            
-            Applications delApp = appsRepo.findOne(appId);
-            if (delApp == null) {
-              log.error("customersCustIdApplicationsDelete....application not found {}", appId);
-              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            
-            List<Applications> currApps = currCust.getApplications();
-            
-            List<Applications> newApps = new ArrayList<>();
-            boolean appFound = false;
-            
-            for (Applications x : currApps) {
-              if (x.getId().equalsIgnoreCase(appId)) {
-                appFound = true;
-              } else {
-                newApps.add(x);
-              }
-            }
-            
-            if (!appFound) {
-              log.error("customersCustIdApplicationsAppIdDelete....application not found {} in customer list {}", appId, custId);
-              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            
-            currCust.setApplications(newApps);
-            custRepo.save(currCust);
-            
-            if (delApp.getReview() != null)
-              reviewRepository.delete(delApp.getReview());
-            
-            if (delApp.getAssessments() != null)
-              assmRepo.delete(delApp.getAssessments());
-            
-            appsRepo.delete(appId);
-            
-          
-          } catch (Exception ex) {
-            log.error("Error while deleting application ["+appId+"]", ex.getMessage(), ex);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-          }
-          
-        }
+        log.info("customersCustIdApplicationsDelete....[" + custId + "]");
 
-      } catch (Exception ex) {
-          log.error("Error with customer ["+custId+"] while deleting application(s)", ex.getMessage(), ex);
-          return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-      return new ResponseEntity<>(HttpStatus.OK);
+        try {
+            Customer currCust = custRepo.findOne(custId);
+            if (currCust == null) {
+                log.error("customersCustIdApplicationsDelete....customer not found {}", custId);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
+            for (String appId : body) {
+
+                try {
+
+                    Applications delApp = appsRepo.findOne(appId);
+                    if (delApp == null) {
+                        log.error("customersCustIdApplicationsDelete....application not found {}", appId);
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+
+                    List<Applications> currApps = currCust.getApplications();
+
+                    List<Applications> newApps = new ArrayList<>();
+                    boolean appFound = false;
+
+                    for (Applications x : currApps) {
+                        if (x.getId().equalsIgnoreCase(appId)) {
+                            appFound = true;
+                        } else {
+                            newApps.add(x);
+                        }
+                    }
+
+                    if (!appFound) {
+                        log.error("customersCustIdApplicationsAppIdDelete....application not found {} in customer list {}", appId, custId);
+                        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+                    }
+
+                    currCust.setApplications(newApps);
+                    custRepo.save(currCust);
+
+                    if (delApp.getReview() != null)
+                        reviewRepository.delete(delApp.getReview());
+
+                    if (delApp.getAssessments() != null)
+                        assmRepo.delete(delApp.getAssessments());
+
+                    appsRepo.delete(appId);
+
+
+                } catch (Exception ex) {
+                    log.error("Error while deleting application [" + appId + "]", ex.getMessage(), ex);
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+
+            }
+
+        } catch (Exception ex) {
+            log.error("Error with customer [" + custId + "] while deleting application(s)", ex.getMessage(), ex);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<>(HttpStatus.OK);
     }
-    
-    
+
 
     // Get Applications
     // GET: /api/pathfinder/customers/{customerId}/applications/
@@ -694,7 +718,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
             List<Applications> resp = customer.getApplications();
-            if (isAuthorizedFor(customer)){
+            if (isAuthorizedFor(customer)) {
                 if ((resp != null) && (!resp.isEmpty())) {
                     for (Applications x : resp) {
                         ApplicationType app = new ApplicationType();
@@ -705,7 +729,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                         }
                         app.setDescription(x.getDescription());
                         app.setOwner(x.getOwner());
-                        
+
                         if (x.getStereotype() != null) {
                             if (apptype != null) {
                                 switch (apptype) {
@@ -757,54 +781,54 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         log.debug("customersCustIdApplicationsPost....");
         return createOrUpdateApplication(custId, null, body);
     }
-    
+
     // Update application
     // POST: /api/pathfinder/customers/{customerId}/applications/{applicationId}
-    public ResponseEntity<String> customersCustIdApplicationsAppIdPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Application Identifier",required=true ) @PathVariable("appId") String appId,@ApiParam(value = "Application Definition"  )  @Valid @RequestBody ApplicationType body) {
-      log.debug("customersCustIdApplicationsAppIdPost....");
-      return createOrUpdateApplication(custId, appId, body);
+    public ResponseEntity<String> customersCustIdApplicationsAppIdPost(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "Application Identifier", required = true) @PathVariable("appId") String appId, @ApiParam(value = "Application Definition") @Valid @RequestBody ApplicationType body) {
+        log.debug("customersCustIdApplicationsAppIdPost....");
+        return createOrUpdateApplication(custId, appId, body);
     }
-    
-    public ResponseEntity<String> createOrUpdateApplication(String custId, String appId, ApplicationType body){
-      Customer myCust = custRepo.findOne(custId);
-      if (myCust == null) {
-          return new ResponseEntity<>(custId, HttpStatus.BAD_REQUEST);
-      } else {
-        
-        Applications app;
-        if (appId==null){
-          app=new Applications();
-          app.setId(UUID.randomUUID().toString());
-        }else{
-          app=appsRepo.findOne(appId);
-        }
-        
-        app.setName(body.getName());
-        app.setDescription(body.getDescription());
-        app.setOwner(body.getOwner());
-        
-        if (body.getStereotype() == null) {
-            log.warn("createOrUpdateApplication....application stereotype missing ");
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+    public ResponseEntity<String> createOrUpdateApplication(String custId, String appId, ApplicationType body) {
+        Customer myCust = custRepo.findOne(custId);
+        if (myCust == null) {
+            return new ResponseEntity<>(custId, HttpStatus.BAD_REQUEST);
         } else {
-            app.setStereotype(body.getStereotype().toString());
+
+            Applications app;
+            if (appId == null) {
+                app = new Applications();
+                app.setId(UUID.randomUUID().toString());
+            } else {
+                app = appsRepo.findOne(appId);
+            }
+
+            app.setName(body.getName());
+            app.setDescription(body.getDescription());
+            app.setOwner(body.getOwner());
+
+            if (body.getStereotype() == null) {
+                log.warn("createOrUpdateApplication....application stereotype missing ");
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            } else {
+                app.setStereotype(body.getStereotype().toString());
+            }
+            app = appsRepo.save(app);
+
+            if (appId == null) {
+                List<Applications> appList = myCust.getApplications();
+                if (appList == null) {
+                    appList = new ArrayList<Applications>();
+                }
+                appList.add(app);
+                myCust.setApplications(appList);
+                custRepo.save(myCust);
+            }
+            return new ResponseEntity<>(app.getId(), HttpStatus.OK);
         }
-        app = appsRepo.save(app);
-        
-        if (appId==null){
-          List<Applications> appList = myCust.getApplications();
-          if (appList == null) {
-            appList = new ArrayList<Applications>();
-          }
-          appList.add(app);
-          myCust.setApplications(appList);
-          custRepo.save(myCust);
-        }
-        return new ResponseEntity<>(app.getId(), HttpStatus.OK);
-      }
     }
-    
-    
+
+
     // Get Customer
     // GET: /api/pathfinder/customers/{customerId}
     @Timed
@@ -833,89 +857,89 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         log.debug("customersPost....{}", body);
         return createOrUpdateCustomer(null, body);
     }
-    
+
     // Update Customer
     // POST: /api/pathfinder/customers/{custId}
-    public ResponseEntity<String> customersCustIdPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = ""  )  @Valid @RequestBody CustomerType body) {
+    public ResponseEntity<String> customersCustIdPost(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @ApiParam(value = "") @Valid @RequestBody CustomerType body) {
         log.debug("customersCustIdPost....{}", body);
         return createOrUpdateCustomer(custId, body);
     }
-    
-    public ResponseEntity<String> createOrUpdateCustomer(String custId, CustomerType body){
-      Customer myCust;
-      if (custId==null){
-        myCust=new Customer();
-        myCust.setId(UUID.randomUUID().toString());
-      }else{
-        myCust=custRepo.findOne(custId);
-      }
-      
-      myCust.setName(body.getCustomerName());
-      myCust.setDescription(body.getCustomerDescription());
-      myCust.setVertical(body.getCustomerVertical());
-      myCust.setSize(body.getCustomerSize());
-      myCust.setRtilink(body.getCustomerRTILink());
-      myCust.setVertical(body.getCustomerVertical());
-      myCust.setAssessor(body.getCustomerAssessor());
-      try {
-          myCust=custRepo.save(myCust);
-      } catch (Exception ex) {
-          log.error("Unable to Create customer ", ex.getMessage(), ex);
-          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-      }
-      return new ResponseEntity<>(myCust.getId(), HttpStatus.OK);
+
+    public ResponseEntity<String> createOrUpdateCustomer(String custId, CustomerType body) {
+        Customer myCust;
+        if (custId == null) {
+            myCust = new Customer();
+            myCust.setId(UUID.randomUUID().toString());
+        } else {
+            myCust = custRepo.findOne(custId);
+        }
+
+        myCust.setName(body.getCustomerName());
+        myCust.setDescription(body.getCustomerDescription());
+        myCust.setVertical(body.getCustomerVertical());
+        myCust.setSize(body.getCustomerSize());
+        myCust.setRtilink(body.getCustomerRTILink());
+        myCust.setVertical(body.getCustomerVertical());
+        myCust.setAssessor(body.getCustomerAssessor());
+        try {
+            myCust = custRepo.save(myCust);
+        } catch (Exception ex) {
+            log.error("Unable to Create customer ", ex.getMessage(), ex);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(myCust.getId(), HttpStatus.OK);
     }
-    
+
     // Get Customers
     // GET: /api/pathfinder/customers/
     @Timed
     public ResponseEntity<List<CustomerType>> customersGet() {
         log.debug("customersGet....");
         ArrayList<CustomerType> response = new ArrayList<>();
-        
-        List<Customer> customers=custRepo.findAll();
+
+        List<Customer> customers = custRepo.findAll();
         if (customers == null) {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
-            for (Customer customer:customers) {
-                if (isAuthorizedFor(customer)){
-                  // then add the customer to the response
-                  CustomerType resp = new CustomerType();
-                  resp.setCustomerName(customer.getName());
-                  resp.setCustomerId(customer.getId());
-                  resp.setCustomerSize(customer.getSize());
-                  resp.setCustomerVertical(customer.getVertical());
-  
-                  int total = customer.getApplications() != null ? customer.getApplications().size() : 0;
-                  resp.setCustomerAssessor(customer.getAssessor());
-                  resp.setCustomerRTILink(customer.getRtilink());
-  
-                  int assessedCount = 0;
-                  int reviewedCount = 0;
-                  if (total > 0) {
-                      for (Applications app : customer.getApplications()) {
-                          ApplicationAssessmentReview review = app.getReview();
-                          // if review is null, then it's not been reviewed
-                          reviewedCount += (review != null ? 1 : 0);
-  
-                          List<Assessments> assmList = app.getAssessments();
-                          if ((assmList != null) && (!assmList.isEmpty())) {
-                              assessedCount += 1;
-                          }
-                      }
-                      // reviewedCount + assessedCount / potential total (ie. total * 2)
-                      BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount + reviewedCount) / (double) (total * 2));
-                      percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
-                      resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
-                      
-                  } else {
-                      resp.setCustomerPercentageComplete(0);
-                  }
-                  
-                  resp.setCustomerAppCount(customer.getApplications()==null?0:customer.getApplications().size());
-                  resp.setCustomerMemberCount(customer.getMembers()==null?0:customer.getMembers().size());
-  
-                  response.add(resp);
+            for (Customer customer : customers) {
+                if (isAuthorizedFor(customer)) {
+                    // then add the customer to the response
+                    CustomerType resp = new CustomerType();
+                    resp.setCustomerName(customer.getName());
+                    resp.setCustomerId(customer.getId());
+                    resp.setCustomerSize(customer.getSize());
+                    resp.setCustomerVertical(customer.getVertical());
+
+                    int total = customer.getApplications() != null ? customer.getApplications().size() : 0;
+                    resp.setCustomerAssessor(customer.getAssessor());
+                    resp.setCustomerRTILink(customer.getRtilink());
+
+                    int assessedCount = 0;
+                    int reviewedCount = 0;
+                    if (total > 0) {
+                        for (Applications app : customer.getApplications()) {
+                            ApplicationAssessmentReview review = app.getReview();
+                            // if review is null, then it's not been reviewed
+                            reviewedCount += (review != null ? 1 : 0);
+
+                            List<Assessments> assmList = app.getAssessments();
+                            if ((assmList != null) && (!assmList.isEmpty())) {
+                                assessedCount += 1;
+                            }
+                        }
+                        // reviewedCount + assessedCount / potential total (ie. total * 2)
+                        BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount + reviewedCount) / (double) (total * 2));
+                        percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
+                        resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
+
+                    } else {
+                        resp.setCustomerPercentageComplete(0);
+                    }
+
+                    resp.setCustomerAppCount(customer.getApplications() == null ? 0 : customer.getApplications().size());
+                    resp.setCustomerMemberCount(customer.getMembers() == null ? 0 : customer.getMembers().size());
+
+                    response.add(resp);
                 }
             }
             return new ResponseEntity<>(response, HttpStatus.OK);
@@ -925,48 +949,48 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     @Timed
     public ResponseEntity<Void> customersDelete(@ApiParam(value = "Target Customer Names") @Valid @RequestBody ApplicationNames body) {
         log.debug("customersDelete....");
-        
-        for(String customerId: body){
-          log.debug("customersDelete: deleting customer [{}]", customerId);
-          try{
-            
-            Customer c=custRepo.findOne(customerId);
-            if (c==null){
-              log.error("customersDelete....customer not found {}", customerId);
-              return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
-            
-            log.debug("customersDelete: customer [{}] had "+(c.getApplications()!=null?c.getApplications().size():0)+" apps", customerId);
-            if (null!=c.getApplications()){
-              for (Applications app:c.getApplications()){
-                log.debug("customersDelete: deleting customer [{}] application [{}]", customerId, app.getId());
-                
-                if (null!=app.getAssessments()){
-                  for(Assessments ass:app.getAssessments()){
-                    log.debug("customersDelete: deleting customer [{}] application [{}] assessment [{}]", customerId, app.getId(), ass.getId());
-                    
-                    assmRepo.delete(ass.getId());
-                  }
+
+        for (String customerId : body) {
+            log.debug("customersDelete: deleting customer [{}]", customerId);
+            try {
+
+                Customer c = custRepo.findOne(customerId);
+                if (c == null) {
+                    log.error("customersDelete....customer not found {}", customerId);
+                    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
                 }
-                
-                if (null!=app.getReview()){
-                  reviewRepository.delete(app.getReview().getId());
+
+                log.debug("customersDelete: customer [{}] had " + (c.getApplications() != null ? c.getApplications().size() : 0) + " apps", customerId);
+                if (null != c.getApplications()) {
+                    for (Applications app : c.getApplications()) {
+                        log.debug("customersDelete: deleting customer [{}] application [{}]", customerId, app.getId());
+
+                        if (null != app.getAssessments()) {
+                            for (Assessments ass : app.getAssessments()) {
+                                log.debug("customersDelete: deleting customer [{}] application [{}] assessment [{}]", customerId, app.getId(), ass.getId());
+
+                                assmRepo.delete(ass.getId());
+                            }
+                        }
+
+                        if (null != app.getReview()) {
+                            reviewRepository.delete(app.getReview().getId());
+                        }
+
+                        appsRepo.delete(app.getId());
+                    }
                 }
-                
-                appsRepo.delete(app.getId());
-              }
+
+                custRepo.delete(customerId);
+
+            } catch (Exception e) {
+                log.error("Error deleting customer [" + customerId + "] ", e.getMessage(), e);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            
-            custRepo.delete(customerId);
-            
-          }catch(Exception e){
-            log.error("Error deleting customer ["+customerId+"] ", e.getMessage(), e);
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-          }
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     @Timed
     public ResponseEntity<AssessmentProcessType> customersCustIdApplicationsAppIdAssessmentsAssessIdProcessGet
         (@ApiParam(value = "", required = true) @PathVariable("custId") String
@@ -1001,7 +1025,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 //            }
             resp.setAssessResults(assessResults);
             resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
-            resp.setDependencies(currAssm.getDeps());
+            resp.setDependenciesIN(currAssm.getDepsIN());
+            resp.setDependenciesOUT(currAssm.getDepsOUT());
             resp.setBusinessPriority(currAssm.getResults().get("BUSPRIORITY"));
 
         } catch (Exception ex) {
@@ -1049,7 +1074,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 
             return new ResponseEntity<>(reviewData.getId(), HttpStatus.OK);
 //            return ResponseEntity.status(302).location(new URI(""));
-            
+
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -1292,7 +1317,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         }
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    
+
     // Get assessment summary data for UI's assessment summary screen
     // GET: /api/pathfinder/customers/{customerId}/applicationAssessmentSummary
     @Timed
@@ -1314,7 +1339,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             } else {
 
                 for (Applications currApp : apps) {
-                    if (currApp.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())){
+                    if (currApp.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())) {
                         ApplicationSummaryType item = new ApplicationSummaryType();
                         item.setId(currApp.getId());
                         item.setName(currApp.getName());
@@ -1330,9 +1355,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                             Assessments currAssm = assmList.get(assmList.size() - 1);
                             item.assessed(true);
                             item.setLatestAssessmentId(currAssm.getId());
-                            
+
                             item.setIncompleteAnswersCount(Collections.frequency(currAssm.getResults().values(), "0-UNKNOWN"));
-                            item.setCompleteAnswersCount(currAssm.getResults().size()-item.getIncompleteAnswersCount());
+                            item.setCompleteAnswersCount(currAssm.getResults().size() - item.getIncompleteAnswersCount());
                         } else {
                             item.assessed(false);
                         }
@@ -1394,7 +1419,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     }
 
 
-    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+//    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+
+    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @NotNull @ApiParam(value = "Specify the depedency direction from the applications persepctive NORTHBOUND = incoming to, SOUTHBOUND = outgoing from", required = true, allowableValues = "NORTHBOUND, SOUTHBOUND") @RequestParam(value = "direction", required = true) String direction) {
+
         log.debug("customersCustIdDependencyTreeGet {}", custId);
         DependenciesListType respDeps = new DependenciesListType();
 
@@ -1413,23 +1441,37 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 for (Applications currApp : apps) {
                     List<Assessments> currAssmList = currApp.getAssessments();
 
-                    if (currAssmList==null || currAssmList.size() == 0) {
+                    if (currAssmList == null || currAssmList.size() == 0) {
                         log.info("Application {} has no assessments...", currApp.getId());
                     } else {
 
                         String assmID = currAssmList.get(currAssmList.size() - 1).getId();
                         Assessments currAssm = assmRepo.findOne(assmID);
+                        List<String> depList;
 
-                        List<String> depList = currAssm.getDeps();
-
-                        if (depList.size() == 0) {
-                            log.info("Application {} has no dependencies...", currApp.getId());
+                        if (direction.equals("NORTHBOUND")) {
+                            depList = currAssm.getDepsIN();
+                            if (depList.size() == 0) {
+                                log.info("Application {} has no NorthBound dependencies...", currApp.getId());
+                            } else {
+                                for (String currDep : depList) {
+                                    DepsPairType dep = new DepsPairType();
+                                    dep.to(currApp.getId());
+                                    dep.from(currDep);
+                                    respDeps.addDepsListItem(dep);
+                                }
+                            }
                         } else {
-                            for (String currDep : depList) {
-                                DepsPairType dep = new DepsPairType();
-                                dep.from(currApp.getId());
-                                dep.to(currDep);
-                                respDeps.addDepsListItem(dep);
+                            depList = currAssm.getDepsOUT();
+                            if (depList.size() == 0) {
+                                log.info("Application {} has no SouthBound dependencies...", currApp.getId());
+                            } else {
+                                for (String currDep : depList) {
+                                    DepsPairType dep = new DepsPairType();
+                                    dep.from(currApp.getId());
+                                    dep.to(currDep);
+                                    respDeps.addDepsListItem(dep);
+                                }
                             }
                         }
                     }

@@ -52,25 +52,38 @@ public class Assessments implements Serializable {
     private HashMap<String, String> results;
 
 
-    @Field("dependencies")
-    private List<String> deps = new ArrayList<String>();
+    @Field("dependenciesIN")
+    private List<String> depsIN = new ArrayList<String>();
+
+    @Field("dependenciesOUT")
+    private List<String> depsOUT = new ArrayList<String>();
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
         Assessments that = (Assessments) o;
         return Objects.equals(id, that.id) &&
             Objects.equals(results, that.results) &&
-            Objects.equals(deps, that.deps) &&
+            Objects.equals(depsIN, that.depsIN) &&
+            Objects.equals(depsOUT, that.depsOUT) &&
             Objects.equals(datetime, that.datetime);
     }
 
     @Override
     public int hashCode() {
+        return Objects.hash(id, results, depsIN, depsOUT, datetime);
+    }
 
-        return Objects.hash(super.hashCode(), id, results, deps, datetime);
+    @Override
+    public String toString() {
+        return "Assessments{" +
+            "id='" + id + '\'' +
+            ", results=" + results +
+            ", depsIN=" + depsIN +
+            ", depsOUT=" + depsOUT +
+            ", datetime='" + datetime + '\'' +
+            '}';
     }
 
     public String getDatetime() {
@@ -94,16 +107,6 @@ public class Assessments implements Serializable {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return "Assessments{" +
-            "id='" + id + '\'' +
-            ", results=" + results +
-            ", deps=" + deps +
-            ", datetime='" + datetime + '\'' +
-            '}';
-    }
-
     public HashMap<String, String> getResults() {
         return results;
     }
@@ -117,14 +120,19 @@ public class Assessments implements Serializable {
         this.results = results;
     }
 
-    public List<String> getDeps() {
-        return deps;
+    public List<String> getDepsIN() {
+        return depsIN;
     }
 
-    public void setDeps(List<String> deps) {
-        this.deps = deps;
+    public void setDepsIN(List<String> depsIN) {
+        this.depsIN = depsIN;
     }
 
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
+    public List<String> getDepsOUT() {
+        return depsOUT;
+    }
 
+    public void setDepsOUT(List<String> depsOUT) {
+        this.depsOUT = depsOUT;
+    }
 }
