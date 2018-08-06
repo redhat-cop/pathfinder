@@ -113,8 +113,10 @@ public class OSEMongoDBConfig {
 
         List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 
-        credentials.add(MongoCredential.createCredential(this.username, this.dbname,
-            this.password.toCharArray()));
+        if (!"".equals(this.username)){
+          credentials.add(MongoCredential.createCredential(this.username, this.dbname,
+              this.password.toCharArray()));
+        }
 
         MongoClientURI dburi = new MongoClientURI(this.createMongoURL());
 
@@ -130,11 +132,14 @@ public class OSEMongoDBConfig {
 
     private String createMongoURL(){
         StringBuilder res = new StringBuilder();
-        res.append("mongodb://")
-            .append(this.username)
-            .append(":")
-            .append(this.password)
-            .append("@")
+        res.append("mongodb://");
+        if (!"".equals(this.username)){
+          res.append(this.username)
+          .append(":")
+          .append(this.password)
+          .append("@");
+        }
+        res
             .append(this.dbhost)
             .append(":")
             .append(this.dbport)

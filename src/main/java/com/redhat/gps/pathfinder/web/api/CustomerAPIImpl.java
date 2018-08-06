@@ -27,6 +27,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -57,6 +58,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+import com.google.common.base.Joiner;
+import com.google.common.collect.Lists;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
@@ -70,6 +73,7 @@ import com.redhat.gps.pathfinder.repository.MembersRepository;
 import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
 import com.redhat.gps.pathfinder.repository.ReviewsRepository;
 import com.redhat.gps.pathfinder.service.util.Json;
+import com.redhat.gps.pathfinder.service.util.MapBuilder;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationAssessmentProgressType;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationNames;
 import com.redhat.gps.pathfinder.web.api.model.ApplicationSummaryType;
@@ -115,27 +119,32 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         this.membersRepo=membersRepository;
     }
     
+
     
     // Non-Swagger api - report page content
     @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
     public String getReport(@PathVariable("custId") String custId) throws IOException {
       log.debug("getReport()...");
-      //classes for a specific json structure
-//      class Summary{
-//        String name;        String getName() {return name;}              void setName(String v){this.name=v;}
-//        String percentage;  String getPercentage() {return percentage;}  void setPercentage(String v){this.percentage=v;}
-//      }
+      
+      class Risk{
+        public Risk(String q, String a, String apps){
+          this.q=q;this.a=a;this.apps=apps;
+        }
+        String q; public String getQuestion(){return q;}
+        String a; public String getAnswer(){return a;}
+        String apps; public String getOffendingApps(){return apps;}
+      }
       class Report{
         Map<String,Double> s;
         public Map<String,Double> getAssessmentSummary() {
           if (null==s) s=new HashMap<String,Double>(); return s;
         }
-        Map<String,List<String>> risks;
-        public Map<String,List<String>> getRisks() {
-          if (null==risks) risks=new HashMap<>(); return risks;
+        List<Risk> risks;
+        public List<Risk> getRisks() {
+          if (null==risks) risks=new ArrayList<Risk>(); return risks;
         }
-      }
+      }  
       
       Report result=new Report();
       
@@ -146,11 +155,23 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       overallStatusCount.put("AMBER",0);
       overallStatusCount.put("RED",0);
       int assessmentTotal=0;
+      Map<String, Risk> risks2=new HashMap<>();
       for(Applications app:customer.getApplications()){
         if (null==app.getAssessments()) continue;
         Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
         
 //        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId());
+        
+        Map<String,Map<String,String>> questionKeyToText=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
+          @Override
+          public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
+            result.put(name, new MapBuilder<String, String>()
+                .put("questionText", questionText)
+                .put("answerText", answerText)
+                .build());
+          }
+        });
+        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX = "+questionKeyToText);
         
         String assessmentOverallStatus="GREEN";
         int mediumCount=0;
@@ -162,22 +183,50 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             assessmentOverallStatus="RED";
             
             // add the RED item to the risk list and add the app name to the risk
-            if (result.getRisks().containsKey(e.getKey())){
-              result.getRisks().get(e.getKey()).add(app.getName());
+//            if (risks.containsKey(e.getKey())){
+//              risks.get(e.getKey()).add(app.getName());
+//            }else{
+//              risks.put(e.getKey(), Lists.newArrayList(app.getName()));
+//            }
+            
+            String riskQuestionAnswerKey=e.getKey()+e.getValue();
+            System.out.println("key="+riskQuestionAnswerKey);
+            if (!risks2.containsKey(riskQuestionAnswerKey)){
+              System.out.println("adding new risk: "+e.getKey() +" for app "+app.getName());
+              String question=questionKeyToText.get(e.getKey()).get("questionText");
+              String answer=questionKeyToText.get(e.getKey()).get("answerText");
+              risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
             }else{
-              List<String> l=new ArrayList<>();
-              l.add(app.getName());
-              result.getRisks().put(e.getKey(), l);
+              System.out.println("adding app to existing risk: "+e.getKey() +" for app "+app.getName());
+              risks2.get(riskQuestionAnswerKey).apps=Joiner.on(",").join(risks2.get(riskQuestionAnswerKey).getOffendingApps().split(","));
             }
+            
+//            if (risks.containsKey(e.getKey())){
+//              risks.get(questionKeyToText.get(e.getKey())).add(app.getName());
+//            }else{
+//              risks.put(questionKeyToText.get(e.getKey()), Lists.newArrayList(app.getName()));
+//            }
+
+            
           }
           
           if (e.getValue().contains("-AMBER"))
             mediumCount=mediumCount+1;
           
           // If more than 30% of answers were AMBER, then overall rating is AMBER
-          if ((mediumCount/assessment.getResults().size())>0.3)
+          double percentageOfAmbers=(double)mediumCount/(double)assessment.getResults().size();
+          double threshold=0.3;
+          if ("GREEN".equals(assessmentOverallStatus) && percentageOfAmbers>threshold){
+            log.debug("getReport():: amber %age is {} which is over the {}% threshold, therefore downgrading to AMBER rating", (percentageOfAmbers*100), (threshold*100));
             assessmentOverallStatus="AMBER";
+          }
         }
+        
+        // process the risks into the result object so it can be displayed as a datatable
+//        for(Entry<String, List<String>> e:risks.entrySet()){
+//          result.getRisks().add(new Risk(e.getKey(), Joiner.on(",").join(e.getValue())));
+//        }
+        
         
         System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
         
@@ -187,9 +236,16 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         System.out.println("getReport():: overallStatusCount="+overallStatusCount);
       }
       
-      result.getAssessmentSummary().put("Easy",  Double.valueOf(overallStatusCount.get("GREEN")/assessmentTotal));
-      result.getAssessmentSummary().put("Medium",Double.valueOf(overallStatusCount.get("AMBER")/assessmentTotal));
-      result.getAssessmentSummary().put("Hard",  Double.valueOf(overallStatusCount.get("RED")/assessmentTotal));
+      System.out.println("risks2.size="+risks2.size());
+      result.risks=Lists.newArrayList(risks2.values());
+      System.out.println("result.risks.size="+result.risks.size());
+      
+      result.getAssessmentSummary().put("Easy",  (double)overallStatusCount.get("GREEN")/(double)assessmentTotal);
+      result.getAssessmentSummary().put("Medium",(double)overallStatusCount.get("AMBER")/(double)assessmentTotal);
+      result.getAssessmentSummary().put("Hard",  (double)overallStatusCount.get("RED")/(double)assessmentTotal);
+      
+//      if (result.getRisks().isEmpty())
+//        result.getRisks().put("None identified", Lists.newArrayList());
       
       System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
       
@@ -223,14 +279,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         private String rating;   public String getRating()   {return rating;}
       }
       log.debug("viewAssessmentSummary....");
-      
-      // Get the survey json content (and fiddle with it so it's readable)
-      String raw=getSurveyContent();
-      int start=raw.indexOf("pages: [{")+7;
-      int end=raw.indexOf("}],")+2;
-      String x=raw.substring(start, end);
-      
-      mjson.Json surveyJson=mjson.Json.read(x);
+//      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
       
       // Find the assessment in mongo
       Assessments assessment = assmRepo.findOne(assessmentId);
@@ -239,45 +288,122 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return null;
       }
       
-      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
+//      // Get the survey json content (and fiddle with it so it's readable)
+//      String raw=getSurveyContent();
+//      int start=raw.indexOf("pages: [{")+7;
+//      int end=raw.indexOf("}],")+2;
+//      String x=raw.substring(start, end);
+//      
+//      mjson.Json surveyJson=mjson.Json.read(x);
+//      for(mjson.Json page:surveyJson.asJsonList()){
+//        for(mjson.Json question:page.at("questions").asJsonList()){
+//          
+//          if (question.at("type").asString().equals("radiogroup")){
+//            
+//            Map<String, String> answerRankingMap=new HashMap<String, String>();
+//            for(mjson.Json a:question.at("choices").asJsonList())
+//              answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
+//            
+//            try{
+//              if (assessment.getResults().containsKey(question.at("name").asString())){
+//                
+//                String name=question.at("name").asString();
+//                String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+//                String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
+//                String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
+//                String questionText=question.at("title").asString();
+//                
+////                log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
+//                
+//                result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
+//              }
+//              
+//            }catch(Exception e){
+//              log.error(e.getMessage(), e);
+//              log.error("Error on: assessment.results="+assessment.getResults());
+//              log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
+//              log.error("Error on: question.name="+question.at("name").asString());
+//              log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
+//            }
+//            
+//          }else if (question.at("type").asString().equals("rating")){
+//            // leave this out since it's things like "Select the app..."
+//          }
+//        }
+//      }
       
-      for(mjson.Json page:surveyJson.asJsonList()){
-        for(mjson.Json question:page.at("questions").asJsonList()){
-          
-          if (question.at("type").asString().equals("radiogroup")){
-            
-            Map<String, String> answerRankingMap=new HashMap<String, String>();
-            for(mjson.Json a:question.at("choices").asJsonList())
-              answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
-            
-            try{
-              if (assessment.getResults().containsKey(question.at("name").asString())){
-                
-                String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-                String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-                String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-                String questionText=question.at("title").asString();
-                
-//                log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
-                
-                result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
-              }
-              
-            }catch(Exception e){
-              log.error(e.getMessage(), e);
-              log.error("Error on: assessment.results="+assessment.getResults());
-              log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
-              log.error("Error on: question.name="+question.at("name").asString());
-              log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
-            }
-            
-          }else if (question.at("type").asString().equals("rating")){
-            // leave this out since it's things like "Select the app..."
-          }
+      //parseSurvey(getSurveyContent(), assessment, new Delegate<Map<String,String>>(){
+      //  @Override
+      //  public Map<String, String> callback(String name, String answerOrdinal, String answerRating, String answerText, String questionText){
+      //    return null;
+      //  }
+      //});
+//      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
+      
+      List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<ApplicationAssessmentSummary>(), getSurveyContent(), assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
+        @Override
+        public void parse(List<ApplicationAssessmentSummary> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
+          result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
         }
-      }
+      });
+      
       return Json.newObjectMapper(true).writeValueAsString(result);
     }
+    
+    public interface QuestionParser<T>{
+      public void parse(T result, String name, String answerOrdinal, String answerRating, String answerText, String questionText);
+    }
+    public class QuestionReader<T>{
+      public T read(T result, String survey, Assessments assessment, QuestionParser<T> parser){
+        String raw=survey;
+        int start=raw.indexOf("pages: [{")+7;
+        int end=raw.indexOf("}],")+2;
+        String x=raw.substring(start, end);
+        
+//        System.out.println(x);
+        
+        mjson.Json surveyJson=mjson.Json.read(x);
+        for(mjson.Json page:surveyJson.asJsonList()){
+          for(mjson.Json question:page.at("questions").asJsonList()){
+            
+            if (question.at("type").asString().equals("radiogroup")){
+              
+              Map<String, String> answerRankingMap=new HashMap<String, String>();
+              for(mjson.Json a:question.at("choices").asJsonList())
+                answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
+              
+              try{
+                if (assessment.getResults().containsKey(question.at("name").asString())){
+                  
+                  String name=question.at("name").asString();
+                  String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
+                  String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
+                  String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
+                  String questionText=question.at("title").asString();
+                  
+                  parser.parse(result, name, answerOrdinal, answerRating, answerText, questionText);
+//                  d.callback(name, answerOrdinal, answerRating, answerText, questionText);
+//                  result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
+                }
+                
+              }catch(Exception e){
+                log.error(e.getMessage(), e);
+                log.error("Error on: assessment.results="+assessment.getResults());
+                log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
+                log.error("Error on: question.name="+question.at("name").asString());
+                log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
+              }
+              
+            }else if (question.at("type").asString().equals("rating")){
+              // leave this out since it's things like "Select the app..."
+            }
+          }
+        }
+        return result;
+      }
+    }
+    
+    
     
     // Get Members
     // GET: /api/pathfinder/customers/{customerId}/member/
@@ -1375,7 +1501,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                             item.setReviewDate(review.getReviewDate());
                             item.setDecision(review.getReviewDecision());
                             item.setWorkEffort(review.getReviewEstimate());
-                            item.setBusinessPriority(new Integer(review.getBusinessPriority()));
+                            item.setWorkPriority(Integer.parseInt(null==review.getWorkPriority()?"0":review.getWorkPriority()));
+                            item.setBusinessPriority(Integer.parseInt(null==review.getBusinessPriority()?"0":review.getBusinessPriority()));
                         }
                         List<Assessments> assmList = currApp.getAssessments();
                         if ((assmList != null) && (!assmList.isEmpty())) {
