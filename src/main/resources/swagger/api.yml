@@ -177,6 +177,10 @@ paths:
   /customers/{custId}/applications/{appId}:
     get:
       description: Get details of an Application for a customer
+      parameters:
+      - in: query
+        name: custom
+        type: string
       responses:
         200:
           description: Application Details
@@ -545,7 +549,6 @@ definitions:
     - ReviewDecision
     - WorkEffort
     - ReviewNotes
-    - BusinessPriority
     - WorkPriority
     properties:
       AssessmentId:
@@ -622,11 +625,12 @@ definitions:
       Review:
         description: ID of review, ignored on post
         type: string
+      CustomFields:
+        $ref: '#/definitions/AssessmentResponse'
       Stereotype:
         description: TARGETAPP, DEPENDENCY, PROFILE
         type: string
         enum: [TARGETAPP, DEPENDENCY, PROFILE]
-
 
   AssessmentResponse:
     description: map
@@ -729,6 +733,9 @@ definitions:
       BusinessPriority:
         description: Business Priority of application
         type: integer
+      WorkPriority:
+        description: Work Priority of application
+        type: integer
       Decision:
         description: Decision on Application
         type: string
@@ -747,7 +754,6 @@ definitions:
       IncompleteAnswersCount:
         description: Number of questions with 'Unknown' answers
         type: integer
-      
 
   DepsPairType:
     required:
@@ -783,5 +789,3 @@ definitions:
         Reviewed:
           description: number of applications reviewed
           type: integer
-
-
