@@ -39,6 +39,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -511,8 +512,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                   Assessments newAssessment = new Assessments();
                   newAssessment.setId(UUID.randomUUID().toString());
                   newAssessment.setDatetime(latestAssessment.getDatetime());
-                  if (!latestAssessment.getDeps().isEmpty())
-                    newAssessment.setDeps(latestAssessment.getDeps());
+                  if (!latestAssessment.getDepsIN().isEmpty())
+                    newAssessment.setDepsIN(latestAssessment.getDepsIN());
+                if (!latestAssessment.getDepsOUT().isEmpty())
+                    newAssessment.setDepsOUT(latestAssessment.getDepsOUT());
                   newAssessment.setResults(latestAssessment.getResults());
                   newAssessment = assmRepo.save(newAssessment);
                   if (newApp.getAssessments()==null) newApp.setAssessments(new ArrayList<>());
@@ -561,7 +564,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         try {
             Assessments currAssm = assmRepo.findOne(assessId);
             if (currAssm != null) {
-                resp.setDeps(currAssm.getDeps());
+                resp.setDepsIN(currAssm.getDepsIN());
+                resp.setDepsOUT(currAssm.getDepsOUT());
                 AssessmentResponse tempPayload = new AssessmentResponse();
 
                 for (Object o : currAssm.getResults().entrySet()) {
@@ -625,7 +629,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 Assessments newitem = new Assessments();
                 newitem.setId(UUID.randomUUID().toString());
                 newitem.setResults(body.getPayload());
-                newitem.setDeps(body.getDeps());
+                newitem.setDepsIN(body.getDepsIN());
+                newitem.setDepsOUT(body.getDepsOUT());
                 newitem.setDatetime(body.getDatetime());
 
                 newitem = assmRepo.insert(newitem);
@@ -1107,7 +1112,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 //            }
             resp.setAssessResults(assessResults);
             resp.setAssmentNotes(currAssm.getResults().get("NOTES"));
-            resp.setDependencies(currAssm.getDeps());
+            resp.setDependenciesIN(currAssm.getDepsIN());
+            resp.setDependenciesOUT(currAssm.getDepsOUT());
             resp.setBusinessPriority(currAssm.getResults().get("BUSPRIORITY"));
 
         } catch (Exception ex) {
@@ -1421,8 +1427,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         }
       });
       
-      
-      
       List<String> ratings=new ArrayList<>();
       for(Entry<String, String> qa:assessment.getResults().entrySet()){
         if (null!=questionInfo.get(qa.getKey())){ //ie, an answered question with a missing question definition
@@ -1564,7 +1568,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     }
 
 
-    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+//    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId) {
+
+    public ResponseEntity<DependenciesListType> customersCustIdDependencyTreeGet(@ApiParam(value = "Customer Identifier", required = true) @PathVariable("custId") String custId, @NotNull @ApiParam(value = "Specify the depedency direction from the applications persepctive NORTHBOUND = incoming to, SOUTHBOUND = outgoing from", required = true, allowableValues = "NORTHBOUND, SOUTHBOUND") @RequestParam(value = "direction", required = true) String direction) {
+
         log.debug("customersCustIdDependencyTreeGet {}", custId);
         DependenciesListType respDeps = new DependenciesListType();
 
@@ -1583,23 +1590,37 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 for (Applications currApp : apps) {
                     List<Assessments> currAssmList = currApp.getAssessments();
 
-                    if (currAssmList==null || currAssmList.size() == 0) {
+                    if (currAssmList == null || currAssmList.size() == 0) {
                         log.info("Application {} has no assessments...", currApp.getId());
                     } else {
 
                         String assmID = currAssmList.get(currAssmList.size() - 1).getId();
                         Assessments currAssm = assmRepo.findOne(assmID);
+                        List<String> depList;
 
-                        List<String> depList = currAssm.getDeps();
-
-                        if (depList.size() == 0) {
-                            log.info("Application {} has no dependencies...", currApp.getId());
+                        if (direction.equals("NORTHBOUND")) {
+                            depList = currAssm.getDepsIN();
+                            if (depList.size() == 0) {
+                                log.info("Application {} has no NorthBound dependencies...", currApp.getId());
+                            } else {
+                                for (String currDep : depList) {
+                                    DepsPairType dep = new DepsPairType();
+                                    dep.to(currApp.getId());
+                                    dep.from(currDep);
+                                    respDeps.addDepsListItem(dep);
+                                }
+                            }
                         } else {
-                            for (String currDep : depList) {
-                                DepsPairType dep = new DepsPairType();
-                                dep.from(currApp.getId());
-                                dep.to(currDep);
-                                respDeps.addDepsListItem(dep);
+                            depList = currAssm.getDepsOUT();
+                            if (depList.size() == 0) {
+                                log.info("Application {} has no SouthBound dependencies...", currApp.getId());
+                            } else {
+                                for (String currDep : depList) {
+                                    DepsPairType dep = new DepsPairType();
+                                    dep.from(currApp.getId());
+                                    dep.to(currDep);
+                                    respDeps.addDepsListItem(dep);
+                                }
                             }
                         }
                     }

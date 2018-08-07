@@ -164,6 +164,17 @@ var json = {
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Difficult/Expensive to change dependent systems - legacy, 3rd party, external", "2-AMBER|Many dependent systems, possible to change but expensive and time consuming", "3-GREEN|Many dependent systems, possible to change as they're internally managed", "4-GREEN|Internal dependencies only", "5-GREEN|No dependent systems"]
             },
             {
+                "type": "checkbox",
+                "name": "DEPSINLIST",
+                "title": "Please add northbound dependencies...",
+                "visibleIf": "{DEPSIN} notcontains '5'",
+                "isRequired": false,
+                "choicesByUrl": {
+                    // Ignore the URL this will be replaced by the event handler
+//                    "url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/12345/applications/"
+                }
+            },
+            {
                 "type": "radiogroup",
                 "name": "DEPSOUT",
                 "title": "Dependencies - (Outgoing/Southbound)",
@@ -176,6 +187,7 @@ var json = {
                 "type": "checkbox",
                 "name": "DEPSOUTLIST",
                 "title": "Please add southbound dependencies...",
+                "visibleIf": "{DEPSOUT} notcontains '5'",
                 "isRequired": false,
                 "choicesByUrl": {
                     // Ignore the URL this will be replaced by the event handler
@@ -286,7 +298,7 @@ var json = {
                 "title": "How does the application acquire security credentials/certificates",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|HSM, hardware based encryption devices", "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3-AMBER|Keys/Certs compiled into application", "4-GREEN|Certificates/Keys loaded via shared disk", "5-GREEN|Certificates/Keys loaded via files or vault integration","5-GREEN|None needed"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|HSM, hardware based encryption devices", "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3-AMBER|Keys/Certs compiled into application", "4-GREEN|Certificates/Keys loaded via shared disk", "5-GREEN|Certificates/Keys loaded via files or vault integration","6-GREEN|None needed"]
             },
             {
                 "type": "radiogroup",
@@ -330,10 +342,12 @@ survey
             var assm = tmpResult.ASSMENTNAME;
             //dependencies array needs special handling
             var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
+            var tmpDEPSINLIST = tmpResult.DEPSINLIST;
             delete tmpResult.DEPSOUTLIST;
+            delete tmpResult.DEPSINLIST;
             xmlhttp.open("POST", addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments"));
             xmlhttp.setRequestHeader("Content-Type", "application/json");
-            myObj = { "payload": tmpResult,"deps":tmpDEPSOUTLIST, "datetime":new Date()};
+            myObj = { "payload": tmpResult,"depsOUT":tmpDEPSOUTLIST, "depsIN":tmpDEPSINLIST,"datetime":new Date()};
             var payload=JSON.stringify(myObj);
             console.log("payload="+payload);
             xmlhttp.send(payload);
@@ -350,15 +364,16 @@ survey
 	.onAfterRenderPage
     .add(function (result) {
    		console.log("result="+JSON.stringify(survey.data));
-    		
-
+   		var appchoices;
         
-        if (result.data.CUSTNAME!=undefined){
+        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo == 1)){
 	        var q = survey.getQuestionByName('ASSMENTNAME');
 	        q.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
 	        q.choicesByUrl.valueName = "Id";
 	        q.choicesByUrl.titleName = "Name";
 	        q.choicesByUrl.run();
+
+
 	        // ### this pre-selects the application
 	        if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
 	        	if (undefined==survey.data.ASSMENTNAME){
@@ -366,15 +381,21 @@ survey
 	        	}
 	        }
 	        q.disabled=true;
-        }
-				
-        if (result.data.CUSTNAME!=undefined){
-          result.data.CUSTID=result.data.CUSTNAME;
-		      var v = survey.getQuestionByName('DEPSOUTLIST');
-	        v.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
-	        v.choicesByUrl.valueName = "Id";
-	        v.choicesByUrl.titleName = "Name";
-	        v.choicesByUrl.run();
+//        }
+//
+//        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo == 1)){
+            result.data.CUSTID=result.data.CUSTNAME;
+		    var d1 = survey.getQuestionByName('DEPSOUTLIST');
+	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
+	        d1.choicesByUrl.valueName = "Id";
+	        d1.choicesByUrl.titleName = "Name";
+	        d1.choicesByUrl.run();
+
+            var d2 = survey.getQuestionByName('DEPSINLIST');
+            d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
+            d2.choicesByUrl.valueName = "Id";
+            d2.choicesByUrl.titleName = "Name";
+            d2.choicesByUrl.run();
 	      }
     });
 
