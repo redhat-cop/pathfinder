@@ -742,6 +742,9 @@ definitions:
       WorkEffort:
         description: Work effort estimate
         type: string
+      Confidence:
+        description: Opposite of Risk, how easy is this app to migrate
+        type: integer
       ReviewDate:
         description: Review date
         type: string
