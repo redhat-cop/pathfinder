@@ -27,20 +27,16 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.validation.Valid;
 
@@ -119,8 +115,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         this.membersRepo=membersRepository;
     }
     
-
-    
     // Non-Swagger api - report page content
     @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
@@ -171,7 +165,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 .build());
           }
         });
-        System.out.println("XXXXXXXXXXXXXXXXXXXXXXXXXXXXX = "+questionKeyToText);
+        
         
         String assessmentOverallStatus="GREEN";
         int mediumCount=0;
@@ -190,23 +184,16 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 //            }
             
             String riskQuestionAnswerKey=e.getKey()+e.getValue();
-            System.out.println("key="+riskQuestionAnswerKey);
+//            System.out.println("key="+riskQuestionAnswerKey);
             if (!risks2.containsKey(riskQuestionAnswerKey)){
-              System.out.println("adding new risk: "+e.getKey() +" for app "+app.getName());
+//              System.out.println("adding new risk: "+e.getKey() +" for app "+app.getName());
               String question=questionKeyToText.get(e.getKey()).get("questionText");
               String answer=questionKeyToText.get(e.getKey()).get("answerText");
               risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
             }else{
-              System.out.println("adding app to existing risk: "+e.getKey() +" for app "+app.getName());
+//              System.out.println("adding app to existing risk: "+e.getKey() +" for app "+app.getName());
               risks2.get(riskQuestionAnswerKey).apps=Joiner.on(",").join(risks2.get(riskQuestionAnswerKey).getOffendingApps().split(","));
             }
-            
-//            if (risks.containsKey(e.getKey())){
-//              risks.get(questionKeyToText.get(e.getKey())).add(app.getName());
-//            }else{
-//              risks.put(questionKeyToText.get(e.getKey()), Lists.newArrayList(app.getName()));
-//            }
-
             
           }
           
@@ -222,34 +209,27 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
           }
         }
         
-        // process the risks into the result object so it can be displayed as a datatable
-//        for(Entry<String, List<String>> e:risks.entrySet()){
-//          result.getRisks().add(new Risk(e.getKey(), Joiner.on(",").join(e.getValue())));
-//        }
-        
-        
-        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
+//        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
         
         assessmentTotal=assessmentTotal+1;
         overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus)+1);
         
-        System.out.println("getReport():: overallStatusCount="+overallStatusCount);
+//        System.out.println("getReport():: overallStatusCount="+overallStatusCount);
       }
       
-      System.out.println("risks2.size="+risks2.size());
       result.risks=Lists.newArrayList(risks2.values());
-      System.out.println("result.risks.size="+result.risks.size());
       
-      result.getAssessmentSummary().put("Easy",  (double)overallStatusCount.get("GREEN")/(double)assessmentTotal);
-      result.getAssessmentSummary().put("Medium",(double)overallStatusCount.get("AMBER")/(double)assessmentTotal);
-      result.getAssessmentSummary().put("Hard",  (double)overallStatusCount.get("RED")/(double)assessmentTotal);
+      result.getAssessmentSummary().put("Easy",   (double)overallStatusCount.get("GREEN"));
+      result.getAssessmentSummary().put("Medium", (double)overallStatusCount.get("AMBER"));
+      result.getAssessmentSummary().put("Hard",   (double)overallStatusCount.get("RED"));
+      result.getAssessmentSummary().put("Total",  (double)assessmentTotal);
       
 //      if (result.getRisks().isEmpty())
 //        result.getRisks().put("None identified", Lists.newArrayList());
       
-      System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
+//      System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
       
-      System.out.println("RETURNING THE REPORT.....");
+//      System.out.println("RETURNING THE REPORT.....");
       
       return Json.newObjectMapper(true).writeValueAsString(result);
     }
@@ -279,7 +259,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         private String rating;   public String getRating()   {return rating;}
       }
       log.debug("viewAssessmentSummary....");
-//      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
       
       // Find the assessment in mongo
       Assessments assessment = assmRepo.findOne(assessmentId);
@@ -289,57 +268,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       }
       
 //      // Get the survey json content (and fiddle with it so it's readable)
-//      String raw=getSurveyContent();
-//      int start=raw.indexOf("pages: [{")+7;
-//      int end=raw.indexOf("}],")+2;
-//      String x=raw.substring(start, end);
-//      
-//      mjson.Json surveyJson=mjson.Json.read(x);
-//      for(mjson.Json page:surveyJson.asJsonList()){
-//        for(mjson.Json question:page.at("questions").asJsonList()){
-//          
-//          if (question.at("type").asString().equals("radiogroup")){
-//            
-//            Map<String, String> answerRankingMap=new HashMap<String, String>();
-//            for(mjson.Json a:question.at("choices").asJsonList())
-//              answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
-//            
-//            try{
-//              if (assessment.getResults().containsKey(question.at("name").asString())){
-//                
-//                String name=question.at("name").asString();
-//                String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-//                String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-//                String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-//                String questionText=question.at("title").asString();
-//                
-////                log.debug("questionText="+questionText+", answerOrdinal="+answerOrdinal+", answerText="+answerText+", rating="+answerRating);
-//                
-//                result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
-//              }
-//              
-//            }catch(Exception e){
-//              log.error(e.getMessage(), e);
-//              log.error("Error on: assessment.results="+assessment.getResults());
-//              log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
-//              log.error("Error on: question.name="+question.at("name").asString());
-//              log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
-//            }
-//            
-//          }else if (question.at("type").asString().equals("rating")){
-//            // leave this out since it's things like "Select the app..."
-//          }
-//        }
-//      }
-      
-      //parseSurvey(getSurveyContent(), assessment, new Delegate<Map<String,String>>(){
-      //  @Override
-      //  public Map<String, String> callback(String name, String answerOrdinal, String answerRating, String answerText, String questionText){
-      //    return null;
-      //  }
-      //});
-//      List<ApplicationAssessmentSummary> result=new ArrayList<ApplicationAssessmentSummary>();
-      
       List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<ApplicationAssessmentSummary>(), getSurveyContent(), assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
         @Override
         public void parse(List<ApplicationAssessmentSummary> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
@@ -360,8 +288,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         int end=raw.indexOf("}],")+2;
         String x=raw.substring(start, end);
         
-//        System.out.println(x);
-        
         mjson.Json surveyJson=mjson.Json.read(x);
         for(mjson.Json page:surveyJson.asJsonList()){
           for(mjson.Json question:page.at("questions").asJsonList()){
@@ -369,8 +295,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             if (question.at("type").asString().equals("radiogroup")){
               
               Map<String, String> answerRankingMap=new HashMap<String, String>();
-              for(mjson.Json a:question.at("choices").asJsonList())
-                answerRankingMap.put(a.asString().split("-")[0], a.asString().split("-")[1]); // answer id to ranking map
+              for(mjson.Json a:question.at("choices").asJsonList()){
+                String answer=a.asString();
+                answerRankingMap.put(answer.substring(0, answer.indexOf("-")), answer.substring(answer.indexOf("-")+1)); // answer id to ranking map
+              }
               
               try{
                 if (assessment.getResults().containsKey(question.at("name").asString())){
@@ -1471,6 +1399,73 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return new ResponseEntity<>(HttpStatus.OK);
     }
     
+    
+    private Integer calculateConfidence(Assessments assessment, ApplicationAssessmentReview review) throws IOException{
+      double confidence=0;
+      
+      Map<String,Integer> weightMap=new MapBuilder<String,Integer>()
+          .put("RED", 1)
+          .put("AMBER", 800)
+          .put("GREEN", 1000)
+      .build();
+      
+      // Get the questions, answers, ratings etc...
+      Map<String,Map<String,String>> questionInfo=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
+        @Override
+        public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
+          result.put(name, new MapBuilder<String, String>()
+//                      .put("questionText", questionText)
+//                      .put("answerText", answerText)
+              .put("answerRating", answerRating)
+              .build());
+        }
+      });
+      
+      
+      
+      List<String> ratings=new ArrayList<>();
+      for(Entry<String, String> qa:assessment.getResults().entrySet()){
+        if (null!=questionInfo.get(qa.getKey())){ //ie, an answered question with a missing question definition
+          String rating=questionInfo.get(qa.getKey()).get("answerRating");
+          ratings.add(rating);
+        }
+      }
+      Collections.sort(ratings, 
+        new Comparator<String>(){
+          @Override public int compare(String o1, String o2){
+            return "RED".equals(o1)?-1:0;
+          }
+        }
+      );
+      
+      int redCount=Collections.frequency(ratings, "RED");
+      int amberCount=Collections.frequency(ratings, "AMBER");
+      
+      double adjuster=1;
+      
+      if (redCount>0) adjuster=adjuster * Math.pow(0.5, redCount);
+      if (amberCount>0) adjuster=adjuster * Math.pow(0.98, amberCount);
+      
+      for(String rating:ratings){
+        if ("RED".equals(rating)) confidence=confidence*0.6;
+        if ("AMBER".equals(rating)) confidence=confidence*0.95;
+        
+        
+        int questionWeight=1; //not implemented yet
+//        if ("RED".equals(rating)) adjuster=adjuster/2;
+        confidence+=weightMap.get(rating) * adjuster * questionWeight;
+      }
+      int answerCount=ratings.size();
+      
+//      System.out.println("["+assessment.getResults().get("CUSTNAME")+"] confidence = "+confidence);
+      
+      int maxConfidence=weightMap.get("GREEN")*answerCount;
+      
+      BigDecimal result = new BigDecimal(((double)confidence/(double)maxConfidence)*100);
+      result.setScale(0, BigDecimal.ROUND_DOWN);
+      return result.intValue();
+    }
+    
     // Get assessment summary data for UI's assessment summary screen
     // GET: /api/pathfinder/customers/{customerId}/applicationAssessmentSummary
     @Timed
@@ -1484,36 +1479,38 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            List<Applications> apps = currCust.getApplications();
+            List<Applications> applications = currCust.getApplications();
 
-            if ((apps == null) || (apps.isEmpty())) {
+            if ((applications == null) || (applications.isEmpty())) {
                 log.info("customersCustIdApplicationAssessmentSummaryGet Customer {} has no applications...", custId);
 
             } else {
 
-                for (Applications currApp : apps) {
-                    if (currApp.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())){
+                for (Applications app : applications) {
+                    if (app.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())){
                         ApplicationSummaryType item = new ApplicationSummaryType();
-                        item.setId(currApp.getId());
-                        item.setName(currApp.getName());
-                        ApplicationAssessmentReview review = currApp.getReview();
-                        if (review != null) {
-                            item.setReviewDate(review.getReviewDate());
-                            item.setDecision(review.getReviewDecision());
-                            item.setWorkEffort(review.getReviewEstimate());
-                            item.setWorkPriority(Integer.parseInt(null==review.getWorkPriority()?"0":review.getWorkPriority()));
-                            item.setBusinessPriority(Integer.parseInt(null==review.getBusinessPriority()?"0":review.getBusinessPriority()));
+                        item.setId(app.getId());
+                        item.setName(app.getName());
+                        ApplicationAssessmentReview review = app.getReview();
+                        List<Assessments> assmList = app.getAssessments();
+                        Assessments assessment=null;
+                        if ((assmList != null) && (!assmList.isEmpty())) assessment = assmList.get(assmList.size() - 1);
+                        item.assessed(assessment!=null);
+                        if (item.getAssessed()){
+                            item.setLatestAssessmentId(assessment.getId());
+                            item.setIncompleteAnswersCount(Collections.frequency(assessment.getResults().values(), "0-UNKNOWN"));
+                            item.setCompleteAnswersCount(assessment.getResults().size()-item.getIncompleteAnswersCount());
                         }
-                        List<Assessments> assmList = currApp.getAssessments();
-                        if ((assmList != null) && (!assmList.isEmpty())) {
-                            Assessments currAssm = assmList.get(assmList.size() - 1);
-                            item.assessed(true);
-                            item.setLatestAssessmentId(currAssm.getId());
-                            
-                            item.setIncompleteAnswersCount(Collections.frequency(currAssm.getResults().values(), "0-UNKNOWN"));
-                            item.setCompleteAnswersCount(currAssm.getResults().size()-item.getIncompleteAnswersCount());
-                        } else {
-                            item.assessed(false);
+                        if (review != null) {
+                          item.setReviewDate(review.getReviewDate());
+                          item.setDecision(review.getReviewDecision());
+                          item.setWorkEffort(review.getReviewEstimate());
+                          item.setWorkPriority(Integer.parseInt(null==review.getWorkPriority()?"0":review.getWorkPriority()));
+                          item.setBusinessPriority(Integer.parseInt(null==review.getBusinessPriority()?"0":review.getBusinessPriority()));
+                          
+                        }
+                        if (item.getAssessed() && review!=null){
+                          item.setConfidence(!item.getAssessed()?0:calculateConfidence(assessment, review));
                         }
                         resp.add(item);
                     }
@@ -1550,14 +1547,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 appCount = currCust.getApplications().size();
 
                 for (Applications currApp : apps) {
-                    ApplicationAssessmentReview review = currApp.getReview();
-                    if (review != null) {
-                        reviewedCount++;
-                    }
-                    List<Assessments> assmList = currApp.getAssessments();
-                    if ((assmList != null) && (!assmList.isEmpty())) {
-                        assessedCount++;
-                    }
+                    reviewedCount=reviewedCount+(currApp.getReview()!=null?1:0);
+                    assessedCount=assessedCount+((currApp.getAssessments()!=null) && (!currApp.getAssessments().isEmpty())?1:0);
                 }
             }
         } catch (Exception ex) {
