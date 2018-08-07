@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -368,35 +369,81 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     // Create Member
     // POST: /api/pathfinder/customers/{customerId}/members/
     public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
-      
+      log.debug("customersCustIdMembersPost....");
+      return createOrUpdateMember(custId, null, body);
+    }
+    
+    // Get Member
+    // GET: /api/pathfinder/customers/{customerId}/members/{memberId}
+    public ResponseEntity<MemberType> customersCustIdMembersMemberIdGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId) {
       Customer customer=custRepo.findOne(custId);
-      
       if (customer == null) {
-        log.error("customersCustIdMembersPost....customer not found " + custId);
+        log.error("customersCustIdMembersMemberIdGet....customer not found {}", custId);
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
       
+      Member member=membersRepo.findOne(memberId);
+      if (null==member){
+        log.error("customersCustIdMembersMemberIdGet....member not found {}", memberId);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
       
-      Member newMember=new Member();
+      if (!customer.getMembers().contains(member)){
+        log.error("customersCustIdMembersMemberIdGet....member {} is not child of customer {} ", memberId, custId);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+      
+      return new ResponseEntity<>(MemberController.populate(member, new MemberType()), HttpStatus.OK);
+    }
+    
+    // Update Member
+    // POST: /api/pathfinder/customers/{customerId}/members/{memberId}
+    public ResponseEntity<String> customersCustIdMembersMemberIdPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
+      log.debug("customersCustIdMembersMemberIdPost....");
+      return createOrUpdateMember(custId, memberId, body);
+    }
+    
+    private ResponseEntity<String> createOrUpdateMember(String custId, String existingUsername, MemberType body){
+      Customer customer=custRepo.findOne(custId);
+      
+      if (customer == null) {
+        log.error("createOrUpdateMember....customer not found " + custId);
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+      }
+      
+      Member member;
+      if (existingUsername==null){
+        member=new Member();
+        member.setUsername(body.getUsername());
+//        member.setId(UUID.randomUUID().toString());
+      }else{
+        member=membersRepo.findOne(existingUsername);
+      }
+      
+//      Member newMember=new Member();
 //      newMember.setId(UUID.randomUUID().toString());
-      newMember.setUsername(body.getUsername());
-      newMember.setDisplayName(body.getDisplayName());
-      newMember.setPassword(body.getPassword());
-      newMember.setEmail(body.getEmail());
-      newMember.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
-      newMember.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
+      member.setDisplayName(body.getDisplayName());
+      if (!StringUtils.isEmpty(body.getPassword())){
+        member.setPassword(body.getPassword());
+      }
+      member.setEmail(body.getEmail());
+      member.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
+      member.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
       
+      member.setCustomer(customer);
+      membersRepo.save(member);
       
-      newMember.setCustomer(customer);
-      membersRepo.save(newMember);
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      customer.getMembers().add(newMember);
-      custRepo.save(customer);
+      if (existingUsername==null){
+        if (null==customer.getMembers())
+          customer.setMembers(new ArrayList<>());
+        
+        customer.getMembers().add(member);
+        custRepo.save(customer);
+      }
       
       return new ResponseEntity<String>(HttpStatus.OK);
     }
+
 
     // Delete Member(s)
     public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Target member IDs"  )  @Valid @RequestBody IdentifierList body) {
@@ -1415,6 +1462,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
           .put("AMBER", 800)
           .put("GREEN", 1000)
       .build();
+      
       
       // Get the questions, answers, ratings etc...
       Map<String,Map<String,String>> questionInfo=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
