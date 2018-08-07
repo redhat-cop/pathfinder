@@ -494,7 +494,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 //                return new ResponseEntity<>(HttpStatus.FAILED_DEPENDENCY);
             }
             Assessments latestAssessment = currAssessments==null?null:currAssessments.get(currAssessments.size() - 1);
-
+ 
 //            List<Applications> listApps = currCust.getApplications();
 
             body.forEach((appName)-> {
@@ -1411,6 +1411,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       
       Map<String,Integer> weightMap=new MapBuilder<String,Integer>()
           .put("RED", 1)
+          .put("UNKNOWN", 700)
           .put("AMBER", 800)
           .put("GREEN", 1000)
       .build();
