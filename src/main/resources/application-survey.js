@@ -164,11 +164,13 @@ var json = {
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Difficult/Expensive to change dependent systems - legacy, 3rd party, external", "2-AMBER|Many dependent systems, possible to change but expensive and time consuming", "3-GREEN|Many dependent systems, possible to change as they're internally managed", "4-GREEN|Internal dependencies only", "5-GREEN|No dependent systems"]
             },
             {
-                "type": "checkbox",
                 "name": "DEPSINLIST",
+                "type": "tagbox",
+                "renderAs": "select2",
                 "title": "Please add northbound dependencies...",
                 "visibleIf": "{DEPSIN} notcontains '5'",
                 "isRequired": false,
+                "colCount": 3,
                 "choicesByUrl": {
                     // Ignore the URL this will be replaced by the event handler
 //                    "url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/12345/applications/"
@@ -184,11 +186,13 @@ var json = {
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Availability only verified when processing traffic", "2-AMBER|Complex strict startup order required", "3-AMBER|Application not ready until dependencies are available ", "4-GREEN|Limited processing available if dependencies are unavailable", "5-GREEN|No dependencies"]
             },
             {
-                "type": "checkbox",
+                "type": "tagbox",
+                "renderAs": "select2",
                 "name": "DEPSOUTLIST",
                 "title": "Please add southbound dependencies...",
                 "visibleIf": "{DEPSOUT} notcontains '5'",
                 "isRequired": false,
+                "colCount": 3,
                 "choicesByUrl": {
                     // Ignore the URL this will be replaced by the event handler
 //                    "url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/12345/applications/"
@@ -364,15 +368,13 @@ survey
 	.onAfterRenderPage
     .add(function (result) {
    		console.log("result="+JSON.stringify(survey.data));
-   		var appchoices;
         
-        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo == 1)){
+        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo === 1)){
 	        var q = survey.getQuestionByName('ASSMENTNAME');
 	        q.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
 	        q.choicesByUrl.valueName = "Id";
 	        q.choicesByUrl.titleName = "Name";
 	        q.choicesByUrl.run();
-
 
 	        // ### this pre-selects the application
 	        if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
@@ -381,9 +383,10 @@ survey
 	        	}
 	        }
 	        q.disabled=true;
-//        }
-//
-//        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo == 1)){
+	    }
+
+	    if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo === 2)){
+
             result.data.CUSTID=result.data.CUSTNAME;
 		    var d1 = survey.getQuestionByName('DEPSOUTLIST');
 	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
@@ -396,7 +399,7 @@ survey
             d2.choicesByUrl.valueName = "Id";
             d2.choicesByUrl.titleName = "Name";
             d2.choicesByUrl.run();
-	      }
+	    }
     });
 
 
