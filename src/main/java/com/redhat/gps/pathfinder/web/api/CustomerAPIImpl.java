@@ -365,7 +365,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       return new ResponseEntity<>(result, HttpStatus.OK);
     }
     
-    
     // Create Member
     // POST: /api/pathfinder/customers/{customerId}/members/
     public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
