@@ -221,6 +221,39 @@ paths:
       required: true
       type: string
 
+  /customers/{custId}/members/{memberId}:
+    get:
+      description: Get a single members details
+      responses:
+        200:
+          description: Member details
+          schema:
+            $ref: '#/definitions/MemberType'
+    post:
+      description: Update a Member for a customer
+      parameters:
+      - name: body
+        in: body
+        description: Member Details
+        schema:
+          $ref: '#/definitions/MemberType'
+      responses:
+        200:
+          description: Member Updated
+          schema:
+            type: string
+    parameters:
+    - name: custId
+      in: path
+      description: Customer Identifier
+      required: true
+      type: string
+    - name: memberId
+      in: path
+      description: Member Identifier
+      required: true
+      type: string
+
   /customers/{custId}/members/:
     get:
       description: Get list of members for a customer
