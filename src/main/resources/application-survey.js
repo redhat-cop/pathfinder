@@ -29,48 +29,9 @@ var json = {
     requiredText: "",
     showProgressBar: "bottom",
     pages: [
-//    {
-//        "title": "Customer Details",
-//        "questions": [
-//            {
-//                "type": "dropdown",
-//                "name": "CUSTNAME",
-//                "title": "Select the Customer...",
-//                "isRequired": true,
-//                "choicesByUrl": {
-//                      "url": "SERVER_URL/api/pathfinder/customers/?_t=JWT_TOKEN",
-//                      "valueName": "CustomerId",
-//                      "titleName": "CustomerName"
-//                }
-//            }
-//        ]
-//    },
-    {
+        {
         "title": "Application Details",
         "questions": [
-//            {
-//                "type": "dropdown",
-//                "name": "ASSMENTNAME",
-//                "title": "Select the application to be assessed....",
-//                "isRequired": true,
-//                "choicesByUrl": {
-//                        // Ignore the URL this will be replaced by the event handler
-//                        //url: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/",
-//                        //"url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/"+survey.data.CUSTNAME+"/applications/",
-//                        "valueName": "Id",
-//                        "titleName": "Name"
-//                }
-//            },
-//            {
-//                "type": "rating",
-//                "name": "BUSPRIORITY",
-//                "title": "Whats the level of business criticality of this application?",
-//                "rateMin": 1,
-//                "rateMax": 10,
-//                "rateStep": 1,
-//                "minRateDescription": "End of Life",
-//                "maxRateDescription": "Core Business Critical"
-//            },
             {
                 "type": "radiogroup",
                 "name": "DEVOWNER",
@@ -333,14 +294,6 @@ var json = {
 };
 
 window.survey = new Survey.Model(json);
-
-
-//// ### this pre-selects the customer
-//if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
-//  survey.data.CUSTNAME = Utils.getParameterByName("customerId");
-//  survey.data.ASSMENTNAME = Utils.getParameterByName("applicationId");
-//}
-
 
 survey
     .onComplete
