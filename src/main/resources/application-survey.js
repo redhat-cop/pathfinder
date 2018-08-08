@@ -17,6 +17,7 @@ Survey
 
 Survey.requiredText = "AA";
 
+
 Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
         options.request.setRequestHeader("Content-Type", "application/javascript");
         //options.request.setRequestHeader("Authorization", "Bearer "+jwtToken);
@@ -27,48 +28,49 @@ var json = {
     sendResultOnPageNext: "true",
     requiredText: "",
     showProgressBar: "bottom",
-    pages: [{
-        "title": "Customer Details",
-        "questions": [
-            {
-                "type": "dropdown",
-                "name": "CUSTNAME",
-                "title": "Select the Customer...",
-                "isRequired": true,
-                "choicesByUrl": {
-                      "url": "SERVER_URL/api/pathfinder/customers/?_t=JWT_TOKEN",
-                      "valueName": "CustomerId",
-                      "titleName": "CustomerName"
-                }
-            }
-        ]
-    },
+    pages: [
+//    {
+//        "title": "Customer Details",
+//        "questions": [
+//            {
+//                "type": "dropdown",
+//                "name": "CUSTNAME",
+//                "title": "Select the Customer...",
+//                "isRequired": true,
+//                "choicesByUrl": {
+//                      "url": "SERVER_URL/api/pathfinder/customers/?_t=JWT_TOKEN",
+//                      "valueName": "CustomerId",
+//                      "titleName": "CustomerName"
+//                }
+//            }
+//        ]
+//    },
     {
         "title": "Application Details",
         "questions": [
-            {
-                "type": "dropdown",
-                "name": "ASSMENTNAME",
-                "title": "Select the application to be assessed....",
-                "isRequired": true,
-                "choicesByUrl": {
-                        // Ignore the URL this will be replaced by the event handler
-                        //url: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/",
-                        //"url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/"+survey.data.CUSTNAME+"/applications/",
-                        "valueName": "Id",
-                        "titleName": "Name"
-                }
-            },
-            {
-                "type": "rating",
-                "name": "BUSPRIORITY",
-                "title": "Whats the level of business criticality of this application?",
-                "rateMin": 1,
-                "rateMax": 10,
-                "rateStep": 1,
-                "minRateDescription": "End of Life",
-                "maxRateDescription": "Core Business Critical"
-            },
+//            {
+//                "type": "dropdown",
+//                "name": "ASSMENTNAME",
+//                "title": "Select the application to be assessed....",
+//                "isRequired": true,
+//                "choicesByUrl": {
+//                        // Ignore the URL this will be replaced by the event handler
+//                        //url: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/",
+//                        //"url": "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com/api/pathfinder/customers/"+survey.data.CUSTNAME+"/applications/",
+//                        "valueName": "Id",
+//                        "titleName": "Name"
+//                }
+//            },
+//            {
+//                "type": "rating",
+//                "name": "BUSPRIORITY",
+//                "title": "Whats the level of business criticality of this application?",
+//                "rateMin": 1,
+//                "rateMax": 10,
+//                "rateStep": 1,
+//                "minRateDescription": "End of Life",
+//                "maxRateDescription": "Core Business Critical"
+//            },
             {
                 "type": "radiogroup",
                 "name": "DEVOWNER",
@@ -332,74 +334,63 @@ var json = {
 
 window.survey = new Survey.Model(json);
 
-// ### this pre-selects the customer
-if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
-  survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
-}
+
+//// ### this pre-selects the customer
+//if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
+//  survey.data.CUSTNAME = Utils.getParameterByName("customerId");
+//  survey.data.ASSMENTNAME = Utils.getParameterByName("applicationId");
+//}
+
 
 survey
     .onComplete
     .add(function (result) {
             var xmlhttp = new XMLHttpRequest();
             tmpResult = result.data;
-            var cust = tmpResult.CUSTNAME;
-            var assm = tmpResult.ASSMENTNAME;
+   		    var custID = Utils.getParameterByName("customerId");
+   		    var appID  = Utils.getParameterByName("applicationId");
+
             //dependencies array needs special handling
             var tmpDEPSOUTLIST = tmpResult.DEPSOUTLIST;
             var tmpDEPSINLIST = tmpResult.DEPSINLIST;
             delete tmpResult.DEPSOUTLIST;
             delete tmpResult.DEPSINLIST;
-            xmlhttp.open("POST", addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+cust+"/applications/"+assm+"/assessments"));
+            xmlhttp.open("POST", addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/"+appID+"/assessments"));
             xmlhttp.setRequestHeader("Content-Type", "application/json");
             myObj = { "payload": tmpResult,"depsOUT":tmpDEPSOUTLIST, "depsIN":tmpDEPSINLIST,"datetime":new Date()};
             var payload=JSON.stringify(myObj);
             console.log("payload="+payload);
             xmlhttp.send(payload);
-            
-            console.log("CUST="+cust);
-            console.log("link="+$('#surveyCompleteLink'));
-            
+
             if (undefined!=$('#surveyCompleteLink')){
             	$('#surveyCompleteLink').attr('href', '/pathfinder-ui/assessments-v2.jsp?customerId='+Utils.getParameterByName("customerId"));
             }
     });
 
+
 survey
 	.onAfterRenderPage
     .add(function (result) {
    		console.log("result="+JSON.stringify(survey.data));
+
+   		var custID = Utils.getParameterByName("customerId");
+   		var appID  = Utils.getParameterByName("applicationId");
         
-        if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo === 1)){
-	        var q = survey.getQuestionByName('ASSMENTNAME');
-	        q.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
-	        q.choicesByUrl.valueName = "Id";
-	        q.choicesByUrl.titleName = "Name";
-	        q.choicesByUrl.run();
-
-	        // ### this pre-selects the application
-	        if (undefined!=Utils.getParameterByName("customerId") && undefined!=Utils.getParameterByName("applicationId")){
-	        	if (undefined==survey.data.ASSMENTNAME){
-	        		survey.data={"CUSTNAME":Utils.getParameterByName("customerId"), "ASSMENTNAME":Utils.getParameterByName("applicationId")};
-	        	}
-	        }
-	        q.disabled=true;
-	    }
-
-	    if ((result.data.CUSTNAME!=undefined)&&(survey.currentPageNo === 2)){
+	    if (survey.currentPageNo === 1){
 
             result.data.CUSTID=result.data.CUSTNAME;
 		    var d1 = survey.getQuestionByName('DEPSOUTLIST');
-	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
+	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/");
 	        d1.choicesByUrl.valueName = "Id";
 	        d1.choicesByUrl.titleName = "Name";
 	        d1.choicesByUrl.run();
 
             var d2 = survey.getQuestionByName('DEPSINLIST');
-            d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+result.data.CUSTNAME+"/applications/");
+            d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/");
             d2.choicesByUrl.valueName = "Id";
             d2.choicesByUrl.titleName = "Name";
             d2.choicesByUrl.run();
-	    }
+	      }
     });
 
 
