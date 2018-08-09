@@ -790,6 +790,11 @@ definitions:
       IncompleteAnswersCount:
         description: Number of questions with 'Unknown' answers
         type: integer
+      OutboundDeps:
+        description: outbound dependencies
+        type: array
+        items: 
+          type: string
 
   DepsPairType:
     required:
