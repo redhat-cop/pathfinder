@@ -287,9 +287,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       public T read(T result, String survey, Assessments assessment, QuestionParser<T> parser){
         String raw=survey;
         int start=raw.indexOf("pages: [{")+7;
-        int end=raw.indexOf("}],")+2;
+        int end=raw.indexOf("}],", start)+2;
         String x=raw.substring(start, end);
-        
         mjson.Json surveyJson=mjson.Json.read(x);
         for(mjson.Json page:surveyJson.asJsonList()){
           for(mjson.Json question:page.at("questions").asJsonList()){
@@ -1552,6 +1551,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                             item.setLatestAssessmentId(assessment.getId());
                             item.setIncompleteAnswersCount(Collections.frequency(assessment.getResults().values(), "0-UNKNOWN"));
                             item.setCompleteAnswersCount(assessment.getResults().size()-item.getIncompleteAnswersCount());
+                            item.setOutboundDeps(assessment.getDepsOUT());
                         }
                         if (review != null) {
                           item.setReviewDate(review.getReviewDate());
