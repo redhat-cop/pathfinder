@@ -25,6 +25,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.data.mongodb.core.query.Query;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -1003,6 +1008,15 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         myCust.setId(UUID.randomUUID().toString());
       }else{
         myCust=custRepo.findOne(custId);
+      }
+      
+      // check customer doesnt already exist with the same name
+      Customer example=new Customer();
+      example.setName(body.getCustomerName());
+      long count=custRepo.count(Example.of(example));
+      if (count>0){
+        log.error("Customer already exists with name {}", body.getCustomerName());
+        return new ResponseEntity<>("Customer already exists with name "+body.getCustomerName(), HttpStatus.BAD_REQUEST);
       }
       
       myCust.setName(body.getCustomerName());

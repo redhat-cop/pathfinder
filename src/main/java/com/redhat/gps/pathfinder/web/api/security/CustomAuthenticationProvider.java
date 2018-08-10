@@ -59,12 +59,12 @@ public class CustomAuthenticationProvider implements AuthenticationManager {
         
         if (null==user) return null;
         
-        log.debug("CustomAuthenticationProvider::authenticate():: user={}, password match?=", name, (password.equals(user.getPassword())));
+        log.debug("CustomAuthenticationProvider::authenticate():: user={}, password match?={}", name, (password.equals(user.getPassword())));
         
         if (password.equals(user.getPassword())){
           return new UsernamePasswordAuthenticationToken(name, password, new ArrayList<>());
         }else{
-          return null;
+           throw new RuntimeException("login error - user not known or password incorrect");
         }
     }
  
