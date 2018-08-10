@@ -487,11 +487,16 @@ paths:
       required: true
       type: string
 
-
-
   /customers/{custId}/applications/{appId}/review:
     post:
       description: Create Review of an application for a customer
+      parameters:
+      - name: body
+        required: false
+        in: body
+        description: Application Review
+        schema:
+          $ref: '#/definitions/ReviewType'
       responses:
         200:
           description: Review Created
@@ -508,12 +513,6 @@ paths:
       in: path
       required: true
       type: string
-    - name: body
-      required: false
-      in: body
-      description: Application Review
-      schema:
-        $ref: '#/definitions/ReviewType'
 
   /customers/{custId}/applications/{appId}/review/{reviewId}:
     get:

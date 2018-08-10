@@ -1241,8 +1241,14 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     @Timed
     public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewReviewIdGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("reviewId") String reviewId) {
         log.debug("customersCustIdApplicationsAppIdReviewReviewIdGet....");
-        ReviewType resp = new ReviewType();
         try {
+          
+            Customer customer = custRepo.findOne(custId);
+            if (customer == null) {
+                log.error("Error while retrieving review....customer not found {}", custId);
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            }
+
             Applications app = appsRepo.findOne(appId);
             if (app == null) {
                 log.error("Error while retrieving review - Unable to find application with id {}", appId);
@@ -1254,22 +1260,23 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
 
-            ApplicationAssessmentReview reviewData = reviewRepository.findOne(app.getReview().getId());
+            ApplicationAssessmentReview review = reviewRepository.findOne(app.getReview().getId());
 
-            if (reviewData == null) {
+            if (review == null || !review.getId().equals(reviewId)) {
                 log.error("Error while retrieving review - Unable to find review for application {}", appId);
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
+            
+            ReviewType result = new ReviewType();
+            result.setAssessmentId(review.getAssessments().getId());
+            result.setReviewDecision(ReviewType.ReviewDecisionEnum.fromValue(review.getReviewDecision()));
+            result.setReviewNotes(review.getReviewNotes());
+            result.setWorkEffort(ReviewType.WorkEffortEnum.fromValue(review.getReviewEstimate()));
+            result.setReviewTimestamp(review.getReviewDate());
+            result.setWorkPriority(review.getWorkPriority());
+            result.setBusinessPriority(review.getBusinessPriority());
 
-            resp.setAssessmentId(reviewData.getAssessments().getId());
-            resp.setReviewDecision(ReviewType.ReviewDecisionEnum.fromValue(reviewData.getReviewDecision()));
-            resp.setReviewNotes(reviewData.getReviewNotes());
-            resp.setWorkEffort(ReviewType.WorkEffortEnum.fromValue(reviewData.getReviewEstimate()));
-            resp.setReviewTimestamp(reviewData.getReviewDate());
-            resp.setWorkPriority(reviewData.getWorkPriority());
-            resp.setBusinessPriority(reviewData.getBusinessPriority());
-
-            return new ResponseEntity<>(resp, HttpStatus.OK);
+            return new ResponseEntity<>(result, HttpStatus.OK);
 
         } catch (Exception ex) {
             log.error("Error while processing review", ex.getMessage(), ex);
@@ -1371,6 +1378,44 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    // THIS METHOD IS NOT USED - please use customersCustIdApplicationsAppIdReviewReviewIdGet
+//    public ResponseEntity<ReviewType> customersCustIdApplicationsAppIdReviewGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "",required=true ) @PathVariable("appId") String appId) {
+//      log.debug("customersCustIdApplicationsAppIdReviewGet... {} {}", custId, appId);
+//      try {
+//        Customer currCust = custRepo.findOne(custId);
+//        if (currCust == null) {
+//            log.error("customersCustIdApplicationsAppIdReviewGet....customer not found {}", custId);
+//            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        
+//        Applications app=appsRepo.findOne(appId);
+//        if (null==app){
+//          log.error("customersCustIdApplicationsAppIdReviewGet....app not found {}", appId);
+//          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        
+//        ApplicationAssessmentReview review=app.getReview();
+//        if (null==review){
+//          log.error("customersCustIdApplicationsAppIdReviewGet....review not found for app {}", appId);
+//          return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+//        }
+//        
+//        ReviewType result = new ReviewType();
+//        result.setBusinessPriority(review.getBusinessPriority());
+//        result.setWorkPriority(review.getWorkPriority());
+//        result.setReviewTimestamp(review.getReviewDate());
+//        result.setWorkEffort(ReviewType.WorkEffortEnum.fromValue(review.getReviewEstimate()));
+//        result.setReviewNotes(review.getReviewNotes());
+//        result.setReviewDecision(ReviewType.ReviewDecisionEnum.fromValue(review.getReviewDecision()));
+//        result.setAssessmentId(app.getAssessments().get(app.getAssessments().size()-1).getId());
+//        
+//        return new ResponseEntity<ReviewType>(result, HttpStatus.OK);
+//      } catch (Exception ex) {
+//        log.error("Error while getting review", ex.getMessage(), ex);
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//      }
+//    }
 
     @Timed
     public ResponseEntity<Void> customersCustIdApplicationsAppIdReviewReviewIdDelete(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "", required = true) @PathVariable("appId") String appId, @ApiParam(value = "", required = true) @PathVariable("reviewId") String reviewId) {
