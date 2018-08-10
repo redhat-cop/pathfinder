@@ -70,6 +70,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
       http.addFilterAfter(new JwtAuthorizationTokenFilter(userDetailsService,jwtTokenUtil,"Authorization"), BasicAuthenticationFilter.class);
       
       http.authorizeRequests()
+          
+//          .antMatchers("/api/pathfinder/**").permitAll()
+      
           .antMatchers("/api/pathfinder/survey").permitAll()
           .antMatchers("/auth").permitAll()
           .antMatchers("/management/health").permitAll()

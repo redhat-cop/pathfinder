@@ -43,6 +43,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -283,6 +284,16 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       });
       
       return Json.newObjectMapper(true).writeValueAsString(result);
+    }
+    
+    /* Uh-oh, Uncle Noel is going to murder me for this one... yes, yes I will convert to Swagger later on, chalk it up on the technical debt board! */
+    @RequestMapping(value="/assessmentResults", method=GET, produces={"application/javascript"})
+    public String getAssessmentResults(HttpServletRequest request) throws IOException {
+      log.debug("getAssessmentResults...");
+      String assessmentId=request.getParameter("assessmentId");
+      log.debug("assessmentId="+assessmentId);
+      Assessments assessment=assmRepo.findOne(assessmentId);
+      return Json.newObjectMapper(true).writeValueAsString(assessment.getResults());
     }
     
     public interface QuestionParser<T>{
