@@ -827,7 +827,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                       Object value=pd.getReadMethod().invoke(customer);
                       if (value instanceof String){
                         log.debug("Adding custom customer field:: {}={}", field, (String)pd.getReadMethod().invoke(customer));
-                        customFieldMap.put(field, (String)value);
+                        customFieldMap.put(entity+"."+field, (String)value);
                         
                       }
                     }
@@ -835,7 +835,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                   
                 }else if (entity.equals("assessment")){
                   log.debug("Adding customer assessment field:: {}={}", field, latestAssessment.getResults().get(field));
-                  customFieldMap.put(field, latestAssessment.getResults().get(field));
+                  customFieldMap.put(entity+"."+field, latestAssessment.getResults().get(field));
                 }
               }
               
