@@ -31,6 +31,9 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.data.mongodb.core.query.Query;
 
+import java.beans.IntrospectionException;
+import java.beans.Introspector;
+import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -41,7 +44,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
@@ -742,6 +747,44 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       return r;
     }
     
+//    private AssessmentResponse populateCustomerFields(AssessmentResponse map, Customer customer, String field){
+//      try{
+//        
+//        }
+//        
+//        Map<String, Object> getters=Arrays.asList(
+//            Introspector.getBeanInfo(customer.getClass(), Object.class)
+//                             .getPropertyDescriptors()
+//        )
+//        .stream()
+//        .filter(pd ->Objects.nonNull(pd.getReadMethod()))
+//        .collect(Collectors.toMap(
+//                PropertyDescriptor::getName,
+//                pd -> {
+//                    try { 
+//                        return pd.getReadMethod().invoke(customer);
+//                    } catch (Exception e) {
+//                       return null;
+//                    }
+//                }));
+//        
+//        
+//        log.debug("GETTING "+"get"+StringUtils.capitalize(field));
+//        log.debug("FOUND {} CUSTOMER GETTERS "+getters.size());
+//        for(Entry<String, Object> e:getters.entrySet()){
+//          log.debug("CUSTOMER PROPERTIES: {} = {}", e.getKey(), e.getValue());
+//        }
+//        
+//        log.debug("ADDING CUSTOMER FIELD {}={}", field, getters.get(field));
+//        
+//        map.put(field, (String)getters.get("get"+StringUtils.capitalize(field)));
+//      }catch (IntrospectionException e){
+//        e.printStackTrace();
+//      }
+//      return map;
+//    }
+    
+    
     // Get Application
     // GET: /customers/{customerId}/applications/{applicationId}
     //
@@ -758,21 +801,45 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         }
         
         try {
-            Applications details = appsRepo.findOne(appId);
-            response.setDescription(details.getDescription());
-            if (details.getReview() != null)
-                response.setReview(details.getReview().getId());
-            response.setName(details.getName());
-            response.setOwner(details.getOwner());
+            Applications application = appsRepo.findOne(appId);
+            response.setDescription(application.getDescription());
+            if (application.getReview() != null)
+                response.setReview(application.getReview().getId());
+            response.setName(application.getName());
+            response.setOwner(application.getOwner());
             response.setId(appId);
-            if ((details.getStereotype() != null) && (!details.getStereotype().isEmpty())) {
-                response.setStereotype(ApplicationType.StereotypeEnum.fromValue(details.getStereotype()));
+            if ((application.getStereotype() != null) && (!application.getStereotype().isEmpty())) {
+                response.setStereotype(ApplicationType.StereotypeEnum.fromValue(application.getStereotype()));
             }
             
+            Assessments latestAssessment=application.getAssessments().get(application.getAssessments().size()-1);
+            
+            // custom fields parsing/injection
             if (null!=custom){
-              AssessmentResponse customFields=populateCustomCustomerFields(custom, customer, null);
-              customFields=populateCustomAssessmentFields(custom, details.getAssessments(), customFields);
-              response.setCustomFields(customFields);
+              AssessmentResponse customFieldMap=new AssessmentResponse();
+              for(String f:custom.split(",")){
+                if (f.indexOf(".")<=0) continue;
+                String entity=f.substring(0, f.indexOf("."));
+                String field=f.substring(f.indexOf(".")+1);
+                if (entity.equals("customer")){
+                  for (PropertyDescriptor pd:Introspector.getBeanInfo(Customer.class).getPropertyDescriptors()){
+                    if (pd.getReadMethod() != null && pd.getReadMethod().getName().equals("get"+StringUtils.capitalize(field)) && !"class".equals(pd.getName())){
+                      Object value=pd.getReadMethod().invoke(customer);
+                      if (value instanceof String){
+                        log.debug("Adding custom customer field:: {}={}", field, (String)pd.getReadMethod().invoke(customer));
+                        customFieldMap.put(field, (String)value);
+                        
+                      }
+                    }
+                  }
+                  
+                }else if (entity.equals("assessment")){
+                  log.debug("Adding customer assessment field:: {}={}", field, latestAssessment.getResults().get(field));
+                  customFieldMap.put(field, latestAssessment.getResults().get(field));
+                }
+              }
+              
+              response.setCustomFields(customFieldMap);
             }
             
         } catch (Exception ex) {
