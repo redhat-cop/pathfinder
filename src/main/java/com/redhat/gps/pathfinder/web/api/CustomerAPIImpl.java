@@ -296,9 +296,14 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     public String getAssessmentResults(HttpServletRequest request) throws IOException {
       log.debug("getAssessmentResults...");
       String assessmentId=request.getParameter("assessmentId");
-      log.debug("assessmentId="+assessmentId);
       Assessments assessment=assmRepo.findOne(assessmentId);
-      return Json.newObjectMapper(true).writeValueAsString(assessment.getResults());
+      
+      Map<String, Object> result=new HashMap<>();
+      result.putAll(assessment.getResults());
+      result.put("DEPSINLIST", assessment.getDepsIN());
+      result.put("DEPSOUTLIST", assessment.getDepsOUT());
+      
+      return Json.newObjectMapper(true).writeValueAsString(result);
     }
     
     public interface QuestionParser<T>{
