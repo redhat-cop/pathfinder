@@ -1089,17 +1089,18 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       if (custId==null){
         myCust=new Customer();
         myCust.setId(UUID.randomUUID().toString());
+        
+        // check customer doesnt already exist with the same name
+        Customer example=new Customer();
+        example.setName(body.getCustomerName());
+        long count=custRepo.count(Example.of(example));
+        if (count>0){
+          log.error("Customer already exists with name {}", body.getCustomerName());
+          return new ResponseEntity<>("Customer already exists with name "+body.getCustomerName(), HttpStatus.BAD_REQUEST);
+        }
+        
       }else{
         myCust=custRepo.findOne(custId);
-      }
-      
-      // check customer doesnt already exist with the same name
-      Customer example=new Customer();
-      example.setName(body.getCustomerName());
-      long count=custRepo.count(Example.of(example));
-      if (count>0){
-        log.error("Customer already exists with name {}", body.getCustomerName());
-        return new ResponseEntity<>("Customer already exists with name "+body.getCustomerName(), HttpStatus.BAD_REQUEST);
       }
       
       myCust.setName(body.getCustomerName());
