@@ -163,71 +163,60 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       overallStatusCount.put("RED",0);
       int assessmentTotal=0;
       Map<String, Risk> risks2=new HashMap<>();
-      for(Applications app:customer.getApplications()){
-        if (null==app.getAssessments()) continue;
-        Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
-        
-//        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId());
-        
-        Map<String,Map<String,String>> questionKeyToText=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
-          @Override
-          public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
-            result.put(name, new MapBuilder<String, String>()
-                .put("questionText", questionText)
-                .put("answerText", answerText)
-                .build());
-          }
-        });
-        
-        
-        String assessmentOverallStatus="GREEN";
-        int mediumCount=0;
-        for(Entry<String, String> e:assessment.getResults().entrySet()){
-//          System.out.println(e.getKey() +"="+ e.getValue());
+      
+      if (null!=customer.getApplications()){
+        for(Applications app:customer.getApplications()){
+          if (null==app.getAssessments()) continue;
+          Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
           
-          // If ANY answers were RED, then the status is RED
-          if (e.getValue().contains("-RED")){
-            assessmentOverallStatus="RED";
+          Map<String,Map<String,String>> questionKeyToText=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
+            @Override
+            public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
+              result.put(name, new MapBuilder<String, String>()
+                  .put("questionText", questionText)
+                  .put("answerText", answerText)
+                  .build());
+            }
+          });
+          
+          
+          String assessmentOverallStatus="GREEN";
+          int mediumCount=0;
+          for(Entry<String, String> e:assessment.getResults().entrySet()){
+  //          System.out.println(e.getKey() +"="+ e.getValue());
             
-            // add the RED item to the risk list and add the app name to the risk
-//            if (risks.containsKey(e.getKey())){
-//              risks.get(e.getKey()).add(app.getName());
-//            }else{
-//              risks.put(e.getKey(), Lists.newArrayList(app.getName()));
-//            }
-            
-            String riskQuestionAnswerKey=e.getKey()+e.getValue();
-//            System.out.println("key="+riskQuestionAnswerKey);
-            if (!risks2.containsKey(riskQuestionAnswerKey)){
-//              System.out.println("adding new risk: "+e.getKey() +" for app "+app.getName());
-              String question=questionKeyToText.get(e.getKey()).get("questionText");
-              String answer=questionKeyToText.get(e.getKey()).get("answerText");
-              risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
-            }else{
-//              System.out.println("adding app to existing risk: "+e.getKey() +" for app "+app.getName());
-              risks2.get(riskQuestionAnswerKey).apps=Joiner.on(",").join(risks2.get(riskQuestionAnswerKey).getOffendingApps().split(","));
+            // If ANY answers were RED, then the status is RED
+            if (e.getValue().contains("-RED")){
+              assessmentOverallStatus="RED";
+              
+              // add the RED item to the risk list and add the app name against the risk
+              String riskQuestionAnswerKey=e.getKey()+e.getValue();
+              if (!risks2.containsKey(riskQuestionAnswerKey)){
+                String question=questionKeyToText.get(e.getKey()).get("questionText");
+                String answer=questionKeyToText.get(e.getKey()).get("answerText");
+                risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
+              }else{
+                risks2.get(riskQuestionAnswerKey).apps=Joiner.on(",").join(risks2.get(riskQuestionAnswerKey).getOffendingApps().split(","));
+              }
+              
             }
             
+            if (e.getValue().contains("-AMBER"))
+              mediumCount=mediumCount+1;
+            
+            // If more than 30% of answers were AMBER, then overall rating is AMBER
+            double percentageOfAmbers=(double)mediumCount/(double)assessment.getResults().size();
+            double threshold=0.3;
+            if ("GREEN".equals(assessmentOverallStatus) && percentageOfAmbers>threshold){
+              log.debug("getReport():: amber answer percentage is {} which is over the {}% threshold, therefore downgrading to AMBER rating", (percentageOfAmbers*100), (threshold*100));
+              assessmentOverallStatus="AMBER";
+            }
           }
           
-          if (e.getValue().contains("-AMBER"))
-            mediumCount=mediumCount+1;
+          assessmentTotal=assessmentTotal+1;
+          overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus)+1);
           
-          // If more than 30% of answers were AMBER, then overall rating is AMBER
-          double percentageOfAmbers=(double)mediumCount/(double)assessment.getResults().size();
-          double threshold=0.3;
-          if ("GREEN".equals(assessmentOverallStatus) && percentageOfAmbers>threshold){
-            log.debug("getReport():: amber %age is {} which is over the {}% threshold, therefore downgrading to AMBER rating", (percentageOfAmbers*100), (threshold*100));
-            assessmentOverallStatus="AMBER";
-          }
         }
-        
-//        System.out.println("getReport():: customer="+customer.getName()+", assessment="+assessment.getId()+", status="+assessmentOverallStatus);
-        
-        assessmentTotal=assessmentTotal+1;
-        overallStatusCount.put(assessmentOverallStatus, overallStatusCount.get(assessmentOverallStatus)+1);
-        
-//        System.out.println("getReport():: overallStatusCount="+overallStatusCount);
       }
       
       result.risks=Lists.newArrayList(risks2.values());
@@ -236,13 +225,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       result.getAssessmentSummary().put("Medium", (double)overallStatusCount.get("AMBER"));
       result.getAssessmentSummary().put("Hard",   (double)overallStatusCount.get("RED"));
       result.getAssessmentSummary().put("Total",  (double)assessmentTotal);
-      
-//      if (result.getRisks().isEmpty())
-//        result.getRisks().put("None identified", Lists.newArrayList());
-      
-//      System.out.println("getReport():: SummaryList="+result.getAssessmentSummary());
-      
-//      System.out.println("RETURNING THE REPORT.....");
       
       return Json.newObjectMapper(true).writeValueAsString(result);
     }
