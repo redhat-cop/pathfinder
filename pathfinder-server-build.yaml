@@ -32,6 +32,7 @@ objects:
     resources: {}
     runPolicy: Serial
     source:
+      contextDir: pathfinder-server
       git:
         ref: master
         uri: https://github.com/redhat-cop/pathfinder

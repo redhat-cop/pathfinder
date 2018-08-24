@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: Build the pathfinder-ui Application
+    iconClass: icon-java
+    tags: java
+  name: pathfinder-ui-build
+objects:
+- apiVersion: v1
+  kind: ImageStream
+  metadata:
+    labels:
+      app: ${APPLICATION_NAME}
+    name: ${APPLICATION_NAME}
+- apiVersion: v1
+  kind: BuildConfig
+  metadata:
+    creationTimestamp: null
+    labels:
+      app: ${APPLICATION_NAME}
+      application: ${APPLICATION_NAME}
+      template: jws31-tomcat8-basic-s2i
+      xpaas: 1.4.12
+    name: ${APPLICATION_NAME}-build
+  spec:
+    nodeSelector: null
+    output:
+      to:
+        kind: ImageStreamTag
+        name: ${APPLICATION_NAME}:latest
+    postCommit: {}
+    resources: {}
+    runPolicy: Serial
+    source:
+      git:
+        ref: master
+        uri: https://github.com/redhat-cop/pathfinder-ui
+      type: Git
+    strategy:
+      sourceStrategy:
+        env:
+        - name: MAVEN_MIRROR_URL
+        - name: ARTIFACT_DIR
+        forcePull: true
+        from:
+          kind: ImageStreamTag
+          name: jboss-webserver31-tomcat8-openshift:1.2
+          namespace: openshift
+      type: Source
+    triggers:
+    - imageChange: {}
+      type: ImageChange
+    - type: ConfigChange
+  status:
+    lastVersion: 0
+parameters:
+- description: The name for the application.
+  displayName: Application name
+  name: APPLICATION_NAME
+  required: true
+  value: pathfinder-ui

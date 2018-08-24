@@ -1,0 +1,11 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Context>
+    <WatchedResource>WEB-INF/web.xml</WatchedResource>
+<!-- 
+	<Resource name="java:jbpm" auth="Container" type="javax.sql.DataSource"
+		maxActive="15" maxIdle="2" maxWait="10000" logAbandoned="true"
+		username="sa" password="" driverClassName="org.h2.jdbcx.JdbcDataSource"
+		url="jdbc:h2:tcp://localhost/~/test" />
+ -->
+               
+</Context>

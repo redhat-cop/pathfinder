@@ -1,0 +1,19 @@
+<?xml version="1.0"  encoding="ISO-8859-1"?>
+<!DOCTYPE Configure PUBLIC "-//Mort Bay Consulting//DTD Configure//EN" "http://jetty.mortbay.org/configure.dtd">
+<Configure class="org.mortbay.jetty.webapp.WebAppContext">
+  <Set name="contextPath">/pathfinder-ui</Set>
+  <Set name="systemClasses">
+  	<Array type="java.lang.String">
+  		<Item>java.</Item>
+  		<Item>javax.servlet.</Item>
+  		<Item>javax.xml.</Item>
+  		<Item>org.mortbay.</Item>
+  		<Item>org.xml.</Item>
+  		<Item>org.w3c.</Item>
+  		<Item>org.commons.apache.logging.</Item>
+  		<Item>org.apache.log4j.</Item>
+  		<Item>org.slf4j.</Item>
+  	</Array>
+  </Set>
+  
+</Configure>

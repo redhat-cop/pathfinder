@@ -1,0 +1,3 @@
+<jboss-web>
+    <context-root>pathfinder-ui</context-root>
+</jboss-web>

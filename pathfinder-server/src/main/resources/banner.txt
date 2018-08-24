@@ -1,0 +1,18 @@
+
+  ${AnsiColor.RED} ######  ####### ######  #     #    #    #######
+  ${AnsiColor.RED} #     # #       #     # #     #   # #      #
+  ${AnsiColor.RED} #     # #       #     # #     #  #   #     #
+  ${AnsiColor.RED} ######  #####   #     # ####### #     #    #
+  ${AnsiColor.RED} #   #   #       #     # #     # #######    #
+  ${AnsiColor.RED} #    #  #       #     # #     # #     #    #
+  ${AnsiColor.RED} #     # ####### ######  #     # #     #    #
+
+  ${AnsiColor.GREEN} ######     #    ####### #     # ####### ### #     # ######  ####### ######
+  ${AnsiColor.GREEN} #     #   # #      #    #     # #        #  ##    # #     # #       #     #
+  ${AnsiColor.GREEN} #     #  #   #     #    #     # #        #  # #   # #     # #       #     #
+  ${AnsiColor.GREEN} ######  #     #    #    ####### #####    #  #  #  # #     # #####   ######
+  ${AnsiColor.GREEN} #       #######    #    #     # #        #  #   # # #     # #       #   #
+  ${AnsiColor.GREEN} #       #     #    #    #     # #        #  #    ## #     # #       #    #
+  ${AnsiColor.GREEN} #       #     #    #    #     # #       ### #     # ######  ####### #     #
+
+

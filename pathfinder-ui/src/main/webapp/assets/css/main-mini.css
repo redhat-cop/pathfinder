@@ -1,0 +1,121 @@
+body:before {
+  content: ' ';
+  display: block;
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  opacity: 0.05;
+}
+#header {
+    -moz-align-items: center;
+    -webkit-align-items: center;
+    -ms-align-items: center;
+    align-items: center;
+    display: -moz-flex;
+    display: -webkit-flex;
+    display: -ms-flex;
+    display: flex;
+    -moz-justify-content: space-between;
+    -webkit-justify-content: space-between;
+    -ms-justify-content: space-between;
+    justify-content: space-between;
+    background: #111111;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: default;
+    height: 3.25rem;
+    left: 0;
+    line-height: 3.25rem;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+#header > .logo {
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 600;
+    height: inherit;
+    line-height: inherit;
+    padding: 0 1.25rem;
+    text-decoration: none;
+}
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+a {
+  -moz-transition: color 0.2s ease-in-out;
+  -webkit-transition: color 0.2s ease-in-out;
+  -ms-transition: color 0.2s ease-in-out;
+  transition: color 0.2s ease-in-out;
+  text-decoration: underline;
+}
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, b, u, i, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+#header > nav > a:last-child {
+    padding-right: 1.25rem;
+}
+#header > nav > a[href="#menu"] {
+    text-decoration: none;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+#header > nav > a {
+    color: inherit;
+    display: inline-block;
+    padding: 0 0.75rem;
+    text-decoration: none;
+}
+#menu {
+    background-color: #111111;
+    color: rgba(255, 255, 255, 0.5);
+    -moz-transform: translateX(20rem);
+    -webkit-transform: translateX(20rem);
+    -ms-transform: translateX(20rem);
+    transform: translateX(20rem);
+    -moz-transition: -moz-transform 0.5s ease, box-shadow 0.5s ease, visibility 0.5s;
+    -webkit-transition: -webkit-transform 0.5s ease, box-shadow 0.5s ease, visibility 0.5s;
+    -ms-transition: -ms-transform 0.5s ease, box-shadow 0.5s ease, visibility 0.5s;
+    transition: transform 0.5s ease, box-shadow 0.5s ease, visibility 0.5s;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: none;
+    height: 100%;
+    max-width: 80%;
+    overflow-y: auto;
+    padding: 3rem 2rem;
+    position: fixed;
+    right: 0;
+    top: 0;
+    visibility: hidden;
+    width: 20rem;
+    z-index: 10002;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #555555;
+}
+h1 {
+    font-size: 3rem;
+    line-height: 1.2;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 300;
+    line-height: 1.5;
+    text-transform: uppercase;
+    margin: 0 0 1.5rem 0;
+}
+body, input, select, textarea {
+    font-family: 'overpass';
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.65;
+}

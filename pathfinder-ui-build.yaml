@@ -33,9 +33,10 @@ objects:
     resources: {}
     runPolicy: Serial
     source:
+      contextDir: pathfinder-ui
       git:
         ref: master
-        uri: https://github.com/redhat-cop/pathfinder-ui
+        uri: https://github.com/redhat-cop/pathfinder
       type: Git
     strategy:
       sourceStrategy:
