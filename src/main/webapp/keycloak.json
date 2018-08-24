@@ -1,8 +1,0 @@
-{
-    "realm": "pathfinder",
-    "auth-server-url": "http://sso-pathfinder.192.168.99.100.nip.io/auth",
-    "ssl-required": "external",
-    "resource": "PathfinderWebUI",
-    "public-client": true,
-    "confidential-port": 0
-}
