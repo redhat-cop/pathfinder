@@ -346,8 +346,9 @@
 												display: true,
 												ticks: {
 													display: false,
-													suggestedMin: -5,
-													suggestedMax: 5,
+													suggestedMin: -6,
+													suggestedMax: 6,
+												  stepSize: 1,
 													beginAtZero: true
 												},
 												scaleLabel:{
@@ -359,8 +360,9 @@
 												display: true,
 												ticks: {
 													display: false,
-													suggestedMin: -50,
-													suggestedMax: 50,
+													suggestedMin: -60,
+													suggestedMax: 60,
+                          stepSize: 10,
 													beginAtZero: true
 												},
 												scaleLabel:{
@@ -461,20 +463,23 @@
 												    var subtractWidth = radius * width / length;
 												    var subtractHeight = radius * height / length;
 										    		
-										    		targetBubble.x-=subtractWidth;
-										    		targetBubble.y-=subtractHeight;
+										    		//targetBubble.x-=subtractWidth;
+										    		//targetBubble.y-=subtractHeight;
+										    		
+										    		//targetBubble.x+=(radius);
+										    		//targetBubble.y+=(radius);
 										    		
 										    		ctx.beginPath();
-										    		//canvas_arrow(ctx,x,y,targetBubble.x, targetBubble.y);
+										    		drawArrow(ctx,x,y,targetBubble.x-subtractWidth, targetBubble.y-subtractHeight, 20);
 										    		
 										    		// draw arrow
-												    var arrowSize=20;   // length of arrow head in pixels
-												    var angle=Math.atan2(targetBubble.y-y,targetBubble.x-x);
-												    ctx.moveTo(x, y);
-												    ctx.lineTo(targetBubble.x, targetBubble.y);
-												    ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle-Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle-Math.PI/6));
-												    ctx.moveTo(targetBubble.x, targetBubble.y);
-												    ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle+Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle+Math.PI/6));
+												    //var arrowSize=15;   // length of arrow head in pixels
+												    //var angle=Math.atan2(targetBubble.y-y,targetBubble.x-x);
+												    //ctx.moveTo(x, y);
+												    //ctx.lineTo(targetBubble.x, targetBubble.y);
+												    ////ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle-Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle-Math.PI/6));
+												    ////ctx.moveTo(targetBubble.x, targetBubble.y);
+												    ////ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle+Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle+Math.PI/6));
 												    
 										    		ctx.stroke();
 										    		console.log("BubbleGraph:: drawn dependency line from '"+label+"' to '"+targetBubble.Name+"' which is from '"+x+","+y+"' to '"+targetBubble.x+","+targetBubble.y+"'");
@@ -490,7 +495,15 @@
 										}								    
 									}
 								});
-								
+						  }
+						  
+						  function drawArrow(ctx, x, y, targetX, targetY, arrowSize){
+							  var angle=Math.atan2(targetY-y,targetX-x);
+							  ctx.moveTo(x, y);
+							  ctx.lineTo(targetX, targetY);
+							  ctx.lineTo(targetX-arrowSize*Math.cos(angle-Math.PI/6),targetY-arrowSize*Math.sin(angle-Math.PI/6));
+							  ctx.moveTo(targetX, targetY);
+							  ctx.lineTo(targetX-arrowSize*Math.cos(angle+Math.PI/6),targetY-arrowSize*Math.sin(angle+Math.PI/6));
 						  }
 						  
 							var data;
@@ -616,10 +629,10 @@
 				
 				<br/><br/><br/>
 				<h2>
-				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
+<!--				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
 					<img src="assets/images/twisty-off.png" style="width:30px;"/>
 					<img src="assets/images/twisty-on.png"  style="width:30px;display:none"/>
-				</a>
+-->				</a>
 				<!--
 				<i class="glyphicon glyphicon-triangle-right"></i>
 				-->
@@ -628,9 +641,9 @@
 					<div class="col-sm-10">
 						
 						<script>
-							$(".twisty").click(function(){
-							  $('img',this).toggle();
-							});
+//							$(".twisty").click(function(){
+//							  $('img',this).toggle();
+//							});
 							
 							function drawRisks(data){
 							  var risks=[];
@@ -656,7 +669,10 @@
 						  }
 						</script>
 						A list of questions with answers that that could cause migratory risk to a container platform.
+<!--						
 						<div class="collapse" id="collapser">
+-->						
+						<div >
 					  	<div id="wrapper">
 						    <div id="tableDiv">
 							    <table id="risks" class="display" cellspacing="0" width="100%">
@@ -671,35 +687,6 @@
 							  </div>
 					  	</div>
 						</div>
-					
-					
-<!--
-<div class="card">
-    <div class="card-header" id="heading-example">
-        <h5 class="mb-0">
-            <a data-toggle="collapse" href="#collapse-example" aria-expanded="true" aria-controls="collapse-example">
-                <i class="fa glyphicon glyphicon-triangle-right pull-right"></i>
-                this is some text
-            </a>
-        </h5>
-    </div>
-    <div id="collapse-example" class="collapsed hidden" aria-labelledby="heading-example">
-        <div class="card-block">
-            and this is more text
-            safsdfsdf
-            gfdlkjldfg
-        </div>
-    </div>
-</div>
-						<style>
-						.card-header .fa {
-						  transition: .3s transform ease-in-out;
-						}
-						.card-header .collapsed .fa {
-						  transform: rotate(90deg);
-						}
-						</style>
--->
 					
 					</div>
 				</div>
