@@ -52,8 +52,7 @@
       </div>
       <script>
 	      function formValidate(){
-	      console.log("pwd="+$('#Password').val());
-		      $('#edit-ok').attr('disabled', isEmpty($('#Username').val()) || $('#Password').val()=="" || $('#Password').val()!=$('#Password2').val())
+		      $('#edit-ok').attr('disabled', isEmpty($('#Username').val()) || ($('#Password').val().length>0 && $('#Password').val()=="" || $('#Password').val()!=$('#Password2').val()))
 	      }
 	      function isEmpty(val){
 	      	return val==null || val=="";
