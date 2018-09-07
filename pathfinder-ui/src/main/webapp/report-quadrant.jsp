@@ -187,6 +187,8 @@
 						//transparency=certainty
 						-->
 						
+						<script src="https://master--chartjs-plugin-datalabels.netlify.com/chartjs-plugin-datalabels.js"></script>
+						
 						<script>
 						  var decisionColors=[];
 						  // colors got from https://brand.redhat.com/elements/color/
@@ -314,6 +316,7 @@
 								if (bubbleChart!=null){
 									bubbleChart.data=getDataOriginal(summary);
 									bubbleChart.options.animation.duration=initial?1000:1;
+									bubbleChart.options.plugins.datalabels.display=labels;
 									bubbleChart.update();
 									return;
 								}
@@ -335,7 +338,15 @@
 											duration: 1000
 										},
 										tooltips:{
-											enabled: false
+											enabled: true,
+											//tooltipTemplate: "<\%if (label){\%><\%=value\%><\%} else {\%> No data <\%}\%>",
+											callbacks: {
+									      label: function(tooltipItem, data) {
+									        //var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || 'Other';
+									        //var label = data.labels[tooltipItem.index];
+									        return data.datasets[tooltipItem.datasetIndex].label || 'Unknown';
+									      }
+									    }
 										},
 										aspectRatio: 1,
 										scales: {
@@ -348,7 +359,7 @@
 													display: false,
 													suggestedMin: -6,
 													suggestedMax: 6,
-												  stepSize: 1,
+													stepSize: 1,
 													beginAtZero: true
 												},
 												scaleLabel:{
@@ -362,7 +373,7 @@
 													display: false,
 													suggestedMin: -60,
 													suggestedMax: 60,
-                          stepSize: 10,
+													stepSize: 10,
 													beginAtZero: true
 												},
 												scaleLabel:{
@@ -370,6 +381,36 @@
 													labelString: "Confidence",
 												}
 											}],
+										},
+										plugins: {
+											datalabels: {
+											  display: labels,
+												anchor: function(context) {
+													var value = context.dataset.data[context.dataIndex];
+													return value.r <= 1500 ? 'end' : 'center';
+												},
+												align: function(context) {
+													var value = context.dataset.data[context.dataIndex];
+													return value.r <= 1500 ? 'end' : 'center';
+												},
+												color: function(context) {
+													var value = context.dataset.data[context.dataIndex];
+													return value.r <= 1500 ? context.dataset.backgroundColor : 'white';
+												},
+												font: {
+													weight: 'bold'
+												},
+												formatter: function(value, context) {
+													//return Math.round(value.r);
+													//console.log("ctx = "+JSON.stringify(context));
+													//var valuex = context.dataset.data[context.dataIndex];
+													var valuex = context.dataset.label[0];
+													console.log("valuex="+JSON.stringify(valuex));
+													return valuex;
+												},
+												offset: 2,
+												padding: 0
+											}
 										}
 									}
 								});
@@ -596,6 +637,7 @@
 						<script>
 							var greyscale=true;
 							var dependencies=true;
+							var labels=false;
 							
 							function greyscaleToggle(t){
 								t.value=="Show Decisions"?t.value="Hide Decisions":t.value="Show Decisions";
@@ -607,10 +649,16 @@
 								dependencies=(t.value=="Show Dependencies");
 								redrawBubble(applicationAssessmentSummary, false);
 							}
+							function labelsToggle(t){
+								t.value=="Show Labels"?t.value="Hide Labels":t.value="Show Labels";
+								labels=(t.value=="Hide Labels");
+								redrawBubble(applicationAssessmentSummary, false);
+							}
 							
 						</script>
 						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:120px;font-size:10pt;line-height:1rem;" type="button" id="greyscale" value="Show Decisions" onclick="greyscaleToggle(this);"/>
 						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:150px;font-size:10pt;line-height:1rem;" type="button" id="dependencies" value="Show Dependencies" onclick="dependenciesToggle(this);"/>
+						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:150px;font-size:10pt;line-height:1rem;" type="button" id="labels" value="Show Labels" onclick="labelsToggle(this);"/>
 						
 					</div> <!-- col-sm-? -->
 				</div> <!-- /row -->
@@ -619,7 +667,7 @@
 				<br/><br/><br/>
 				<h2>Suggested Adoption Plan</h2>
 				<div class="row">
-					<div class="col-sm-8">
+					<div class="col-sm-10">
 						<canvas id="adoption" style="width: 500px; height: 100px;"></canvas>
 						<%@include file="report-adoption.jsp"%>
 					</div> <!-- col-sm-? -->
@@ -632,8 +680,8 @@
 <!--				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
 					<img src="assets/images/twisty-off.png" style="width:30px;"/>
 					<img src="assets/images/twisty-on.png"  style="width:30px;display:none"/>
--->				</a>
-				<!--
+				</a>
+-->				<!--
 				<i class="glyphicon glyphicon-triangle-right"></i>
 				-->
 				Identified Risks</h2>
