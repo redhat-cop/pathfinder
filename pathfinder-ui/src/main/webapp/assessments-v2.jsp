@@ -156,8 +156,8 @@
 					if (json[i].Assessed) assessed+=1;
 					if (json[i].ReviewDate!=null) reviewed+=1;
 				}
-				setProgress("assessedProgress", (100/json.length)*assessed, "Assessed");
-				setProgress("reviewedProgress", (100/json.length)*reviewed, "Reviewed");
+				setProgress("assessedProgress", json.length<=0?0:(100/json.length)*assessed, "Assessed");
+				setProgress("reviewedProgress", json.length<=0?0:(100/json.length)*reviewed, "Reviewed");
 				buttonEnablement();
 			}
 			$(document).ready(function() {
