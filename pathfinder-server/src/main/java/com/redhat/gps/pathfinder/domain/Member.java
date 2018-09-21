@@ -58,8 +58,10 @@ public class Member implements Serializable{
   @Field("roles")
   private List<String> roles;
   
-  @DBRef
-  private Customer customer;
+//  @DBRef
+//  private Customer customer;
+  @Field("customerId")
+  private String customerId;
 
 
   public String getUsername(){
@@ -78,8 +80,8 @@ public class Member implements Serializable{
     return password;
   }
 
-  public Customer getCustomer(){
-    return customer;
+  public String getCustomerId(){
+    return customerId;
   }
 
   public void setUsername(String username){
@@ -98,8 +100,8 @@ public class Member implements Serializable{
     this.password=password;
   }
 
-  public void setCustomer(Customer customer){
-    this.customer=customer;
+  public void setCustomerId(String customerId){
+    this.customerId=customerId;
   }
   
   public List<String> getPrivileges(){

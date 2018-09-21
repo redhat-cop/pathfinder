@@ -72,6 +72,8 @@ public class ApplicationAssessmentReview implements Serializable {
     @DBRef
     private Applications Application;
 
+    public ApplicationAssessmentReview() {}
+    
     public ApplicationAssessmentReview(String ReviewDate, com.redhat.gps.pathfinder.domain.Assessments Assessments, String ReviewDecision, String ReviewEstimate, String ReviewNotes, String WorkPriority, String BusinessPriority) {
         this.ReviewDate = ReviewDate;
         this.Assessments = Assessments;

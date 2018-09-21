@@ -25,13 +25,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.data.mongodb.core.query.Query;
-
-import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
@@ -44,20 +39,26 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
+import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+import org.springframework.context.annotation.Bean;
+import org.springframework.data.domain.Example;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,6 +69,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Joiner;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
@@ -100,6 +103,10 @@ import com.redhat.gps.pathfinder.web.api.model.ReviewType;
 
 import io.swagger.annotations.ApiParam;
 
+//import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
+//import org.springframework.context.annotation.*;
+//import org.springframework.http.converter.*;
+
 @RestController
 @RequestMapping("/api/pathfinder")
 public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
@@ -119,14 +126,149 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     private final MembersRepository membersRepo;
 
     public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository, ReviewsRepository reviewRepository, MembersRepository membersRepository) {
-        super(membersRepository);
-        this.custRepo = custRepo;
-        this.appsRepo = appsRepo;
-        this.assmRepo = assmRepo;
-        this.questionRepository = questionRepository;
-        this.reviewRepository = reviewRepository;
-        this.membersRepo=membersRepository;
+      super(membersRepository);
+      this.custRepo = custRepo;
+      this.appsRepo = appsRepo;
+      this.assmRepo = assmRepo;
+      this.questionRepository = questionRepository;
+      this.reviewRepository = reviewRepository;
+      this.membersRepo=membersRepository;
     }
+
+    private Customer newExampleCustomer(String name) {
+    	Customer example=new Customer();
+      example.setName(name);
+      return example;
+    }
+    
+    // Non-Swagger api - import/export
+    @RequestMapping(value="/customers/import", method=POST)//, headers={"Content-Disposition: attachment; filename=myfile.json"})
+    public ResponseEntity<?> importCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    	log.debug("importCustomer()...");
+    	
+    	String payload=IOUtils.toString(request.getInputStream(), "UTF-8");
+    	
+    	try {
+    		List<Customer> customers=Json.newObjectMapper(true).readValue(payload, new TypeReference<List<Customer>>() {});
+//    		Customer importedCustomer=Json.newObjectMapper(false).readValue(payload, Customer.class);
+    		
+    		for(Customer customer:customers) {
+    			log.debug("importCustomer():: importing customer = "+customer.getName());
+    			
+    			// Check Customer entity
+    			if (null!=custRepo.findOne(customer.getId())) {
+    				// CustomerID in use, generate a new one
+    				customer.setId(UUID.randomUUID().toString());
+    				
+            Customer example=new Customer();
+            example.setName(customer.getName());
+//            long count=custRepo.count(Example.of(example));
+//            log.debug("count = "+count);
+            if (custRepo.count(Example.of(example))>0){
+            	int i=1, max=20;
+            	while(custRepo.count(Example.of(newExampleCustomer(customer.getName()+"_"+i)))>0) {
+//            		log.debug("theres already a customer: "+(customer.getName()+"_"+i));
+            		i=i+1;
+            		if (i>=max) break;
+            	}
+//            	log.debug("setting customer name to : "+ (customer.getName()+"_"+i));
+            	customer.setName(customer.getName()+"_"+i); // give the customer a unique name if we can
+            	
+            	if (i>=max) {
+	              log.error("Customer already exists with name {}", customer.getName());
+	              return new ResponseEntity<>("Customer already exists with name "+customer.getName(), HttpStatus.BAD_REQUEST);
+            	}
+            }
+    			}
+    			
+    			// Check Applications entities
+//    			customer.setApplications(newApps);
+//    			custRepo.save(customer);
+//    			List<Applications> newApps=new ArrayList<>();
+    			for(Applications app:customer.getApplications()) {
+    				
+    				// Check Application
+    				app.setId(null!=appsRepo.findOne(app.getId())?UUID.randomUUID().toString():app.getId()); // generate a new ID if it's in use
+    				
+    				// Check Assessment entity
+    				Assessments ass=app.getAssessments()!=null && app.getAssessments().size()>0?app.getAssessments().get(app.getAssessments().size()-1):null;
+    				if (ass!=null) {
+	    				log.debug("ass id before = "+ass.getId());
+    					ass.setId(null!=assmRepo.findOne(ass.getId())?UUID.randomUUID().toString():ass.getId()); // generate a new ID if it's in use
+    					log.debug("ass id after = "+ass.getId());
+	    				app.setAssessments(Lists.newArrayList(ass));
+	    				assmRepo.save(ass);
+    				}
+    				
+    				// Check Review entity
+    				if (null!=app.getReview()) {
+    					app.getReview().setId(app.getReview()!=null && null!=reviewRepository.findOne(app.getReview().getId())?UUID.randomUUID().toString():app.getReview().getId());
+    					reviewRepository.save(app.getReview());
+    				}
+    				
+    				appsRepo.save(app);
+//    				newApps.add(app);
+    			}
+    			
+//    			customer.setApplications(newApps);
+    			custRepo.save(customer);
+    			
+    		}
+    		
+    	}catch(Exception e){
+    		e.printStackTrace();
+    	}
+    	
+//    	return ResponseEntity.status(200).header("Access-Control-Allow-Origin", "*/*").build();
+    	return ResponseEntity.status(200).build();
+    }
+    
+    
+    // Non-Swagger api - import/export
+    @RequestMapping(value="/customers/export", method=GET)//, headers={"Content-Disposition: attachment; filename=myfile.json"})
+//    @CrossOrigin
+    public ResponseEntity<?> exportCustomer(@RequestParam("ids") String custIds, HttpServletResponse response) throws IOException {
+    	
+    	List<Customer> result=new ArrayList<Customer>();
+    	
+    	log.debug("custIds = "+custIds);
+    	String[] custIdss=custIds.split(",");
+    	log.debug("# of customers = "+custIdss.length);
+    	
+    	HttpHeaders h= new HttpHeaders(); 
+    	
+    	String filename=null;
+    	for(String custId:custIdss) {
+    		Customer c=custRepo.findOne(custId);
+    		filename=c.getName();
+    		log.debug("Adding customer: "+c.getName());
+    		
+    		// distill the customer a bit
+    		for(Applications app:c.getApplications()){
+    			if (app.getAssessments()!=null && app.getAssessments().size()>0) {
+    				app.getAssessments().removeIf(new Predicate<Assessments>(){
+    					@Override public boolean apply(Assessments input){
+								return !input.getId().equals(app.getAssessments().get(app.getAssessments().size()-1).getId());
+						}});
+    			}
+    		}
+    		
+    		result.add(c);
+    	}
+    	
+    	if (custIdss.length==1){
+    		h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+filename.replaceAll(" ", "-")+"_export.json");
+    	}else{
+    		h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment");
+    	}
+    	
+    	log.debug("returning: "+result.size() +" customer(s)");
+    	
+    	return ResponseEntity.ok()
+	  		      .headers(h)
+	  		      .body(result);
+    }
+    
     
     // Non-Swagger api - report page content
     @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -436,7 +578,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       member.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
       member.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
       
-      member.setCustomer(customer);
+      member.setCustomerId(customer.getId());
       membersRepo.save(member);
       
       if (existingUsername==null){
@@ -1124,8 +1266,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                   resp.setCustomerDescription(customer.getDescription());
                   resp.setCustomerSize(customer.getSize());
                   resp.setCustomerVertical(customer.getVertical());
-  
-                  int total = customer.getApplications() != null ? customer.getApplications().size() : 0;
+                  
+                  int total = customer.getApplications() != null ? Collections2.filter(customer.getApplications(), Predicates.assessableApplications).size() : 0;
                   resp.setCustomerAssessor(customer.getAssessor());
                   resp.setCustomerRTILink(customer.getRtilink());
   
@@ -1133,6 +1275,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                   int reviewedCount = 0;
                   if (total > 0) {
                       for (Applications app : customer.getApplications()) {
+                      	if (app==null) continue;  // TODO: Remove this MAT!!!!
                           ApplicationAssessmentReview review = app.getReview();
                           // if review is null, then it's not been reviewed
                           reviewedCount += (review != null ? 1 : 0);
@@ -1178,6 +1321,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             log.debug("customersDelete: customer [{}] had "+(c.getApplications()!=null?c.getApplications().size():0)+" apps", customerId);
             if (null!=c.getApplications()){
               for (Applications app:c.getApplications()){
+              	if (app==null) continue;  // TODO: Remove this MAT!!!!
                 log.debug("customersDelete: deleting customer [{}] application [{}]", customerId, app.getId());
                 
                 if (null!=app.getAssessments()){
@@ -1666,6 +1810,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             } else {
 
                 for (Applications app : applications) {
+                	if (app==null) continue; //TODO Mat fix this!!!
                     if (app.getStereotype().equals(ApplicationType.StereotypeEnum.TARGETAPP.toString())){
                         ApplicationSummaryType item = new ApplicationSummaryType();
                         item.setId(app.getId());

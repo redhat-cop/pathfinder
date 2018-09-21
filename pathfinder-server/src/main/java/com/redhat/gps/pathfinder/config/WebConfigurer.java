@@ -32,6 +32,7 @@ import com.codahale.metrics.servlets.MetricsServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
 import org.springframework.boot.context.embedded.*;
 import org.springframework.boot.context.embedded.undertow.UndertowEmbeddedServletContainerFactory;
 import io.undertow.UndertowOptions;
@@ -43,6 +44,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.http.MediaType;
+import org.springframework.http.converter.StringHttpMessageConverter;
 
 import java.util.*;
 import javax.servlet.*;
@@ -62,11 +64,15 @@ public class WebConfigurer implements ServletContextInitializer, EmbeddedServlet
     private MetricRegistry metricRegistry;
 
     public WebConfigurer(Environment env, JHipsterProperties jHipsterProperties) {
-
         this.env = env;
         this.jHipsterProperties = jHipsterProperties;
     }
 
+//    @Bean
+//    public HttpMessageConverters customConverters() {
+//        return new HttpMessageConverters(new StringHttpMessageConverter());
+//    }
+    
     @Override
     public void onStartup(ServletContext servletContext) throws ServletException {
         if (env.getActiveProfiles().length != 0) {
@@ -108,6 +114,7 @@ public class WebConfigurer implements ServletContextInitializer, EmbeddedServlet
      * Initializes Metrics.
      */
     private void initMetrics(ServletContext servletContext, EnumSet<DispatcherType> disps) {
+    	
         log.debug("Initializing Metrics registries");
         servletContext.setAttribute(InstrumentedFilter.REGISTRY_ATTRIBUTE,
             metricRegistry);
@@ -117,7 +124,9 @@ public class WebConfigurer implements ServletContextInitializer, EmbeddedServlet
         log.debug("Registering Metrics Filter");
         FilterRegistration.Dynamic metricsFilter = servletContext.addFilter("webappMetricsFilter",
             new InstrumentedFilter());
-
+        
+        if (null==metricsFilter) return;
+        
         metricsFilter.addMappingForUrlPatterns(disps, true, "/*");
         metricsFilter.setAsyncSupported(true);
 

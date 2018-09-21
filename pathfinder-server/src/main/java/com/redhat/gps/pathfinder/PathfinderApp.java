@@ -1,5 +1,26 @@
 package com.redhat.gps.pathfinder;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
+
+import javax.annotation.PostConstruct;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.env.Environment;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
 /*-
  * #%L
  * Pathfinder
@@ -26,21 +47,6 @@ import com.redhat.gps.pathfinder.config.ApplicationProperties;
 import com.redhat.gps.pathfinder.config.DefaultProfileUtil;
 
 import io.github.jhipster.config.JHipsterConstants;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.actuate.autoconfigure.*;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.core.env.Environment;
-
-import javax.annotation.PostConstruct;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.Collection;
 
 @ComponentScan
 @EnableAutoConfiguration(exclude = {MetricFilterAutoConfiguration.class, MetricRepositoryAutoConfiguration.class})
@@ -101,5 +107,15 @@ public class PathfinderApp {
             InetAddress.getLocalHost().getHostAddress(),
             env.getProperty("server.port"),
             env.getActiveProfiles());
+    }
+    
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("*").allowedOrigins("*/*");
+            }
+        };
     }
 }

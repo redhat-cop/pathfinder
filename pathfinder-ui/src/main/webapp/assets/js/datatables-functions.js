@@ -18,12 +18,18 @@ function send(action, uri, data){
   	//console.log("table="+JSON.stringify(table1));
   	//console.log("oSettings="+JSON.stringify(oSettings));
   	
+	console.log("datatables-functions::send:: onloadend ... status = "+this.status);
+	  
   	if (this.status == 200){
+	  	console.log("datatables-functions::send:: returned 200");
 	  	
 	  	$('#example').DataTable().ajax.reload(
 	  		function(json){
 	  		  // ideally we'd just call fnInitComplete but sadly i can't find that function embedded in the datatable object yet
-	  			if (undefined!=onDatatableRefresh) onDatatableRefresh(json);
+	  			if (undefined!=onDatatableRefresh){
+	  				console.log("datatables-functions::send:: calling onDatatableRefresh();");
+	  				onDatatableRefresh(json);
+	  			}
 	  			//table.fnSettings.fnInitComplete(null, json);
 	  		}
 	  	);

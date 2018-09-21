@@ -44,13 +44,13 @@ public class ApplicationStartup implements ApplicationListener<ApplicationReadyE
     @Override
     public void onApplicationEvent(final ApplicationReadyEvent event) {
       if (0==membersRepo.findAll().size()){
-        log.debug("No users found in database, creating default \"Admin\" user with username & password as \"admin\"");
+        log.debug("No users found in database, creating default \"admin\" user with username & password as \"admin\"");
         Member admin=new Member();
         admin.setUsername("admin");
         admin.setRoles(Arrays.asList("SUPER"));
         admin.setDisplayName("Admin");
         admin.setPassword("admin");
-        admin.setCustomer(null);
+        admin.setCustomerId(null);
         
         membersRepo.save(admin);
       }

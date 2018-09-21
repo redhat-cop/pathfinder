@@ -42,56 +42,56 @@ public class InitialSetupMigration {
 
 
 
-    @ChangeSet(order = "01", author = "initiator", id = "01-addQuestionWeights",runAlways = true)
-    public void addQuestionWeights(MongoTemplate mongoTemplate) {
-        QuestionMetaData currData = null;
-        currData = PathfinderQuestionConfig.QuestionARCHTYPE();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionCLUSTER();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionCOMMS();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionCOMPLIANCE();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionCONFIG();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionCONTAINERS();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPLOY();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPS3RD();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPSHW();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPSIN();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPSOS();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionDEPSOUT();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionHA();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionHEALTH();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionLOGS();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionMETRICS();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionOWNER();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionPROFILE();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionOWNER();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionRESILIENCY();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionSECURITY();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionSTATE();
-        mongoTemplate.save(currData);
-        currData = PathfinderQuestionConfig.QuestionTEST();
-        mongoTemplate.save(currData);
-
-    }
+//    @ChangeSet(order = "01", author = "initiator", id = "01-addQuestionWeights",runAlways = true)
+//    public void addQuestionWeights(MongoTemplate mongoTemplate) {
+//        QuestionMetaData currData = null;
+//        currData = PathfinderQuestionConfig.QuestionARCHTYPE();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionCLUSTER();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionCOMMS();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionCOMPLIANCE();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionCONFIG();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionCONTAINERS();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPLOY();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPS3RD();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPSHW();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPSIN();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPSOS();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionDEPSOUT();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionHA();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionHEALTH();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionLOGS();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionMETRICS();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionOWNER();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionPROFILE();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionOWNER();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionRESILIENCY();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionSECURITY();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionSTATE();
+//        mongoTemplate.save(currData);
+//        currData = PathfinderQuestionConfig.QuestionTEST();
+//        mongoTemplate.save(currData);
+//
+//    }
 
 }

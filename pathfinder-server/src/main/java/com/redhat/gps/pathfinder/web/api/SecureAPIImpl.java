@@ -69,9 +69,12 @@ public class SecureAPIImpl{
     Member currentUser=getCurrentUser();
     boolean result= currentUser.getRoles().contains("SUPER")
               || 
-           (currentUser.getRoles().contains("ADMIN") 
-            && currentUser.getCustomer()!=null 
-            && currentUser.getCustomer().getId().equals(c.getId()));
+           (currentUser.getRoles().contains("ADMIN")
+      		 && currentUser.getCustomerId()!=null
+  				 && currentUser.getCustomerId().equals(c.getId()));
+                   
+//          				 && currentUser.getCustomer()!=null 
+//            && currentUser.getCustomer().getId().equals(c.getId()));
 //    log.debug("AUTH: user->{}, roles->{}, customer->{}, auth->{}", currentUser.getUsername(), Joiner.on(",").join(currentUser.getRoles()), c.getName(), result);
     return result;
   }

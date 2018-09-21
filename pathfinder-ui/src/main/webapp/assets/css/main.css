@@ -146,10 +146,10 @@ table.dataTable thead .sorting {
 .progress-bar-success a,
 .progress-bar-success a:visited {
   margin: 0px 0px 0px 10px;
-  color: white;
+  color: #505050;
 }
 .progress-bar-success a:hover {
-  color: #ddd;
+  color: #a5a5a5;
 }
 
 
