@@ -22,6 +22,14 @@
 $(document).ready (function(){
   $("#successNotification").hide();
   $("#errorNotification").hide();
+  
+  // automatically redirect back to login when logged-out/timed-out
+	$.fn.dataTable.ext.errMode = function ( settings, helpPage, message ) { 
+	    //console.log("ERROR:"+JSON.stringify(message));
+	    if (message.includes("Ajax error")){
+	    	self.location.href="${pageContext.request.contextPath}";
+	    }
+	};
 });
 
 function showNotification(type, message){
