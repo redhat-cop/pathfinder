@@ -4,14 +4,30 @@
     <name>${project.groupId}.${project.artifactId}</name>
     <groupId>com.redhat.gps.pathfinder</groupId>
     <artifactId>pathfinder</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
+        <module>acceptance</module>
         <module>pathfinder-ui</module>
         <module>pathfinder-server</module>
+        <module>pathfinder-server-war</module>
+        <!-- 
+        <module>pathfinder-server-lib</module>
+        <module>pathfinder-server-boot</module>
+         -->
 	<!--module>acceptance</module-->
     </modules>
+    
+    <profiles>
+      <profile>
+        <id>war</id>
+        <modules>
+          <module>pathfinder-server-war</module>
+        </modules>
+      </profile>
+      
+    </profiles>
 	
 </project>
 

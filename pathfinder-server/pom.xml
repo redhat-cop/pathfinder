@@ -14,8 +14,8 @@
 
     <properties>
         <!-- Build properties -->
-        <maven.version>3.0.0</maven.version>
         <java.version>1.8</java.version>
+        <maven.version>3.0.0</maven.version>
         <scala.version>2.12.1</scala.version>
         <node.version>v8.9.4</node.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -508,6 +508,7 @@
                 <artifactId>sonar-maven-plugin</artifactId>
                 <version>${sonar-maven-plugin.version}</version>
             </plugin>
+            <!--
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -520,15 +521,14 @@
                     </execution>
                 </executions>
                 <configuration>
+                    Enable the line below to have remote debugging of your application on port 5005
+                    <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
+                </configuration>
                     <mainClass>${start-class}</mainClass>
                     <executable>true</executable>
                     <fork>true</fork>
-                    <!--
-                    Enable the line below to have remote debugging of your application on port 5005
-                    <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
-                    -->
-                </configuration>
             </plugin>
+            -->
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
@@ -611,6 +611,19 @@
                                     <action>
                                         <ignore/>
                                     </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                  <pluginExecutionFilter>
+                                    <groupId>io.swagger</groupId>
+                                    <artifactId>swagger-codegen-maven-plugin</artifactId>
+                                    <versionRange>[2.2.3,)</versionRange>
+                                    <goals>
+                                      <goal>generate</goal>
+                                    </goals>
+                                  </pluginExecutionFilter>
+                                  <action>
+                                    <ignore></ignore>
+                                  </action>
                                 </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
@@ -937,5 +950,62 @@
             </dependencies>
         </profile>
         <!-- jhipster-needle-maven-add-profile -->
+        
+
+        <profile>
+          <id>war</id>
+          <dependencies>
+              <dependency>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-starter-undertow</artifactId>
+              </dependency>
+              <dependency>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-devtools</artifactId>
+                  <optional>true</optional>
+              </dependency>
+          </dependencies>
+          <build>
+            <plugins>
+              <plugin>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-maven-plugin</artifactId>
+                  <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+          </build>
+        </profile>
+         
+        <profile>
+          <id>spring-boot</id>
+          <activation>
+            <activeByDefault>true</activeByDefault>
+          </activation>
+          <build>
+            <plugins>
+              <plugin>
+                  <groupId>org.springframework.boot</groupId>
+                  <artifactId>spring-boot-maven-plugin</artifactId>
+                  <version>${spring-boot.version}</version>
+                  <executions>
+                      <execution>
+                          <goals>
+                              <goal>repackage</goal>
+                          </goals>
+                      </execution>
+                  </executions>
+                  <configuration>
+                      <mainClass>${start-class}</mainClass>
+                      <executable>true</executable>
+                      <fork>true</fork>
+                      <!--
+                      Enable the line below to have remote debugging of your application on port 5005
+                      <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
+                      -->
+                  </configuration>
+              </plugin>
+            </plugins>
+          </build>
+        </profile>
     </profiles>
 </project>

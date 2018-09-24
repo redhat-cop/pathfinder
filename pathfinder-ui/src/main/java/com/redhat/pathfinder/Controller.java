@@ -230,7 +230,11 @@ public class Controller{
     request.getSession().invalidate();
     return Response.status(302).location(new URI("../index.jsp")).build();
   }
-
+  
+  private String maskPasswords(String input) {
+  	return input.replaceAll("password=.+&", "password=****&");
+  }
+  
   @POST
   @Path("/login")
   public Response login(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
@@ -239,11 +243,12 @@ public class Controller{
     
     String uri=IOUtils.toString(request.getInputStream());
     
-    System.out.println("Controller::login() payload = "+uri); //username=&password=
+    System.out.println("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
     
     final Map<String, String> keyValues=Splitter.on('&').trimResults().withKeyValueSeparator("=").split(uri);
     
-    System.out.println("Controller::login():: username="+keyValues.get("username") +", password="+keyValues.get("password"));
+//    System.out.println("Controller::login():: username="+keyValues.get("username") +", password="+keyValues.get("password"));
+    System.out.println("Controller::login():: username="+keyValues.get("username") +", password=****");
 
     io.restassured.response.Response loginResp = given()
         .body("{\"username\":\""+keyValues.get("username")+"\",\"password\":\""+keyValues.get("password")+"\"}")

@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Platform;
@@ -33,7 +34,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +48,7 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
 public class CustomerSteps{
+  private static ResourceBundle rb = ResourceBundle. getBundle("acceptance");
   private static final Logger log=LoggerFactory.getLogger(CustomerSteps.class);
   private static final String URL="http://localhost:8082/pathfinder-ui/index.jsp";
 //  private List<Order> orders=new ArrayList<Order>();
@@ -57,42 +58,31 @@ public class CustomerSteps{
   private static boolean initialised = false;
   @Before public void beforeAll(){
     if(!initialised) initialised=Utils.beforeScenarios();
-    
-//    System.setProperty("webdriver.chrome.driver", "/usr/bin/google-chrome");
-//    browser ;
+    getBrowser();
   }
   
   private WebDriver getBrowser(){
     if (browser==null){
-//      System.setProperty("webdriver.chrome.driver", "/home/mallen/Downloads/chromedriver");
-////      System.setProperty("webdriver.chrome.driver", "/usr/bin/google-chrome");
-//      System.setProperty("webdriver.gecko.driver", "/home/mallen/Downloads/geckodriver");
+        System.setProperty("webdriver.chrome.driver", "chromedriver-linux-2.41");
       
-      
-      String path="/home/mallen/Work/poc/sso-tools/pathfinder/pathfinder-ng/acceptance/chromedriver-linux-2.40";
-      System.setProperty("webdriver.chrome.driver", path);
-      
-//      try{
-//        DesiredCapabilities capabilities = DesiredCapabilities.firefox();
-      DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-////        capabilities.setCapability("marionette", true);
-//        capabilities.setBrowserName("firefox");
-        capabilities.setPlatform(Platform.LINUX);
-//        
-////        browser = new RemoteWebDriver(new java.net.URL(URL), new FirefoxOptions(capabilities));
-//      }catch(Exception e){
-//        throw new RuntimeException(e);
-//      }
-      
-//      browser = new FirefoxDriver();
-      browser = new ChromeDriver(new ChromeOptions().setBinary(new File(path))
-          .setExperimentalOption("useAutomationExtension", false)
-          .addArguments("--headless")
+//      browser = new ChromeDriver(new ChromeOptions()//.setBinary(new File(path))
+//          .setExperimentalOption("useAutomationExtension", false)
+//          .addArguments("--headless")
 //          .addArguments("--no-sandbox")
 //          .addArguments("--disable-dev-shm-usage")
 //          .addArguments("--disable-extensions")
 //          .addArguments("disable-infobars")
-          );
+//          );
+      
+      ChromeOptions o=new ChromeOptions();
+      o.setBinary("/usr/bin/google-chrome-stable");
+      o.addArguments("--headless");
+      o.addArguments("--disable-extensions"); // disabling extensions
+      o.addArguments("--disable-gpu"); // applicable to windows os only
+      o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
+      o.addArguments("--no-sandbox");
+      browser=new ChromeDriver();
+      
     }
     return browser;
   }
@@ -101,11 +91,12 @@ public class CustomerSteps{
   public void login(List<Map<String,String>> table){
     getBrowser().get(URL);
     String title = getBrowser().getTitle();
-    System.out.println(title);  
+    System.out.println("TITLE="+title);
     
     WebElement txtUsername = getBrowser().findElement(By.id("username"));
     assertTrue((txtUsername.isDisplayed()));
     for(Map<String,String> row:table){
+      
       getBrowser().findElement(By.id("username")).sendKeys(row.get("Username"));
       getBrowser().findElement(By.id("password")).sendKeys(row.get("Password"));
       getBrowser().findElement(By.id("submit")).click();
@@ -117,9 +108,8 @@ public class CustomerSteps{
         return getBrowser().findElement(By.name("New")).isDisplayed();
       }
     });
-    
   }
-
+  
   
   @Given("^we navigate to the \"(.*?)\" page$")
   public void we_navigate_to_the_page(String arg1) throws Throwable {

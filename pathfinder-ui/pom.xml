@@ -109,7 +109,11 @@ ENABLE FOR EMBEDDED JETTY
   <version>9.4.9.v20180320</version>
 </dependency>
 -->
-
+<dependency>
+    <groupId>org.apache.bcel</groupId>
+    <artifactId>bcel</artifactId>
+    <version>6.0</version>
+</dependency>
 			<dependency>
 				<groupId>io.rest-assured</groupId>
 				<artifactId>rest-assured</artifactId>
