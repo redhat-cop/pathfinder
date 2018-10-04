@@ -122,7 +122,7 @@
 		<div id="wrapper" class="container-fluid">
 			<div class="row title-row">
 				<div class="col-xs-4">
-					<h2>Applications</h2>
+					<h2 id="title">Applications</h2>
 				</div>
 			</div>
 			<div class="section">

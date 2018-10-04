@@ -39,7 +39,8 @@
           <div class="form-group">
             <label for="CustomerVertical" class="control-label">Customer Vertical</label>
             <select name="CustomerVertical" id="CustomerVertical">
-							<option value="Agriculture" selected="selected">Agriculture</option>
+							<option value="" selected="selected"></option>
+							<option value="Agriculture">Agriculture</option>
 							<option value="Business Services">Business Services</option>
 							<option value="Construction & Real Estate">Construction & Real Estate</option>
 							<option value="Education">Education</option>
@@ -67,8 +68,8 @@
       </div>
       <script>
 	      function formValidate(){
-		      //$('#edit-ok').attr('disabled', isEmpty($('#CustomerName').val()) || isEmpty($('#CustomerAssessor').val()));
-		      $('#edit-ok').attr('disabled', isEmpty($('#CustomerName').val()) );
+		      //$('#ok').attr('disabled', isEmpty($('#CustomerName').val()) || isEmpty($('#CustomerAssessor').val()));
+		      $('#ok').attr('disabled', isEmpty($('#CustomerName').val()) );
 	      }
 	      function isEmpty(val){
 	      	return val==null || val==undefined || val=="";
@@ -89,8 +90,8 @@
 				});
       </script>
       <div class="modal-footer">
-        <a data-dismiss="modal">Cancel</a>
-        <button id="edit-ok" type="button" class="btn btn-primary" data-dismiss="modal" onclick="save(this, 'form'); return false;">Create</button>
+        <a id="cancel" name="cancel" data-dismiss="modal">Cancel</a>
+        <button id="ok" name="ok" type="button" class="btn btn-primary" data-dismiss="modal" onclick="save(this, 'form'); return false;">Create</button>
       </div>
     </div>
   </div>

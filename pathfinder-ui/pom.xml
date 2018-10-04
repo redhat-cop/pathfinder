@@ -57,7 +57,7 @@
 				                    <include>**/*.js</include>
 				                </includes>
 				            </resource>
-				        </webResources>                    
+				        </webResources>
 				    </configuration>
 				</plugin>
 				 -->
@@ -158,11 +158,17 @@ ENABLE FOR EMBEDDED JETTY
 			  <artifactId>mjson</artifactId>
 			  <version>1.4.0</version>
 			</dependency>
-	<dependency>
-	    <groupId>org.springframework.data</groupId>
-	    <artifactId>spring-data-mongodb</artifactId>
-	    <version>1.10.4.RELEASE</version>
-	</dependency>
+    	<dependency>
+    	    <groupId>org.springframework.data</groupId>
+    	    <artifactId>spring-data-mongodb</artifactId>
+    	    <version>1.10.4.RELEASE</version>
+    	</dependency>
+        <dependency>
+	        <groupId>org.slf4j</groupId>
+	        <artifactId>slf4j-api</artifactId>
+          <version>1.7.25</version>
+          <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>com.google.guava</groupId>
@@ -170,6 +176,11 @@ ENABLE FOR EMBEDDED JETTY
 						<version>23.5-jre</version>
         </dependency>
 	
+    		<dependency>
+    			<groupId>log4j</groupId>
+    			<artifactId>log4j</artifactId>
+    			<version>1.2.17</version>
+    		</dependency>
 		</dependencies>
 <!-- 
 		<profiles>

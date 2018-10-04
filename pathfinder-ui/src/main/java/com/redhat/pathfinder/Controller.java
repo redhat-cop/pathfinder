@@ -235,6 +235,11 @@ public class Controller{
   	return input.replaceAll("password=.+&", "password=****&");
   }
   
+  void log(String s){
+  	System.out.println(s);
+  	System.err.println(s);
+  }
+  
   @POST
   @Path("/login")
   public Response login(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
@@ -243,23 +248,27 @@ public class Controller{
     
     String uri=IOUtils.toString(request.getInputStream());
     
-    System.out.println("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
+    log("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
     
     final Map<String, String> keyValues=Splitter.on('&').trimResults().withKeyValueSeparator("=").split(uri);
     
 //    System.out.println("Controller::login():: username="+keyValues.get("username") +", password="+keyValues.get("password"));
-    System.out.println("Controller::login():: username="+keyValues.get("username") +", password=****");
+    log("Controller::login():: username="+keyValues.get("username") +", password=****");
 
+    log("Controller::login():: Auth url (POST) = "+getProperty("PATHFINDER_SERVER")+"/auth");
+    
     io.restassured.response.Response loginResp = given()
         .body("{\"username\":\""+keyValues.get("username")+"\",\"password\":\""+keyValues.get("password")+"\"}")
         .post(getProperty("PATHFINDER_SERVER")+"/auth");
     
     if (loginResp.statusCode()!=200){
+    	log("Controller:login():: ERROR1 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
+    	log("Controller:login():: 3 OUT/ERROR loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
       String error="Username and/or password is unknown or incorrect"; // would grab the text from server side but spring wraps some debug info in there so until we can strip that we cant give details of failure
       return Response.status(302).location(new URI("../index.jsp?error="+URLEncoder.encode(error, "UTF-8"))).build();
     }
     
-    System.out.println("Controller:login():: loginResp.asString() = "+loginResp.asString());
+    log("Controller:login():: 2 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
     mjson.Json jsonResp=mjson.Json.read(loginResp.asString());
     String jwtToken=jsonResp.at("token").asString();
     String username=jsonResp.at("username").asString();

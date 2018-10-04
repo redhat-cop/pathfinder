@@ -52,7 +52,7 @@
       </div>
       <script>
 	      function formValidate(){
-		      $('#edit-ok').attr('disabled', isEmpty($('#Username').val()) || ($('#Password').val().length>0 && $('#Password').val()=="" || $('#Password').val()!=$('#Password2').val()))
+		      $('#ok').attr('disabled', isEmpty($('#Username').val()) || ($('#Password').val().length>0 && $('#Password').val()=="" || $('#Password').val()!=$('#Password2').val()))
 	      }
 	      function isEmpty(val){
 	      	return val==null || val=="";
@@ -73,8 +73,8 @@
       </script>
       
       <div class="modal-footer">
-        <a data-dismiss="modal">Cancel</a>
-        <button class="btn btn-primary" id="edit-ok" type="button" data-dismiss="modal" disabled onclick="save(this, 'form'); return false;">Create</button>
+        <a id="cancel" name="cancel" data-dismiss="modal">Cancel</a>
+        <button class="btn btn-primary" id="ok" name="ok" type="button" data-dismiss="modal" disabled onclick="save(this, 'form'); return false;">Create</button>
       </div>
     </div>
   </div>

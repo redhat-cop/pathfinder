@@ -17,192 +17,199 @@
 
 package com.redhat.acceptance.steps;
 
-import static org.junit.Assert.assertTrue;
+import static com.redhat.acceptance.steps.Helper.Pages.*;
+import cucumber.api.java.en.Given;
+import cucumber.api.java.en.When;
+import cucumber.api.java.en.Then;
+import cucumber.api.java.en_tx.Givenyall;
+import cucumber.api.java.en_tx.Whenyall;
+import cucumber.api.java.en_tx.Thenyall;
 
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.ResourceBundle;
 
+import org.junit.AfterClass;
+import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Platform;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.Point;
 //import org.codehaus.plexus.util.StringUtils;
 //import org.jboss.order.domain.Country;
 //import org.jboss.order.domain.Order;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
+import com.redhat.acceptance.steps.Helper.Pages;
 import com.redhat.acceptance.utils.ToHappen;
 import com.redhat.acceptance.utils.Utils;
 import com.redhat.acceptance.utils.Wait;
+import com.redhat.gps.pathfinder.service.util.MapBuilder;
 
-import cucumber.api.PendingException;
 import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
 
 public class CustomerSteps{
   private static ResourceBundle rb = ResourceBundle. getBundle("acceptance");
   private static final Logger log=LoggerFactory.getLogger(CustomerSteps.class);
-  private static final String URL="http://localhost:8082/pathfinder-ui/index.jsp";
-//  private List<Order> orders=new ArrayList<Order>();
-  WebDriver browser = null;
-//  RemoteWebDriver browser = null;
+  protected static Helper helper;
+  private static WebDriver browser = null;
+  private WebDriver getBrowser(){return browser;}
+  
+//  /** button text to name mapping */
+//  private Map<String,String> buttons=new MapBuilder<String,String>()
+//  		.put("Add Customer", "btnAddCustomer")
+//  		.put("Remove Customer", "btnRemoveCustomer")
+//  		.put("Import", "btnImport")
+//  		.put("Export", "btnExport")
+//  		.build();
   
   private static boolean initialised = false;
   @Before public void beforeAll(){
-    if(!initialised) initialised=Utils.beforeScenarios();
-    getBrowser();
-  }
-  
-  private WebDriver getBrowser(){
-    if (browser==null){
-        System.setProperty("webdriver.chrome.driver", "chromedriver-linux-2.41");
-      
-//      browser = new ChromeDriver(new ChromeOptions()//.setBinary(new File(path))
-//          .setExperimentalOption("useAutomationExtension", false)
-//          .addArguments("--headless")
-//          .addArguments("--no-sandbox")
-//          .addArguments("--disable-dev-shm-usage")
-//          .addArguments("--disable-extensions")
-//          .addArguments("disable-infobars")
-//          );
-      
-      ChromeOptions o=new ChromeOptions();
-      o.setBinary("/usr/bin/google-chrome-stable");
-      o.addArguments("--headless");
-      o.addArguments("--disable-extensions"); // disabling extensions
-      o.addArguments("--disable-gpu"); // applicable to windows os only
-      o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
-      o.addArguments("--no-sandbox");
-      browser=new ChromeDriver();
-      
-    }
-    return browser;
-  }
-  
-  @Given("we login with the following credentials:$")
-  public void login(List<Map<String,String>> table){
-    getBrowser().get(URL);
-    String title = getBrowser().getTitle();
-    System.out.println("TITLE="+title);
-    
-    WebElement txtUsername = getBrowser().findElement(By.id("username"));
-    assertTrue((txtUsername.isDisplayed()));
-    for(Map<String,String> row:table){
-      
-      getBrowser().findElement(By.id("username")).sendKeys(row.get("Username"));
-      getBrowser().findElement(By.id("password")).sendKeys(row.get("Password"));
-      getBrowser().findElement(By.id("submit")).click();
-      break; //only use the first set of credentials in the table
-    }
-    
-    Wait.For("the \"Add Customer\" button to be displayed on the \"CUSTOMERS\" page", 10, new ToHappen(){
-      public boolean hasHappened(){
-        return getBrowser().findElement(By.name("New")).isDisplayed();
-      }
-    });
-  }
-  
-  
-  @Given("^we navigate to the \"(.*?)\" page$")
-  public void we_navigate_to_the_page(String arg1) throws Throwable {
-      // Write code here that turns the phrase above into concrete actions
-      throw new PendingException();
+    if(!initialised)helper=new Helper();
+    browser=helper.getBrowser();
   }
 
-  @When("^the \"(.*?)\" button is clicked$")
-  public void the_button_is_clicked(String arg1) throws Throwable {
-      // Write code here that turns the phrase above into concrete actions
-      throw new PendingException();
+  @Given("^we login:$")
+  public void login(List<Map<String,String>> table) throws Throwable{
+  	helper.cleanup();
+  	if (!helper.isLoggedIn()){
+  		helper.login(table.get(0).get("Username"), table.get(0).get("Password"));
+  		helper.navigateTo(Pages.CUSTOMERS);
+  	}
   }
 
-  @When("^we enter the following into the \"(.*?)\" dialog:$")
-  public void we_enter_the_following_into_the_dialog(String arg1, List<Map<String,String>> table) throws Throwable {
-      // Write code here that turns the phrase above into concrete actions
-      // For automatic transformation, change DataTable to one of
-      // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-      // E,K,V must be a scalar (String, Integer, Date, enum etc)
-      throw new PendingException();
+  @Givenyall("^navigate to the \"(.*?)\" page$")
+  public void navigate_to_the_page(String pageName) throws Throwable {
+  	helper.navigateTo(Pages.valueOf(pageName.toUpperCase()));
   }
-
-  @Then("^a customer exists in the customers screen with the following details:$")
-  public void a_customer_exists_in_the_customers_screen_with_the_following_details(List<Map<String,String>> table) throws Throwable {
-      // Write code here that turns the phrase above into concrete actions
-      // For automatic transformation, change DataTable to one of
-      // List<YourType>, List<List<E>>, List<Map<K,V>> or Map<K,V>.
-      // E,K,V must be a scalar (String, Integer, Date, enum etc)
-      throw new PendingException();
-  }
-
-//  @Given("^the order service is deployed$")
-//  public void the_order_service_is_deployed() throws Throwable {
-//    assertEquals(200, given().when().get(ORDER_SERVICE_URL+"/version").getStatusCode());
-//  }
-//
-//  @Then("new orders are created with the following details:$")
-//  public void a_new_order_is_created_with_the_following_details(List<Map<String,String>> table) throws Throwable {
-//    orders.clear();
-//    for(Map<String,String> row:table)
-//      orders.add(new Order(row.get("ID"), Country.valueOf(row.get("Country")), Double.valueOf(row.get("Amount"))));
-//  }
-//  
-//  @When("^the risk check is performed$")
-//  public void the_risk_check_is_performed() throws Throwable {
-//    for(Order order:orders)
-//      riskCheckOrder(order);
-//  }
-//  
-//  @When("^the orders are processed$")
-//  public void the_order_is_submitted() throws Throwable {
-//    for(Order order:orders){
-//      String payload="{\"id\":\""+order.getId()+"\",\"country\":\""+order.getCountry().name()+"\",\"amount\":"+order.getAmount()+"}";
-//      Response response=given().when().body(payload).post(ORDER_SERVICE_URL+"/rest/order/new");
-//      String responseString=response.asString();
-//      if (response.getStatusCode()!=200)
-//        throw new RuntimeException("Response was ["+response.getStatusLine()+"], with content of ["+responseString+"]");
-//      assertEquals(200, response.getStatusCode());
-//      Order responseOrder=Json.toObject(responseString, Order.class);
-////      assertTrue("The response order should have a positive processId, "+responseOrder.getProcessId()+" was returned. Whole response = "+responseString, responseOrder.getProcessId()>0);
-//    }
-//  }
-//  
-//  public void riskCheckOrder(Order order) throws JsonParseException, JsonMappingException, IOException{
-//    String payload="{\"id\":\""+order.getId()+"\",\"country\":\""+order.getCountry().name()+"\",\"amount\":"+order.getAmount()+"}";
-//    Response response=given().when().body(payload).post(ORDER_SERVICE_URL+"/rest/riskcheck");
-//    String responseString=response.asString();
-//    if (response.getStatusCode()!=200)
-//      throw new RuntimeException("Response was ["+response.getStatusLine()+"], with content of ["+responseString+"]");
-//    assertEquals(200, response.getStatusCode());
-//    Order responseOrder=Json.toObject(responseString, Order.class);
-//    order.setRiskStatus(responseOrder.getRiskStatus());
-//    order.setRiskReason(responseOrder.getRiskReason());
-//  }
-//  
-//  @Then("^the risk responses should be:$")
-//  public void the_risk_responses_should_be(List<Map<String,String>> table) throws Throwable {
-//    int ordersCheckedCount=0;
-//    assertEquals("You must provide expected responses for all orders", table.size(), orders.size());
-//    for(Map<String,String> row:table){
-//      Response response=given().when().post(ORDER_SERVICE_URL+"/rest/order/"+row.get("ID"));
-//      String responseString=response.asString();
-//      Order order=(Order)Json.toObject(responseString, Order.class);
-//      if (!row.get("Risk Rating").equals(order.getRiskStatus())){
-//        System.err.println("FAILED on row: "+row);
-//        assertEquals(row.get("Risk Rating"), order.getRiskStatus());
-//      }
-//      // allow null or empty
-//      assertTrue("Found \""+order.getRiskReason()+"\" risk reason, expecting \""+row.get("Reason")+"\"","".equals(row.get("Reason"))?StringUtils.isEmpty(order.getRiskReason()):order.getRiskReason().equalsIgnoreCase(row.get("Reason").trim()));
-//      ordersCheckedCount+=1;
-//    }
-//    assertEquals(table.size(), ordersCheckedCount);
-//  }
   
+  @When("^click the \"(.*?)\" button$")
+  public void click_the_button(String buttonText) throws Throwable {
+  	helper.clickButton(buttonText);
+  }
+
+  @Whenyall("^enter the following into the \"(.*?)\" dialog:$")
+  public void we_enter_the_following_into_the_dialog(String dialogTitle, List<Map<String,String>> table) throws Throwable {
+
+  	Wait.For("dialog is not visible: "+dialogTitle, 5, new ToHappen(){@Override public boolean hasHappened(){
+				return getBrowser().findElement(By.className("modal-title")).isDisplayed();
+		}});
+  	
+  	if (!dialogTitle.equals(getBrowser().findElement(By.className("modal-title")).getText())){
+  		throw new RuntimeException("unable to find dialog with name: "+dialogTitle);
+  	}
+  	
+  	final String prefix;
+  	if (dialogTitle.toLowerCase().contains("customer")){
+  		prefix="Customer";
+  	}else
+  		prefix="";
+  	
+  	for(Map<String,String> row:table){
+  		for(Entry<String, String> e:row.entrySet()){
+  			Wait.For(5, new ToHappen(){@Override public boolean hasHappened(){
+  				WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+						return element.isDisplayed() && element.isEnabled();
+				}});
+  			
+  			WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+  			if (element.getTagName().toLowerCase().equals("select")){
+  				new Select(element).selectByValue(e.getValue());
+  			}else{
+  				element.sendKeys(e.getValue());
+  			}
+  			
+  		}
+  	}
+  }
+
+  @Then("^customers exist with the following details:$")
+  public void customers_exist_with_the_following_details(List<Map<String,String>> table) throws Throwable {
+  	
+  	// check that the list is exactly what it listed, not too many, not too few
+  	
+  	// this rows logic doesnt seem to always return the correct number of rows in the table
+  	List<WebElement> rows=getBrowser().findElements(By.xpath("//*[@id=\"example\"]/tbody/tr"));
+  	int rowSize=table.size(); //resorting to using the expected size since xpath of the table/tr with the selenium driver appears to be inaccurate 
+  	
+  	try{Thread.sleep(1000);}catch(Exception ignore){}
+  	
+  	List<Map<String,String>> expectedTable=Lists.newArrayList(table.toArray(new Map[table.size()]));
+  	List<Map<String,String>> foundTable=new ArrayList<>();
+//  	System.out.println("Datatable.size() = "+rows.size());
+		for (int i=0;i<=rowSize;i++){
+			try{
+//				System.out.println("Datatable("+(i+1)+") ... about to check");
+				String name=        getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr["+(i+1)+"]/td[2]/a")).getText();
+//				System.out.println("Datatable("+(i+1)+") = "+name);
+				
+				String description= getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr["+(i+1)+"]/td[3]")).getText();
+				String vertical=    getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr["+(i+1)+"]/td[4]")).getText();
+				String assessor=    getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr["+(i+1)+"]/td[5]")).getText();
+				foundTable.add(new MapBuilder<String,String>()
+						.put("Name", name)
+						.put("Description", description)
+						.put("Vertical", vertical)
+						.put("Assessor", assessor)
+						.build());
+			}catch(WebDriverException ignore){
+				break; // assume it's read too many rows
+			}
+			
+		}
+		Assert.assertEquals("Expected and actual data size is wrong", expectedTable.size(), foundTable.size());
+		int protectionMax=expectedTable.size()+1;
+		int i=0;
+		while (expectedTable.size()>0){
+			i+=1;
+			if (i>=protectionMax) break;
+  		String expectedName=expectedTable.get(0).get("Name");
+  		String expectedDescription=expectedTable.get(0).get("Description");
+  		String expectedVertical=expectedTable.get(0).get("Vertical");
+  		String expectedAssessor=expectedTable.get(0).get("Assessor");
+  		String expected=expectedName+expectedDescription+expectedVertical+expectedAssessor;
+			
+  		for (Map<String, String> e:foundTable){
+  			String actual=e.get("Name")+e.get("Description")+e.get("Vertical")+e.get("Assessor");
+				if (expected.equals(actual)){
+					expectedTable.remove(0);
+					break;
+				}
+			}
+		}
+		Assert.assertEquals("There are still customers in the expected list that weren't found", 0, expectedTable.size());
+  }
+  
+  @Given("^we delete all customers$")
+  public void cleanup() throws Throwable{
+  	helper.cleanup();
+  }
+  
+  @Then("^delete the customer:$")
+  public void delete_the_customer(List<Map<String,String>> table) throws Throwable {
+  	for(Map<String,String> row:table){
+  		
+  	}
+  }
+  
+  @Givenyall("^create the following customers:$")
+  public void createCustomers(List<Map<String,String>> table) throws Throwable {
+  	helper.navigateTo(CUSTOMERS);
+  	for(Map<String,String> row:table){
+  		helper.clickButton("Add Customer");
+  		we_enter_the_following_into_the_dialog("New Customer", Lists.newArrayList(row));
+  		helper.clickButton("Create");
+//  		helper.waitForPage(CUSTOMERS, 5);
+  	}
+  }
   
 }

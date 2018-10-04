@@ -4,7 +4,7 @@
   <script src="assets/js/bootstrap-3.3.7.min.js"></script>
   <%-- <script src="assets/js/jquery.dataTables-1.10.16.js"></script> --%>
   <script src="https://cdn.datatables.net/v/bs/dt-1.10.18/datatables.min.js"></script>
-  <script src="assets/js/datatables-functions.js?v14"></script>
+  <script src="assets/js/datatables-functions.js?v15"></script>
 	<script src="assets/js/dateFormat.min.js"></script>
 	
 	<script src="utils.jsp"></script>

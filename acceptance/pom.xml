@@ -88,7 +88,7 @@
                   <!-- optional, default is a new dir in java.io.tmpdir -->
                   <databaseDirectory>/tmp/mongotest</databaseDirectory>
                   <!-- optional (file|console|none), default console -->
-                  <logging>file</logging>
+                  <logging>console</logging>
                   <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
                   <logFile>${project.build.directory}/mongodb.log</logFile>
                   <!-- optional, can be used when logging=file, default is utf-8 -->
@@ -200,6 +200,7 @@
                 </systemProperties>
                 <!-- these end up in <tomcat_home>/common/lib -->
                 <!--
+                -->
                 <dependencies>
                   <dependency>
                     <groupId>org.slf4j</groupId>
@@ -214,7 +215,6 @@
                     <artifactId>log4j</artifactId>
                   </dependency>
                 </dependencies>
-                -->
               </container>
               <configuration>
                 <properties>

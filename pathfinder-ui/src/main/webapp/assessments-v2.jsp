@@ -55,7 +55,7 @@
 				<div class="col-xs-9">
 					<div class="row title-row">
 						<div class="col-xs-4">
-							<h2>Assessments</h2>
+							<h2 id="title">Assessments</h2>
 						</div>
 					</div>
 					<div class="section">

@@ -50,7 +50,7 @@
 			
 			<div class="row title-row">
 				<div class="col-xs-10">
-					<h2><span id="applicationName"></span> Assessment</h2>
+					<h2 id="title"><span id="applicationName"></span> Assessment</h2>
 				</div>
 			</div>
 			

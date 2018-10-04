@@ -17,12 +17,7 @@
 
 package com.redhat.acceptance.utils;
 
-public class Wait{
-//		static boolean exceptions=true;
-//		public static Wait noExceptions() {
-//			exceptions=false;
-//			return this;
-//		}
+public class SafeWait{
 		
 	  private static boolean For(boolean noExceptions, String errorMessage, int timeoutInSeconds, int intervalInSeconds, ToHappen toHappen) {
 	    long start=System.currentTimeMillis();
@@ -36,7 +31,7 @@ public class Wait{
 	      timeout=System.currentTimeMillis()>end;
 	      if (timeout && !noExceptions){
 	        System.out.println("timed out waiting for: "+errorMessage);
-	        throw new RuntimeException("timed out waiting for: "+errorMessage);
+//	        throw new RuntimeException("timed out waiting for: "+errorMessage);
 	      }
 	    }
 	    if (timeout) return false;
@@ -50,11 +45,4 @@ public class Wait{
       return For(false, "unspecified wait", timeoutInSeconds, 1, toHappen);
     }
     
-//	  public static boolean For(String errorMessage, int timeoutInSeconds, ToHappen toHappen) {
-//	    return For(true, errorMessage, timeoutInSeconds, 1, toHappen);
-//	  }
-//
-//    public static boolean For(int timeoutInSeconds, ToHappen toHappen) {
-//      return For(true, "unspecified wait", timeoutInSeconds, 1, toHappen);
-//    }
 }

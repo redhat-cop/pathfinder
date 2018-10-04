@@ -105,7 +105,7 @@
 		<div id="wrapper" class="container-fluid">
 			<div class="row title-row">
 				<div class="col-xs-4">
-					<h2>Members</h2>
+					<h2 id="title">Members</h2>
 				</div>
 			</div>
 			<div class="section">

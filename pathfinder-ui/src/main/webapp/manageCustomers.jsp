@@ -99,7 +99,7 @@
 			});
 			buttonEnablement();
 			function buttonEnablement(){
-				$('button[name="btnRemove"]').attr('disabled', $('#example input[name="id"]:checked').length<1);
+				$('button[name="btnRemoveCustomer"]').attr('disabled', $('#example input[name="id"]:checked').length<1);
 				$('button[name="btnImport"]').attr('disabled', $('#example input[name="id"]:checked').length>0);
 				$('button[name="btnExport"]').attr('disabled', $('#example input[name="id"]:checked').length<1);
 			}
@@ -192,7 +192,7 @@
 				caller.disabled=false;
 			}
 			
-			function btnRemove_onclick(caller){
+			function btnRemoveCustomer_onclick(caller){
 				if (!confirm("Are you sure? This will also remove any applications, assessments and/or associated reviews for the selected customers(s).")){
 						return false;
 				}else{
@@ -209,7 +209,7 @@
 
 			<div class="row title-row">
 				<div class="col-xs-4">
-					<h2>Customers</h2>
+					<h2 id="title">Customers</h2>
 				</div>
 			</div>
 			<div class="section">
@@ -225,10 +225,10 @@
 							<button class="btn btn-secondary form-control" name="btnImport" type="button" onclick="return btnImport_onclick(this);">Import</button>
 						</div>
 						<div class="col-xs-2 pull-right form-group">
-							<button class="btn btn-danger form-control" name="btnRemove" disabled onclick="btnRemove_onclick(this);" type="button">Remove Customer</button>
+							<button class="btn btn-danger form-control" name="btnRemoveCustomer" disabled onclick="btnRemoveCustomer_onclick(this);" type="button">Remove Customer</button>
 						</div>
 						<div class="col-xs-2 pull-right form-group">
-							<button class="btn btn-primary form-control" name="New" onclick="editFormReset();" type="button" data-toggle="modal" data-target="#exampleModal" data-whatever="@new">Add Customer</button>
+							<button class="btn btn-primary form-control" name="btnAddCustomer" onclick="editFormReset();" type="button" data-toggle="modal" data-target="#exampleModal" data-whatever="@new">Add Customer</button>
 						</div>
 					</div>
 			    <table id="example" class="display" cellspacing="0" width="100%">

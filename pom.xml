@@ -1,33 +1,36 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-    <name>${project.groupId}.${project.artifactId}</name>
-    <groupId>com.redhat.gps.pathfinder</groupId>
-    <artifactId>pathfinder</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
-    <packaging>pom</packaging>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!-- # to build a spring boot app mvn clean install # to build a war (deployable is in pathfinder-server-war) mvn clean install -Pwar -->
+  <modelVersion>4.0.0</modelVersion>
+  <name>${project.groupId}.${project.artifactId}</name>
+  <groupId>com.redhat.gps.pathfinder</groupId>
+  <artifactId>pathfinder</artifactId>
+  <version>1.0.2-SNAPSHOT</version>
+  <packaging>pom</packaging>
 
-    <modules>
-        <module>acceptance</module>
-        <module>pathfinder-ui</module>
-        <module>pathfinder-server</module>
+  <modules>
+    <!-- <module>acceptance</module> -->
+    <module>pathfinder-ui</module>
+    <module>pathfinder-server</module>
+    <!-- 
+    <module>pathfinder-server-war</module>
+    <module>pathfinder-server-lib</module>
+    <module>pathfinder-server-boot</module>
+     -->
+    <!--module>acceptance</module -->
+  </modules>
+
+  <profiles>
+    <profile>
+      <id>war</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
         <module>pathfinder-server-war</module>
-        <!-- 
-        <module>pathfinder-server-lib</module>
-        <module>pathfinder-server-boot</module>
-         -->
-	<!--module>acceptance</module-->
-    </modules>
-    
-    <profiles>
-      <profile>
-        <id>war</id>
-        <modules>
-          <module>pathfinder-server-war</module>
-        </modules>
-      </profile>
-      
-    </profiles>
-	
+      </modules>
+    </profile>
+
+  </profiles>
+
 </project>
 

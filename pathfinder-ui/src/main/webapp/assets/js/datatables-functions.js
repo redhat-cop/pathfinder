@@ -84,7 +84,7 @@ function put(uri, data){
   return send("put", uri, data);
 }
 function editFormReset(){
-    document.getElementById("edit-ok").innerHTML="Create";
+    document.getElementById("ok").innerHTML="Create";
     document.getElementById("exampleModalLabel").innerHTML=document.getElementById("exampleModalLabel").innerHTML.replace("Update", "New");
     document.getElementById(getIdFieldName()).disabled=false; // allow key fields to be changed when entities are new
     
@@ -100,9 +100,16 @@ function editFormReset(){
     //document.getElementById(getIdFieldName()).value="NEW";
 }
 function loadEntity(id){
-  document.getElementById("edit-ok").innerHTML="Update";
+  document.getElementById("ok").innerHTML="Update";
   document.getElementById("exampleModalLabel").innerHTML=document.getElementById("exampleModalLabel").innerHTML.replace("New", "Update");
   document.getElementById(getIdFieldName()).disabled=true; // don't allow key fields to be changed
+  
+  // reset fields
+  var form=document.getElementById("form");
+  for (var i = 0, ii = form.length; i < ii; ++i) {
+    var input = form[i];
+    input.value="";
+  }
   
   var xhr = new XMLHttpRequest();
   var ctx = "${pageContext.request.contextPath}";

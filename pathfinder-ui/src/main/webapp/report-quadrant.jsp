@@ -56,6 +56,8 @@
 		<section class="wrapper">
 			<div class="inner">
 				
+				<div id="title" alt="required for automated testing" style="display:none;">REPORT</div>
+				
 				<!-- ### Page specific stuff here ### -->
 				
 				

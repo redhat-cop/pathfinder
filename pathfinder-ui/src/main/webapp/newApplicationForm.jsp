@@ -63,9 +63,9 @@
 	      		if ($(this).attr('class')!=undefined && $(this).attr('class').includes("mandatory"))
 	      			disabled=disabled || isEmpty($(this).val());
 	      	});
-	      	console.log("#edit-ok -> enabled="+!disabled);
-	      	$('#edit-ok').attr('disabled', disabled);
-		      //$('#edit-ok').attr('disabled', isEmpty($('#Stereotype').val()) || isEmpty($('#Name').val()));
+	      	console.log("#ok -> enabled="+!disabled);
+	      	$('#ok').attr('disabled', disabled);
+		      //$('#ok').attr('disabled', isEmpty($('#Stereotype').val()) || isEmpty($('#Name').val()));
 	      }
 	      
 	      function isEmpty(val){
@@ -90,8 +90,8 @@
       </script>
       
       <div class="modal-footer">
-        <a type="button" data-dismiss="modal">Cancel</a>
-        <button class="btn btn-primary" id="edit-ok" type="button" data-dismiss="modal" onclick="save(this, 'form'); return false;">Create</button>
+        <a type="button" id="cancel" name="cancel" data-dismiss="modal">Cancel</a>
+        <button class="btn btn-primary" id="ok" name="ok" type="button" data-dismiss="modal" onclick="save(this, 'form'); return false;">Create</button>
       </div>
     </div>
   </div>

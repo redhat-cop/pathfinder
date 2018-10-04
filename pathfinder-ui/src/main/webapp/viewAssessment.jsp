@@ -168,9 +168,9 @@ function onClickHandlers(myChart) {
 				<div class="row title-row">
 					<div class="col-sm-4">
 						<%if ("true".equalsIgnoreCase(request.getParameter("review"))){%>
-							<h2>Architect Review</h2>
+							<h2 id="title">Architect Review</h2>
 						<%}else{%>
-							<h2>Assessment Summary</h2>
+							<h2 id="title">Assessment Summary</h2>
 						<%}%>
 					</div>
 					<div class="col-sm-8">
