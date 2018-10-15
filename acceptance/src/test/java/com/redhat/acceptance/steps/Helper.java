@@ -3,9 +3,13 @@ package com.redhat.acceptance.steps;
 import static com.redhat.acceptance.steps.Helper.Pages.CUSTOMERS;
 import static org.junit.Assert.assertTrue;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -20,6 +24,7 @@ import com.redhat.acceptance.steps.Helper.Pages;
 import com.redhat.acceptance.utils.SafeWait;
 import com.redhat.acceptance.utils.ToHappen;
 import com.redhat.acceptance.utils.Wait;
+import com.redhat.gps.pathfinder.service.util.MapBuilder;
 
 import cucumber.api.PendingException;
 
@@ -174,6 +179,36 @@ public class Helper{
       return e.isDisplayed() && e.isEnabled();
     }});
 		browser.findElement(By.xpath("//a[contains(text(), '"+withText+"')]")).click();
+	}
+
+	public List<Map<String, String>> getDataTable(By id){
+		List<Map<String, String>> result=new ArrayList<>();
+		
+		Map<Integer,String> headers=new HashMap<>();
+		for (int i=1;i<=15;i++){
+			try {
+				String headerName=getBrowser().findElement(By.xpath("//*[@id=\"example\"]/thead/tr/th["+(i+1)+"]")).getText();
+				if (!StringUtils.isEmpty(headerName))
+					headers.put(i, headerName);
+			}catch (WebDriverException ignore){
+				break; // assume it's read too many rows
+			}
+		}
+		
+		int rowSize=getBrowser().findElements(By.xpath("//*[@id=\"example\"]/tbody/tr")).size();
+		for (int i=0;i<=rowSize;i++){
+			try{
+				Map<String,String> rowData=new HashMap<>();
+				rowData.put("row", String.valueOf(i+1));
+				for(Entry<Integer, String> e:headers.entrySet()){
+					rowData.put(e.getValue(), getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr[" + (i + 1) + "]/td["+(e.getKey()+1)+"]")).getText());
+				}
+				result.add(rowData);
+			}catch (WebDriverException ignore){
+				break; // assume it's read too many rows
+			}
+		}
+		return result;
 	}
 
 	

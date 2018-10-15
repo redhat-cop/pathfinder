@@ -3,15 +3,18 @@ package com.redhat.acceptance.steps;
 import java.util.List;
 import java.util.Map;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.redhat.acceptance.steps.Helper.Pages;
 
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
+import cucumber.api.java.en.Then;
 
 public class AssessmentsSteps{
   private static final Logger log=LoggerFactory.getLogger(AssessmentsSteps.class);
@@ -41,6 +44,38 @@ public class AssessmentsSteps{
   	helper.clickLink(customerName);
   }
   
+  @Then("^the following application assessments exist:$")
+  public void appAssessmentsExist(List<Map<String,String>> table) throws Throwable {
+  	
+  	List<Map<String, String>> data=helper.getDataTable(By.id("example"));
+  	System.out.println("data.size() = "+data.size());
+  	System.out.println("data = "+data);
+  	
+  	List<Map<String,String>> expectedTable=Lists.newArrayList(table.toArray(new Map[table.size()]));
+  	int protectionMax=expectedTable.size()+1;
+		int i=0;
+		while (expectedTable.size()>0){
+			i+=1;
+			if (i>=protectionMax) break;
+  		String expected1=expectedTable.get(0).get("Name");
+  		String expected2=expectedTable.get(0).get("Assessed");
+  		String expected3=expectedTable.get(0).get("Reviewed");
+  		String expected4=expectedTable.get(0).get("Criticality");
+  		String expected5=expectedTable.get(0).get("Decision");
+  		String expected6=expectedTable.get(0).get("Effort");
+  		String expected7=expectedTable.get(0).get("Review Date");
+  		String expected=expected1+expected2+expected3+expected4+expected5+expected6+expected7;
+			
+  		for (Map<String, String> e:data){
+  			String actual=e.get("Name")+e.get("Assessed")+e.get("Reviewed")+e.get("Criticality")+e.get("Decision")+e.get("Effort")+e.get("Review Date");
+				if (expected.equals(actual)){
+					expectedTable.remove(0);
+					break;
+				}
+			}
+		}
+		Assert.assertEquals("Expected and actual assessments/apps differs", 0, expectedTable.size());
+  }
   
 //  @Given("we login with the following credentials:$")
 //  public void login(List<Map<String,String>> table) throws Throwable{

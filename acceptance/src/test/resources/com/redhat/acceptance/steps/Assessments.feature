@@ -1,7 +1,9 @@
 Feature: Assessments
 
 Scenario: 00 - Setup a new customer for assessment tests
-Given we login with "admin/admin":
+Given we login:
+|Username |Password |
+|admin    |admin    |
 And navigate to the "Customers" page
 When click the "Add Customer" button
 And enter the following into the "New Customer" dialog:
@@ -21,7 +23,10 @@ And enter the following into the "New Application" dialog:
 |Name  |Stereotype |Description |Owner |
 |App 1 |TARGETAPP  |            |      |
 And click the "Create" button
+Then the following application assessments exist:
+|Name   |Assessed |Reviewed |Criticality |Decision |Effort |Review Date |
+|App 1  |No       |         |            |         |       |            |
 
 
-Scenario: 99 - Delete all customers
-Given we delete all customers
+#Scenario: 99 - Delete all customers
+#Given we delete all customers

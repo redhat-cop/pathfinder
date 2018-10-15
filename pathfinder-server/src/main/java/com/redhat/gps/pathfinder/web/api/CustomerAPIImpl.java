@@ -150,7 +150,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     	
     	try {
     		List<Customer> customers=Json.newObjectMapper(true).readValue(payload, new TypeReference<List<Customer>>() {});
-//    		Customer importedCustomer=Json.newObjectMapper(false).readValue(payload, Customer.class);
     		
     		for(Customer customer:customers) {
     			log.debug("importCustomer():: importing customer = "+customer.getName());
@@ -162,8 +161,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     				
             Customer example=new Customer();
             example.setName(customer.getName());
-//            long count=custRepo.count(Example.of(example));
-//            log.debug("count = "+count);
             if (custRepo.count(Example.of(example))>0){
             	int i=1, max=20;
             	while(custRepo.count(Example.of(newExampleCustomer(customer.getName()+"_"+i)))>0) {
@@ -182,9 +179,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     			}
     			
     			// Check Applications entities
-//    			customer.setApplications(newApps);
-//    			custRepo.save(customer);
-//    			List<Applications> newApps=new ArrayList<>();
     			for(Applications app:customer.getApplications()) {
     				
     				// Check Application
@@ -207,10 +201,18 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     				}
     				
     				appsRepo.save(app);
-//    				newApps.add(app);
     			}
     			
-//    			customer.setApplications(newApps);
+    			// Add Members
+    			for(Member m:customer.getMembers()){
+    				if (null==membersRepo.findOne(m.getUsername())){
+    					m.setCustomerId(customer.getId());
+    				}else{
+    					log.error("Unable to add user to customer because the username already exists ["+m.getUsername()+"]");
+    				}
+    				membersRepo.save(m);
+    			}
+    			
     			custRepo.save(customer);
     			
     		}

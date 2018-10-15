@@ -164,7 +164,10 @@ public class CustomerSteps{
 			}catch(WebDriverException ignore){
 				break; // assume it's read too many rows
 			}
-			
+		}
+		
+		if (expectedTable.size()!=foundTable.size()) {
+			System.out.println("gonna fail!");
 		}
 		Assert.assertEquals("Expected and actual data size is wrong", expectedTable.size(), foundTable.size());
 		int protectionMax=expectedTable.size()+1;
