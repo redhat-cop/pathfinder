@@ -1,5 +1,7 @@
 package com.redhat.gps.pathfinder.service.util;
 
+import java.io.IOException;
+
 /*-
  * #%L
  * Pathfinder
@@ -25,11 +27,23 @@ package com.redhat.gps.pathfinder.service.util;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+
 public class Json {
 
   public static ObjectMapper newObjectMapper(boolean pretty){
     ObjectMapper mapper = new ObjectMapper();
     mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT,pretty);
     return mapper;
+  }
+  
+  public static String yamlToJson(String yaml) throws JsonParseException, JsonMappingException, IOException {
+  	com.fasterxml.jackson.databind.ObjectMapper yamlReader = new com.fasterxml.jackson.databind.ObjectMapper(new com.fasterxml.jackson.dataformat.yaml.YAMLFactory());
+    Object obj = yamlReader.readValue(yaml, Object.class);
+
+    ObjectMapper jsonWriter = new ObjectMapper();
+    return jsonWriter.writeValueAsString(obj);
   }
 }

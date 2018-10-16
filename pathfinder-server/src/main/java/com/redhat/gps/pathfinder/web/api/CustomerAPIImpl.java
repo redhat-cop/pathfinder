@@ -25,14 +25,12 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  */
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -42,23 +40,16 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
-import org.codehaus.jackson.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,21 +59,21 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Joiner;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
 import com.redhat.gps.pathfinder.domain.Customer;
-import com.redhat.gps.pathfinder.domain.Member;
-import com.redhat.gps.pathfinder.domain.QuestionMetaData;
 import com.redhat.gps.pathfinder.repository.ApplicationsRepository;
 import com.redhat.gps.pathfinder.repository.AssessmentsRepository;
 import com.redhat.gps.pathfinder.repository.CustomerRepository;
 import com.redhat.gps.pathfinder.repository.MembersRepository;
-import com.redhat.gps.pathfinder.repository.QuestionMetaDataRepository;
 import com.redhat.gps.pathfinder.repository.ReviewsRepository;
 import com.redhat.gps.pathfinder.service.util.Json;
 import com.redhat.gps.pathfinder.service.util.MapBuilder;
@@ -103,174 +94,55 @@ import com.redhat.gps.pathfinder.web.api.model.ReviewType;
 
 import io.swagger.annotations.ApiParam;
 
-//import org.springframework.boot.autoconfigure.web.HttpMessageConverters;
-//import org.springframework.context.annotation.*;
-//import org.springframework.http.converter.*;
-
 @RestController
 @RequestMapping("/api/pathfinder")
 public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
-
     private final Logger log = LoggerFactory.getLogger(CustomerAPIImpl.class);
-
     private final CustomerRepository custRepo;
-
     private final ApplicationsRepository appsRepo;
-
     private final AssessmentsRepository assmRepo;
-
-    private final QuestionMetaDataRepository questionRepository;
-
     private final ReviewsRepository reviewRepository;
-    
     private final MembersRepository membersRepo;
 
-    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, QuestionMetaDataRepository questionRepository, ReviewsRepository reviewRepository, MembersRepository membersRepository) {
+    public CustomerAPIImpl(CustomerRepository custRepo, ApplicationsRepository appsRepo, AssessmentsRepository assmRepo, ReviewsRepository reviewRepository, MembersRepository membersRepository) {
       super(membersRepository);
       this.custRepo = custRepo;
       this.appsRepo = appsRepo;
       this.assmRepo = assmRepo;
-      this.questionRepository = questionRepository;
       this.reviewRepository = reviewRepository;
       this.membersRepo=membersRepository;
     }
 
-    private Customer newExampleCustomer(String name) {
-    	Customer example=new Customer();
-      example.setName(name);
-      return example;
+    
+    // Another fail by Spring... cannot define multiple controllers with the same mapping - Going to have to have duplicate Members methods
+    // Get Members
+    // GET: /api/pathfinder/customers/{customerId}/member/
+    public ResponseEntity<List<MemberType>> customersCustIdMembersGet(@ApiParam(value="", required=true) @PathVariable("custId") String custId){
+    	return new MemberController(custRepo, membersRepo).getMembers(custId);
     }
-    
-    // Non-Swagger api - import/export
-    @RequestMapping(value="/customers/import", method=POST)//, headers={"Content-Disposition: attachment; filename=myfile.json"})
-    public ResponseEntity<?> importCustomer(HttpServletRequest request, HttpServletResponse response) throws IOException {
-    	log.debug("importCustomer()...");
-    	
-    	String payload=IOUtils.toString(request.getInputStream(), "UTF-8");
-    	
-    	try {
-    		List<Customer> customers=Json.newObjectMapper(true).readValue(payload, new TypeReference<List<Customer>>() {});
-    		
-    		for(Customer customer:customers) {
-    			log.debug("importCustomer():: importing customer = "+customer.getName());
-    			
-    			// Check Customer entity
-    			if (null!=custRepo.findOne(customer.getId())) {
-    				// CustomerID in use, generate a new one
-    				customer.setId(UUID.randomUUID().toString());
-    				
-            Customer example=new Customer();
-            example.setName(customer.getName());
-            if (custRepo.count(Example.of(example))>0){
-            	int i=1, max=20;
-            	while(custRepo.count(Example.of(newExampleCustomer(customer.getName()+"_"+i)))>0) {
-//            		log.debug("theres already a customer: "+(customer.getName()+"_"+i));
-            		i=i+1;
-            		if (i>=max) break;
-            	}
-//            	log.debug("setting customer name to : "+ (customer.getName()+"_"+i));
-            	customer.setName(customer.getName()+"_"+i); // give the customer a unique name if we can
-            	
-            	if (i>=max) {
-	              log.error("Customer already exists with name {}", customer.getName());
-	              return new ResponseEntity<>("Customer already exists with name "+customer.getName(), HttpStatus.BAD_REQUEST);
-            	}
-            }
-    			}
-    			
-    			// Check Applications entities
-    			for(Applications app:customer.getApplications()) {
-    				
-    				// Check Application
-    				app.setId(null!=appsRepo.findOne(app.getId())?UUID.randomUUID().toString():app.getId()); // generate a new ID if it's in use
-    				
-    				// Check Assessment entity
-    				Assessments ass=app.getAssessments()!=null && app.getAssessments().size()>0?app.getAssessments().get(app.getAssessments().size()-1):null;
-    				if (ass!=null) {
-	    				log.debug("ass id before = "+ass.getId());
-    					ass.setId(null!=assmRepo.findOne(ass.getId())?UUID.randomUUID().toString():ass.getId()); // generate a new ID if it's in use
-    					log.debug("ass id after = "+ass.getId());
-	    				app.setAssessments(Lists.newArrayList(ass));
-	    				assmRepo.save(ass);
-    				}
-    				
-    				// Check Review entity
-    				if (null!=app.getReview()) {
-    					app.getReview().setId(app.getReview()!=null && null!=reviewRepository.findOne(app.getReview().getId())?UUID.randomUUID().toString():app.getReview().getId());
-    					reviewRepository.save(app.getReview());
-    				}
-    				
-    				appsRepo.save(app);
-    			}
-    			
-    			// Add Members
-    			for(Member m:customer.getMembers()){
-    				if (null==membersRepo.findOne(m.getUsername())){
-    					m.setCustomerId(customer.getId());
-    				}else{
-    					log.error("Unable to add user to customer because the username already exists ["+m.getUsername()+"]");
-    				}
-    				membersRepo.save(m);
-    			}
-    			
-    			custRepo.save(customer);
-    			
-    		}
-    		
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    	
-//    	return ResponseEntity.status(200).header("Access-Control-Allow-Origin", "*/*").build();
-    	return ResponseEntity.status(200).build();
-    }
-    
-    
-    // Non-Swagger api - import/export
-    @RequestMapping(value="/customers/export", method=GET)//, headers={"Content-Disposition: attachment; filename=myfile.json"})
-//    @CrossOrigin
-    public ResponseEntity<?> exportCustomer(@RequestParam("ids") String custIds, HttpServletResponse response) throws IOException {
-    	
-    	List<Customer> result=new ArrayList<Customer>();
-    	
-    	log.debug("custIds = "+custIds);
-    	String[] custIdss=custIds.split(",");
-    	log.debug("# of customers = "+custIdss.length);
-    	
-    	HttpHeaders h= new HttpHeaders(); 
-    	
-    	String filename=null;
-    	for(String custId:custIdss) {
-    		Customer c=custRepo.findOne(custId);
-    		filename=c.getName();
-    		log.debug("Adding customer: "+c.getName());
-    		
-    		// distill the customer a bit
-    		for(Applications app:c.getApplications()){
-    			if (app.getAssessments()!=null && app.getAssessments().size()>0) {
-    				app.getAssessments().removeIf(new Predicate<Assessments>(){
-    					@Override public boolean apply(Assessments input){
-								return !input.getId().equals(app.getAssessments().get(app.getAssessments().size()-1).getId());
-						}});
-    			}
-    		}
-    		
-    		result.add(c);
-    	}
-    	
-    	if (custIdss.length==1){
-    		h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename="+filename.replaceAll(" ", "-")+"_export.json");
-    	}else{
-    		h.add(HttpHeaders.CONTENT_DISPOSITION, "attachment");
-    	}
-    	
-    	log.debug("returning: "+result.size() +" customer(s)");
-    	
-    	return ResponseEntity.ok()
-	  		      .headers(h)
-	  		      .body(result);
-    }
-    
+
+    // Create Member
+    // POST: /api/pathfinder/customers/{customerId}/members/
+	  public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
+	  	return new MemberController(custRepo, membersRepo).createMember(custId, body);
+	  }
+	  
+	  // Get Member
+	  // GET: /api/pathfinder/customers/{customerId}/members/{memberId}
+	  public ResponseEntity<MemberType> customersCustIdMembersMemberIdGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId) {
+	  	return new MemberController(custRepo, membersRepo).getMember(custId, memberId);
+	  }
+	  
+	  // Update Member
+	  // POST: /api/pathfinder/customers/{customerId}/members/{memberId}
+	  public ResponseEntity<String> customersCustIdMembersMemberIdPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
+	  	return new MemberController(custRepo, membersRepo).updateMember(custId, memberId, body);
+	  }
+	  
+	  // Delete Member(s)
+	  public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Target member IDs"  )  @Valid @RequestBody IdentifierList body) {
+	  	return new MemberController(custRepo, membersRepo).deleteMembers(custId, body);
+	  }
     
     // Non-Swagger api - report page content
     @RequestMapping(value="/customers/{custId}/report", method=GET, produces=MediaType.APPLICATION_JSON_VALUE)
@@ -372,7 +244,14 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       
       return Json.newObjectMapper(true).writeValueAsString(result);
     }
+
     
+    // Non-Swagger api - returns the swagger docs
+    @RequestMapping(value="/docs", method=GET, produces={"application/javascript"})
+    public String getDocs() throws IOException {
+    	return Json.yamlToJson(IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("swagger/api.yml"), "UTF-8"));
+    }
+
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value="/survey", method=GET, produces={"application/javascript"})
     public String getSurvey() throws IOException {
@@ -483,145 +362,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return result;
       }
     }
-    
-    
-    
-    // Get Members
-    // GET: /api/pathfinder/customers/{customerId}/member/
-    public ResponseEntity<List<MemberType>> customersCustIdMembersGet(@ApiParam(value="", required=true) @PathVariable("custId") String custId){
-      List<MemberType> result=new ArrayList<MemberType>();
-  
-      Customer customer=custRepo.findOne(custId);
-  
-      if (customer == null) {
-        log.error("customersCustIdMembersGet....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      
-      for(Member m:customer.getMembers()){
-        MemberType member=new MemberType();
-        member.setUsername(m.getUsername());
-        member.setDisplayName(m.getDisplayName());
-//        member.setId(m.getId());
-        member.setEmail(m.getEmail());
-        member.setPassword(m.getPassword());
-        member.setCustomerId(customer.getId());
-//        member.setCustomer(m.get);
-        result.add(member);
-      }
-      
-      return new ResponseEntity<>(result, HttpStatus.OK);
-    }
-    
-    // Create Member
-    // POST: /api/pathfinder/customers/{customerId}/members/
-    public ResponseEntity<String> customersCustIdMembersPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
-      log.debug("customersCustIdMembersPost....");
-      return createOrUpdateMember(custId, null, body);
-    }
-    
-    // Get Member
-    // GET: /api/pathfinder/customers/{customerId}/members/{memberId}
-    public ResponseEntity<MemberType> customersCustIdMembersMemberIdGet(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId) {
-      Customer customer=custRepo.findOne(custId);
-      if (customer == null) {
-        log.error("customersCustIdMembersMemberIdGet....customer not found {}", custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      Member member=membersRepo.findOne(memberId);
-      if (null==member){
-        log.error("customersCustIdMembersMemberIdGet....member not found {}", memberId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      if (!customer.getMembers().contains(member)){
-        log.error("customersCustIdMembersMemberIdGet....member {} is not child of customer {} ", memberId, custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      return new ResponseEntity<>(MemberController.populate(member, new MemberType()), HttpStatus.OK);
-    }
-    
-    // Update Member
-    // POST: /api/pathfinder/customers/{customerId}/members/{memberId}
-    public ResponseEntity<String> customersCustIdMembersMemberIdPost(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Member Identifier",required=true ) @PathVariable("memberId") String memberId,@ApiParam(value = "Member Details"  )  @Valid @RequestBody MemberType body) {
-      log.debug("customersCustIdMembersMemberIdPost....");
-      return createOrUpdateMember(custId, memberId, body);
-    }
-    
-    private ResponseEntity<String> createOrUpdateMember(String custId, String existingUsername, MemberType body){
-      Customer customer=custRepo.findOne(custId);
-      
-      if (customer == null) {
-        log.error("createOrUpdateMember....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      Member member;
-      if (existingUsername==null){
-        member=new Member();
-        member.setUsername(body.getUsername());
-//        member.setId(UUID.randomUUID().toString());
-      }else{
-        member=membersRepo.findOne(existingUsername);
-      }
-      
-//      Member newMember=new Member();
-//      newMember.setId(UUID.randomUUID().toString());
-      member.setDisplayName(body.getDisplayName());
-      if (!StringUtils.isEmpty(body.getPassword())){
-        member.setPassword(body.getPassword());
-      }
-      member.setEmail(body.getEmail());
-      member.setRoles(Arrays.asList("ADMIN")); // SUPER, ADMIN OR USER
-      member.setPrivileges(Arrays.asList("ALL")); // can add apps etc... not currently used
-      
-      member.setCustomerId(customer.getId());
-      membersRepo.save(member);
-      
-      if (existingUsername==null){
-        if (null==customer.getMembers())
-          customer.setMembers(new ArrayList<>());
-        
-        customer.getMembers().add(member);
-        custRepo.save(customer);
-      }
-      
-      return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
-
-    // Delete Member(s)
-    public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Target member IDs"  )  @Valid @RequestBody IdentifierList body) {
-      
-      Customer customer=custRepo.findOne(custId);
-      
-      if (customer == null) {
-        log.error("customersCustIdMembersPost....customer not found " + custId);
-        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-      }
-      
-      if (null==customer.getMembers())
-        customer.setMembers(new ArrayList<>());
-      
-      body.forEach((id)-> {
-        log.debug("Deleting Member "+id);
-        List<Member> newMembers=new ArrayList<>();
-        for(Member m:customer.getMembers()){
-          if (!m.getUsername().equals(id))
-            newMembers.add(m);
-        }
-        customer.setMembers(newMembers);
-      });
-      custRepo.save(customer);
-      
-      return new ResponseEntity<String>(HttpStatus.OK);
-    }
-
     
     ////// ###############
 //    public void dummy(){
@@ -1369,8 +1109,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 return new ResponseEntity<>(resp, HttpStatus.BAD_REQUEST);
             }
 
-            List<QuestionMetaData> questionData = questionRepository.findAll();
-
+//            List<QuestionMetaData> questionData = questionRepository.findAll();
 
 //            for (QuestionMetaData currQuestion : questionData) {
 //                String res = (String) currAssm.getResults().get(currQuestion.getId());
