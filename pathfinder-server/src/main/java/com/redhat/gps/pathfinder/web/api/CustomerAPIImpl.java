@@ -114,7 +114,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     }
 
     
-    // Another fail by Spring... cannot define multiple controllers with the same mapping - Going to have to have duplicate Members methods
+    // Another fail by Spring... cannot define multiple controllers with the same mapping when extending from an interface - going to have to have duplicate/delegate methods
     // Get Members
     // GET: /api/pathfinder/customers/{customerId}/member/
     public ResponseEntity<List<MemberType>> customersCustIdMembersGet(@ApiParam(value="", required=true) @PathVariable("custId") String custId){
@@ -140,6 +140,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
 	  }
 	  
 	  // Delete Member(s)
+	  // POST: /customers/{custId}/members/
 	  public ResponseEntity<String> customersCustIdMembersDelete(@ApiParam(value = "Customer Identifier",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "Target member IDs"  )  @Valid @RequestBody IdentifierList body) {
 	  	return new MemberController(custRepo, membersRepo).deleteMembers(custId, body);
 	  }

@@ -99,37 +99,38 @@ public class CustomerSteps{
 
   @Whenyall("^enter the following into the \"(.*?)\" dialog:$")
   public void we_enter_the_following_into_the_dialog(String dialogTitle, List<Map<String,String>> table) throws Throwable {
-
-  	Wait.For("dialog is not visible: "+dialogTitle, 5, new ToHappen(){@Override public boolean hasHappened(){
-				return getBrowser().findElement(By.className("modal-title")).isDisplayed();
-		}});
   	
-  	if (!dialogTitle.equals(getBrowser().findElement(By.className("modal-title")).getText())){
-  		throw new RuntimeException("unable to find dialog with name: "+dialogTitle);
-  	}
-  	
-  	final String prefix;
-  	if (dialogTitle.toLowerCase().contains("customer")){
-  		prefix="Customer";
-  	}else
-  		prefix="";
-  	
-  	for(Map<String,String> row:table){
-  		for(Entry<String, String> e:row.entrySet()){
-  			Wait.For(5, new ToHappen(){@Override public boolean hasHappened(){
-  				WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
-						return element.isDisplayed() && element.isEnabled();
-				}});
-  			
-  			WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
-  			if (element.getTagName().toLowerCase().equals("select")){
-  				new Select(element).selectByValue(e.getValue());
-  			}else{
-  				element.sendKeys(e.getValue());
-  			}
-  			
-  		}
-  	}
+  	helper.enterDetailsIntoTheDialog(dialogTitle, table);
+//  	Wait.For("dialog is not visible: "+dialogTitle, 5, new ToHappen(){@Override public boolean hasHappened(){
+//				return getBrowser().findElement(By.className("modal-title")).isDisplayed();
+//		}});
+//  	
+//  	if (!dialogTitle.equals(getBrowser().findElement(By.className("modal-title")).getText())){
+//  		throw new RuntimeException("unable to find dialog with name: "+dialogTitle);
+//  	}
+//  	
+//  	final String prefix;
+//  	if (dialogTitle.toLowerCase().contains("customer")){
+//  		prefix="Customer";
+//  	}else
+//  		prefix="";
+//  	
+//  	for(Map<String,String> row:table){
+//  		for(Entry<String, String> e:row.entrySet()){
+//  			Wait.For(5, new ToHappen(){@Override public boolean hasHappened(){
+//  				WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+//						return element.isDisplayed() && element.isEnabled();
+//				}});
+//  			
+//  			WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+//  			if (element.getTagName().toLowerCase().equals("select")){
+//  				new Select(element).selectByValue(e.getValue());
+//  			}else{
+//  				element.sendKeys(e.getValue());
+//  			}
+//  			
+//  		}
+//  	}
   }
 
   @Then("^customers exist with the following details:$")
@@ -200,7 +201,7 @@ public class CustomerSteps{
   @Then("^delete the customer:$")
   public void delete_the_customer(List<Map<String,String>> table) throws Throwable {
   	for(Map<String,String> row:table){
-  		
+  		throw new RuntimeException("NOT IMPLEMENTED YET");
   	}
   }
   

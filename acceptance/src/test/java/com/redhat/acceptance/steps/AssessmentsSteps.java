@@ -6,6 +6,8 @@ import java.util.Map;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +17,7 @@ import com.redhat.acceptance.steps.Helper.Pages;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
+import cucumber.api.java.en_tx.Givenyall;
 
 public class AssessmentsSteps{
   private static final Logger log=LoggerFactory.getLogger(AssessmentsSteps.class);
@@ -30,13 +33,19 @@ public class AssessmentsSteps{
   
   @Given("^we login with \"(.*?)\":$")
   public void login(String userPass) throws Throwable{
-//  	helper.cleanup();
+  	helper.cleanup();
   	if (browser.getCurrentUrl().contains("data:,"))
   		browser.get(Helper.URL);
   	if (!helper.isLoggedIn()){
   		helper.login(userPass.split("/")[0], userPass.split("/")[1]);
   		helper.navigateTo(Pages.CUSTOMERS);
   	}
+  }
+  
+  @Given("^create and open customer:$")
+  public void createAndEnterCustomer(List<Map<String,String>> table) throws Throwable {
+  	new CustomerSteps().createCustomers(table);
+  	helper.clickLink(table.get(0).get("Name"));
   }
   
   @Given("^click into the customer \"(.*?)\"$")
@@ -76,6 +85,47 @@ public class AssessmentsSteps{
 		}
 		Assert.assertEquals("Expected and actual assessments/apps differs", 0, expectedTable.size());
   }
+
+  @Then("^delete all applications$")
+  public void deleteAllApps() throws Throwable {
+  	List<Map<String, String>> data=helper.getDataTable(By.id("example"));
+  	for(int i=0;i<data.size();i++){
+  		browser.findElement(By.xpath("//input[@value='"+data.get(i).get("id")+"']")).click();
+  	}
+  	helper.clickButton("Remove Application(s)");
+  	browser.switchTo().alert().accept();
+  }
+  	
+  @Then("^delete the applications:$")
+  public void deleteApps(List<Map<String,String>> table) throws Throwable {
+  	List<Map<String, String>> data=helper.getDataTable(By.id("example"));
+  	
+  	for(int i=0;i<data.size();i++){
+  		if (data.get(i).get("Name").equals(table.get(i).get("Name"))){
+  			String appGuid=data.get(i).get("id");
+  			
+  			WebElement btn=browser.findElement(By.xpath("//input[@value='"+appGuid+"']"));
+  			try{
+  				btn.click();
+  			}catch(WebDriverException e){}
+  		}
+  	}
+  	helper.clickButton("Remove Application(s)");
+  	browser.switchTo().alert().accept();
+  }
+  
+  
+  @Then("^create the following applications:$")
+  public void createApps(List<Map<String,String>> table) throws Throwable{
+  	
+  	for(Map<String, String> row:table){
+  		helper.clickButton("Add Application");
+  		helper.enterDetailsIntoTheDialog("New Application", Lists.newArrayList(row));
+  		helper.clickButton("Create");
+  	}
+  	//appAssessmentsExist(table);
+  }
+  
   
 //  @Given("we login with the following credentials:$")
 //  public void login(List<Map<String,String>> table) throws Throwable{

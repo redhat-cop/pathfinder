@@ -168,6 +168,8 @@ ENABLE FOR EMBEDDED JETTY
 	        <artifactId>slf4j-api</artifactId>
           <version>1.7.25</version>
           <!-- 
+          comment for tomcat on openshift
+          uncomment acceptance testing with jetty
           <scope>provided</scope>
           -->
         </dependency>

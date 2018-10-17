@@ -19,6 +19,7 @@ import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.support.ui.Select;
 
 import com.redhat.acceptance.steps.Helper.Pages;
 import com.redhat.acceptance.utils.SafeWait;
@@ -174,9 +175,13 @@ public class Helper{
 	}
 
 	public void clickLink(String withText){
-		SafeWait.For("link with text "+withText+" is not being displayed", 5, new ToHappen(){public boolean hasHappened(){
-			WebElement e = browser.findElement(By.xpath("//*//a[contains(text(), '"+withText+"')]"));
-      return e.isDisplayed() && e.isEnabled();
+		SafeWait.For("link with text "+withText+" is not being displayed", 10, new ToHappen(){public boolean hasHappened(){
+			try {
+				WebElement e = browser.findElement(By.xpath("//*//a[contains(text(), '"+withText+"')]"));
+				return e.isDisplayed() && e.isEnabled();
+			}catch(Exception e) {
+				return false;
+			}
     }});
 		browser.findElement(By.xpath("//a[contains(text(), '"+withText+"')]")).click();
 	}
@@ -200,6 +205,7 @@ public class Helper{
 			try{
 				Map<String,String> rowData=new HashMap<>();
 				rowData.put("row", String.valueOf(i+1));
+				rowData.put("id", getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr[" + (i + 1) + "]/td["+(1)+"]/input")).getAttribute("value"));
 				for(Entry<Integer, String> e:headers.entrySet()){
 					rowData.put(e.getValue(), getBrowser().findElement(By.xpath("//*[@id=\"example\"]/tbody/tr[" + (i + 1) + "]/td["+(e.getKey()+1)+"]")).getText());
 				}
@@ -210,6 +216,41 @@ public class Helper{
 		}
 		return result;
 	}
+	
+	
+	public void enterDetailsIntoTheDialog(String dialogTitle, List<Map<String,String>> table) throws Throwable {
+
+  	Wait.For("dialog is not visible: "+dialogTitle, 5, new ToHappen(){@Override public boolean hasHappened(){
+				return getBrowser().findElement(By.className("modal-title")).isDisplayed();
+		}});
+  	
+  	if (!dialogTitle.equals(getBrowser().findElement(By.className("modal-title")).getText())){
+  		throw new RuntimeException("unable to find dialog with name: "+dialogTitle);
+  	}
+  	
+  	final String prefix;
+  	if (dialogTitle.toLowerCase().contains("customer")){
+  		prefix="Customer";
+  	}else
+  		prefix="";
+  	
+  	for(Map<String,String> row:table){
+  		for(Entry<String, String> e:row.entrySet()){
+  			Wait.For(5, new ToHappen(){@Override public boolean hasHappened(){
+  				WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+						return element.isDisplayed() && element.isEnabled();
+				}});
+  			
+  			WebElement element=getBrowser().findElement(By.id(prefix+e.getKey()));
+  			if (element.getTagName().toLowerCase().equals("select")){
+  				new Select(element).selectByValue(e.getValue());
+  			}else{
+  				element.sendKeys(e.getValue());
+  			}
+  			
+  		}
+  	}
+  }
 
 	
 //	public WebElement findByIdOrName(String idOrName){
