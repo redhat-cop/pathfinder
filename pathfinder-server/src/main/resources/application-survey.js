@@ -332,13 +332,13 @@ survey
 
 	        result.data.CUSTID=result.data.CUSTNAME;
 	        var d1 = survey.getQuestionByName('DEPSOUTLIST');
-	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/");
+	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
 	        d1.choicesByUrl.valueName = "Id";
 	        d1.choicesByUrl.titleName = "Name";
 	        d1.choicesByUrl.run();
 
           var d2 = survey.getQuestionByName('DEPSINLIST');
-          d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/");
+          d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
           d2.choicesByUrl.valueName = "Id";
           d2.choicesByUrl.titleName = "Name";
           d2.choicesByUrl.run();

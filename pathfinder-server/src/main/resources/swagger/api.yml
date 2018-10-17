@@ -318,6 +318,10 @@ paths:
         name: apptype
         type: string
         description: TARGETS,DEPENDENCIES,PROFILES
+      - in: query
+        name: exclude
+        type: string
+        description: app id to exclude
       responses:
         200:
           description: Applications List

@@ -797,7 +797,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     // GET: /api/pathfinder/customers/{customerId}/applications/
     @Override
     @Timed
-    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "", required = true) @PathVariable("custId") String custId, @ApiParam(value = "TARGETS,DEPENDENCIES,PROFILES") @RequestParam(value = "apptype", required = false) String apptype) {
+    public ResponseEntity<List<ApplicationType>> customersCustIdApplicationsGet(@ApiParam(value = "",required=true ) @PathVariable("custId") String custId,@ApiParam(value = "TARGETS,DEPENDENCIES,PROFILES") @RequestParam(value = "apptype", required = false) String apptype,@ApiParam(value = "app id to exclude") @RequestParam(value = "exclude", required = false) String exclude) {
         log.info("customersCustIdApplicationsGet....[" + custId + "]");
         ArrayList<ApplicationType> response = new ArrayList<>();
         try {
@@ -810,6 +810,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
             if (isAuthorizedFor(customer)){
                 if ((resp != null) && (!resp.isEmpty())) {
                     for (Applications x : resp) {
+                    		
+                    		if (null!=exclude && x.getId().equals(exclude)) continue;
+                    		
                         ApplicationType app = new ApplicationType();
                         app.setName(x.getName());
                         app.setId(x.getId());
