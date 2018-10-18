@@ -139,10 +139,10 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.2</version>
         <configuration>
+          <!--
           <failOnMissingWebXml>false</failOnMissingWebXml>
           <warSourceDirectory>src/main/webapp/</warSourceDirectory>
 
-          <!--
           <packagingExcludes>
             WEB-INF/lib/jcl-over-slf4j-1.7.22.jar,WEB-INF/lib/jul-to-slf4j-1.7.22.jar,WEB-INF/lib/slf4j-api-1.7.25.jar
           </packagingExcludes>

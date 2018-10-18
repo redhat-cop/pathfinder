@@ -427,6 +427,8 @@
                                 <delimiter>#</delimiter>
                             </delimiters>
                             <resources>
+                            <!-- 
+                             -->
                                 <resource>
                                     <directory>src/main/webapp</directory>
                                 </resource>

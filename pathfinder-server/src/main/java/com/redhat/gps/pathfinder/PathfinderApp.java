@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -115,6 +116,13 @@ public class PathfinderApp {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("*").allowedOrigins("*/*");
+            }
+            // this will serve any resources in / root of the jar as web content. We need this for the swagger docs
+            @Override
+            public void addResourceHandlers(ResourceHandlerRegistry registry){
+                 registry.addResourceHandler("/**")
+                    .addResourceLocations("/")
+                    .setCachePeriod(0);
             }
         };
     }
