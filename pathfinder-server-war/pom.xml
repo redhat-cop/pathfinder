@@ -132,7 +132,6 @@
             <artifactId>slf4j-api</artifactId>
  -->
             
-          <!--
   <build>
     <plugins>
       <plugin>
@@ -140,15 +139,18 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.2</version>
         <configuration>
-          <webappDirectory>/sample/servlet/container/deploy/directory</webappDirectory>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <warSourceDirectory>src/main/webapp/</warSourceDirectory>
+
+          <!--
           <packagingExcludes>
             WEB-INF/lib/jcl-over-slf4j-1.7.22.jar,WEB-INF/lib/jul-to-slf4j-1.7.22.jar,WEB-INF/lib/slf4j-api-1.7.25.jar
           </packagingExcludes>
+          -->
         </configuration>
       </plugin>
     </plugins>
   </build>
-          -->
 <!--
 	<build>
 		<defaultGoal>spring-boot:run</defaultGoal>
