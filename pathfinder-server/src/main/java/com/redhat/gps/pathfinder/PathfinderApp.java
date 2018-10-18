@@ -118,12 +118,12 @@ public class PathfinderApp {
                 registry.addMapping("*").allowedOrigins("*/*");
             }
             // this will serve any resources in / root of the jar as web content. We need this for the swagger docs
-            @Override
-            public void addResourceHandlers(ResourceHandlerRegistry registry){
-                 registry.addResourceHandler("/**")
-                    .addResourceLocations("/")
-                    .setCachePeriod(0);
-            }
+//            @Override
+//            public void addResourceHandlers(ResourceHandlerRegistry registry){
+//                 registry.addResourceHandler("/**")
+//                    .addResourceLocations("/")
+//                    .setCachePeriod(0);
+//            }
         };
     }
 }
