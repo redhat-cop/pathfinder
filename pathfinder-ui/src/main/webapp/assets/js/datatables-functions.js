@@ -13,10 +13,6 @@ function send(action, uri, data){
     xhr.send();
   }
   xhr.onloadend = function () {
-  	//var table1=$('#example').DataTable();
-  	//var oSettings=table1.fnSettings();
-  	//console.log("table="+JSON.stringify(table1));
-  	//console.log("oSettings="+JSON.stringify(oSettings));
   	
 	console.log("datatables-functions::send:: onloadend ... status = "+this.status);
 	  
