@@ -2182,6 +2182,28 @@ body {
   padding: 0 1.25rem;
   text-decoration: none;
 }
+#header>a{
+	text-decoration: none;
+}
+.logo{
+	margin:0px 8px 2px 4px;
+}
+.logo-text{
+	font-size:16pt;
+	font-family: Overpass, Arial;
+	color: white;
+	position: relative;
+	top: 4px;
+	/*
+	left:-5px;
+	*/
+}
+.vbold{
+	font-weight: 900;
+}
+.normal{
+	font-weight: 500;
+}
 
 #header>nav>a {
   color: inherit;
