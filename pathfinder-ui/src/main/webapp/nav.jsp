@@ -10,7 +10,7 @@
 		<%}%>
 	<%}else{%>
 		<a id="customers" href="manageCustomers.jsp">
-			<img id="logo" style="height:60px;margin:0px 10px 6px" src="assets/images/RH_Pathfinder_Icon_Color-56.png"/><span class="logo-text">Pathfinder</span>
+			<img class="logo" id="logo" src="assets/images/RH_Pathfinder_Icon_Color-56.png"/><span class="logo-text vbold">Path</span><span class="logo-text normal">finder</span>
 		</a>
 		<p id="logged-status">Logged in as <%=request.getSession().getAttribute("x-displayName")%> <a href="api/pathfinder/logout"> (Logout)</a></p>
 	<%}%>
