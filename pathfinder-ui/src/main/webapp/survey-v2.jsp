@@ -25,7 +25,6 @@
 					var customerName=application.CustomFields['customer.name'];
 					if (undefined!=setBreadcrumbs) initTabs("assessments", customerId, customerName);
 				});
-				
 			});
 		</script>
 						
@@ -70,6 +69,24 @@
 					font-size: 0.8rem; /* answer - text size */
 					margin: 0 0 0.4rem 0; /* answer - spacing between radio options*/
 				}
+				
+				/* #161 - change to add question weighting colors to left of radio buttons */
+				.iradio_square-blue{
+					width:25px !important;
+				}
+				.UNKNOWN{
+					border-left: solid grey 3px !important;
+				}
+				.RED{
+					border-left: solid #c00 3px !important;
+				}
+				.AMBER{
+					border-left: solid #f0ab02 3px !important;
+				}
+				.GREEN{
+					border-left: solid #92d400 3px !important;
+				}
+				/* /change to add question weighting colors to left of radio buttons */
 			</style>
 			<!--
 			<script src="utils.jsp"></script>

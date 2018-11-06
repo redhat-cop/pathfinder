@@ -165,8 +165,11 @@ function httpGetObject(url, callback){
 	//xhr.setRequestHeader("Accept", "application/json");
 	xhr.send();
 	xhr.onloadend = function () {
-		if (this.status == 200){
+		if (this.status==200){
 		  callback(JSON.parse(xhr.responseText));
+		}
+		if (this.status==403){
+			self.location.href="/";
 		}
 	};
 }

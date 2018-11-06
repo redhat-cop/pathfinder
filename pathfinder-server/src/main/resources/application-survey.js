@@ -324,7 +324,17 @@ survey
 	.onAfterRenderPage
     .add(function (result) {
    		console.log("result="+JSON.stringify(survey.data));
-
+   		
+   		// this adds the question weighting to the css class so we can add a visual clue to where the thresholds are 
+   		$('input', $(".iradio_square-blue")).each(function(){
+   			var valueSplit=this.value.split('-');
+   			if (valueSplit.length>1){
+   				var color=valueSplit[1];
+   				$(this).parent().addClass(color);
+   				console.log("Adding question weighting to: "+$(this).name);
+   			}
+		});
+   		
    		var custID = Utils.getParameterByName("customerId");
    		var appID  = Utils.getParameterByName("applicationId");
         
@@ -352,3 +362,5 @@ if (null!=results){
 $("#surveyElement").Survey({
     model: survey
 });
+
+
