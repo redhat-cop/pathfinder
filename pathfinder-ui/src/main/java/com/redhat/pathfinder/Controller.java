@@ -248,7 +248,7 @@ public class Controller{
     
     String uri=IOUtils.toString(request.getInputStream());
     
-    log("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
+//    log("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
     
     final Map<String, String> keyValues=Splitter.on('&').trimResults().withKeyValueSeparator("=").split(uri);
     

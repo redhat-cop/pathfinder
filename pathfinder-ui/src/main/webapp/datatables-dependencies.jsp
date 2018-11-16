@@ -25,20 +25,20 @@ $(document).ready (function(){
   
   // automatically redirect back to login when logged-out/timed-out
   if (undefined!=$.fn.dataTable){
-		$.fn.dataTable.ext.errMode = function ( settings, helpPage, message ) { 
-		    //console.log("ERROR:"+JSON.stringify(message));
-		    if (message.includes("Ajax error")){
-		    	self.location.href="${pageContext.request.contextPath}";
-		    }
-		};
+    $.fn.dataTable.ext.errMode = function ( settings, helpPage, message ) { 
+        //console.log("ERROR:"+JSON.stringify(message));
+        if (message.includes("Ajax error")){
+          self.location.href="${pageContext.request.contextPath}";
+        }
+    };
   }
 });
 
 function showNotification(type, message){
   $('#'+type+'NotificationMessage').html(message);
   $("#"+type+"Notification").fadeTo(3000, 500).slideUp(500, function(){
-		$("#"+type+"Notification").slideUp(500);
-	});
+    $("#"+type+"Notification").slideUp(500);
+  });
 };
 </script>
 

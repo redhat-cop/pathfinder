@@ -13,30 +13,30 @@ function send(action, uri, data){
     xhr.send();
   }
   xhr.onloadend = function () {
-  	
-	console.log("datatables-functions::send:: onloadend ... status = "+this.status);
-	  
-  	if (this.status == 200){
-	  	console.log("datatables-functions::send:: returned 200");
-	  	
-	  	$('#example').DataTable().ajax.reload(
-	  		function(json){
-	  		  // ideally we'd just call fnInitComplete but sadly i can't find that function embedded in the datatable object yet
-	  			if (undefined!=onDatatableRefresh){
-	  				console.log("datatables-functions::send:: calling onDatatableRefresh();");
-	  				onDatatableRefresh(json);
-	  			}
-	  			//table.fnSettings.fnInitComplete(null, json);
-	  		}
-	  	);
-  		
-  	}else if(xhr.status>=400){
-  		
-  		showNotification("error", xhr.responseText);
-  		
-  	}
-  	
-  	
+    
+    console.log("datatables-functions::send:: onloadend ... status = "+this.status);
+      
+    if (this.status == 200){
+        console.log("datatables-functions::send:: returned 200");
+        
+        $('#example').DataTable().ajax.reload(
+          function(json){
+            // ideally we'd just call fnInitComplete but sadly i can't find that function embedded in the datatable object yet
+            if (undefined!=onDatatableRefresh){
+            	console.log("datatables-functions::send:: calling onDatatableRefresh();");
+            	onDatatableRefresh(json);
+            }
+            //table.fnSettings.fnInitComplete(null, json);
+          }
+        );
+    
+    }else if(xhr.status>=400){
+      
+      showNotification("error", xhr.responseText);
+      
+    }
+    
+    
     //$('#example').dataTable().ajax.reload();// new function(json){console.log("json="+json);}, true );
     //$('#example').dataTable().fnReloadAjax(null, onDatatableRefresh, null);
 //    if (undefined!=postAction){
@@ -49,27 +49,27 @@ function post(uri, data){
   return send("POST", uri, data);
 }
 function postWait(url, data, callback){
-	var xhr = new XMLHttpRequest();
-	xhr.open("POST", addAuthToken(url), true);
-	xhr.setRequestHeader("Content-type", "application/json");
-	xhr.send(JSON.stringify(data));
-	xhr.onloadend = function () {
-	  console.log("PostWait::status = "+xhr.status);
-	  console.log("PostWait::status = "+xhr.responseText);
-	  
-	  if (xhr.status==200){
-	    console.log("PostWait::calling callback");
-	  	callback(xhr.responseText);
-	  }
-	};
+  var xhr = new XMLHttpRequest();
+  xhr.open("POST", addAuthToken(url), true);
+  xhr.setRequestHeader("Content-type", "application/json");
+  xhr.send(JSON.stringify(data));
+  xhr.onloadend = function () {
+    console.log("PostWait::status = "+xhr.status);
+    console.log("PostWait::status = "+xhr.responseText);
+    
+    if (xhr.status==200){
+      console.log("PostWait::calling callback");
+      callback(xhr.responseText);
+    }
+  };
 }
 
 function deleteItem(id){
-	if (!confirm("Are you sure?")){
-		return false;
-	}else{
-  	httpDelete(Utils.SERVER+"/api/pathfinder/customers/"+id);
-	}
+  if (!confirm("Are you sure?")){
+  	return false;
+  }else{
+    httpDelete(Utils.SERVER+"/api/pathfinder/customers/"+id);
+  }
 }
 
 function httpDelete(uri, data){
@@ -151,27 +151,27 @@ function save(sender, formId){
 }
 
 function httpGet(url, field, callback){
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", addAuthToken(url), true);
-	xhr.send();
-	xhr.onloadend = function () {
-	  callback(JSON.parse(xhr.responseText)[field]);
-	};
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", addAuthToken(url), true);
+  xhr.send();
+  xhr.onloadend = function () {
+    callback(JSON.parse(xhr.responseText)[field]);
+  };
 }
 
 function httpGetObject(url, callback){
-	var xhr = new XMLHttpRequest();
-	xhr.open("GET", addAuthToken(url), true);
-	//xhr.setRequestHeader("Accept", "application/json");
-	xhr.send();
-	xhr.onloadend = function () {
-		if (this.status==200){
-		  callback(JSON.parse(xhr.responseText));
-		}
-		if (this.status==403){
-			self.location.href="/";
-		}
-	};
+  var xhr = new XMLHttpRequest();
+  xhr.open("GET", addAuthToken(url), true);
+  //xhr.setRequestHeader("Accept", "application/json");
+  xhr.send();
+  xhr.onloadend = function () {
+    if (this.status==200){
+      callback(JSON.parse(xhr.responseText));
+    }
+    if (this.status==403){
+      console.log("Error: xhr call returned 403, redirecting to '/'. Request url was "+url);
+      self.location.href="/";
+    }
+  };
 }
-
 

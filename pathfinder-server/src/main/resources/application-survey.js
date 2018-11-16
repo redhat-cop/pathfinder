@@ -321,38 +321,38 @@ survey
 
 
 survey
-	.onAfterRenderPage
+    .onAfterRenderPage
     .add(function (result) {
-   		console.log("result="+JSON.stringify(survey.data));
-   		
-   		// this adds the question weighting to the css class so we can add a visual clue to where the thresholds are 
-   		$('input', $(".iradio_square-blue")).each(function(){
-   			var valueSplit=this.value.split('-');
-   			if (valueSplit.length>1){
-   				var color=valueSplit[1];
-   				$(this).parent().addClass(color);
-   				console.log("Adding question weighting to: "+$(this).name);
-   			}
-		});
-   		
-   		var custID = Utils.getParameterByName("customerId");
-   		var appID  = Utils.getParameterByName("applicationId");
+      console.log("result="+JSON.stringify(survey.data));
+      
+      //// this adds the question weighting to the css class so we can add a visual clue to where the thresholds are 
+      //$('input', $(".iradio_square-blue")).each(function(){
+      //  var valueSplit=this.value.split('-');
+      //  if (valueSplit.length>1){
+      //    var color=valueSplit[1];
+      //    $(this).parent().addClass(color);
+      //    console.log("Adding question weighting to: "+$(this).name);
+      //  }
+      //});
+      
+      var custID = Utils.getParameterByName("customerId");
+      var appID  = Utils.getParameterByName("applicationId");
         
-	    if (survey.currentPageNo === 1){
+      if (survey.currentPageNo === 1){
+        
+	    result.data.CUSTID=result.data.CUSTNAME;
+	    var d1 = survey.getQuestionByName('DEPSOUTLIST');
+	    d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
+	    d1.choicesByUrl.valueName = "Id";
+	    d1.choicesByUrl.titleName = "Name";
+	    d1.choicesByUrl.run();
 
-	        result.data.CUSTID=result.data.CUSTNAME;
-	        var d1 = survey.getQuestionByName('DEPSOUTLIST');
-	        d1.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
-	        d1.choicesByUrl.valueName = "Id";
-	        d1.choicesByUrl.titleName = "Name";
-	        d1.choicesByUrl.run();
-
-          var d2 = survey.getQuestionByName('DEPSINLIST');
-          d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
-          d2.choicesByUrl.valueName = "Id";
-          d2.choicesByUrl.titleName = "Name";
-          d2.choicesByUrl.run();
-	      }
+        var d2 = survey.getQuestionByName('DEPSINLIST');
+        d2.choicesByUrl.url = addAuthToken(Utils.SERVER+"/api/pathfinder/customers/"+custID+"/applications/?exclude="+appID);
+        d2.choicesByUrl.valueName = "Id";
+        d2.choicesByUrl.titleName = "Name";
+        d2.choicesByUrl.run();
+	  }
     });
 
 if (null!=results){
