@@ -20,7 +20,7 @@
 		$(document).ready(function(){
 			$("#loginForm").submit(function () {
 				$("#submit").attr("disabled", true);
-				e.preventDefault();
+				//e.preventDefault();
 				return true;
 			});
 		  $("#username").focus();

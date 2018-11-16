@@ -684,38 +684,39 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 response.setStereotype(ApplicationType.StereotypeEnum.fromValue(application.getStereotype()));
             }
             
-            if (application.getAssessments()!=null && application.getAssessments().size()>0){
-            
-            	Assessments latestAssessment=application.getAssessments().get(application.getAssessments().size()-1);
-            
-	            // custom fields parsing/injection
-	            if (null!=custom){
-	              AssessmentResponse customFieldMap=new AssessmentResponse();
-	              for(String f:custom.split(",")){
-	                if (f.indexOf(".")<=0) continue;
-	                String entity=f.substring(0, f.indexOf("."));
-	                String field=f.substring(f.indexOf(".")+1);
-	                if (entity.equals("customer")){
-	                  for (PropertyDescriptor pd:Introspector.getBeanInfo(Customer.class).getPropertyDescriptors()){
-	                    if (pd.getReadMethod() != null && pd.getReadMethod().getName().equals("get"+StringUtils.capitalize(field)) && !"class".equals(pd.getName())){
-	                      Object value=pd.getReadMethod().invoke(customer);
-	                      if (value instanceof String){
-	                        log.debug("Adding custom customer field:: {}={}", field, (String)pd.getReadMethod().invoke(customer));
-	                        customFieldMap.put(entity+"."+field, (String)value);
-	                        
-	                      }
-	                    }
-	                  }
-	                  
-	                }else if (entity.equals("assessment")){
-	                  log.debug("Adding customer assessment field:: {}={}", field, latestAssessment.getResults().get(field));
-	                  customFieldMap.put(entity+"."+field, latestAssessment.getResults().get(field));
-	                }
-	              }
-	              
-	              response.setCustomFields(customFieldMap);
-	            }
+            // custom fields parsing/injection
+            if (null!=custom){
+            	AssessmentResponse customFieldMap=new AssessmentResponse();
+            	for(String f:custom.split(",")){
+            		if (f.indexOf(".")<=0) continue;
+            		String entity=f.substring(0, f.indexOf("."));
+            		String field=f.substring(f.indexOf(".")+1);
+            		if (entity.equals("customer")){
+            			for (PropertyDescriptor pd:Introspector.getBeanInfo(Customer.class).getPropertyDescriptors()){
+            				if (pd.getReadMethod() != null && pd.getReadMethod().getName().equals("get"+StringUtils.capitalize(field)) && !"class".equals(pd.getName())){
+            					Object value=pd.getReadMethod().invoke(customer);
+            					if (value instanceof String){
+            						log.debug("Adding custom customer field:: {}={}", field, (String)pd.getReadMethod().invoke(customer));
+            						customFieldMap.put(entity+"."+field, (String)value);
+            						
+            					}
+            				}
+            			}
+            			
+            		}else if (entity.equals("assessment")){
+            			if (application.getAssessments()!=null && application.getAssessments().size()>0){
+            				Assessments latestAssessment=application.getAssessments().get(application.getAssessments().size()-1);
+            				log.debug("Adding customer assessment field:: {}={}", field, latestAssessment.getResults().get(field));
+            				customFieldMap.put(entity+"."+field, latestAssessment.getResults().get(field));
+            			}
+            			
+            		}
+            	}
+            	
+            	response.setCustomFields(customFieldMap);
             }
+            
+            
             
         } catch (Exception ex) {
             log.error("Unable to get applications for customer ", ex.getMessage(), ex);
