@@ -169,8 +169,8 @@ function httpGetObject(url, callback){
       callback(JSON.parse(xhr.responseText));
     }
     if (this.status==403){
-      console.log("Error: xhr call returned 403, redirecting to '/${pageContext.request.contextPath}'. Request url was "+url);
-      self.location.href="/${pageContext.request.contextPath}";
+      console.log("Error: xhr call returned 403, redirecting to '.'. Request url was "+url);
+      self.location.href=".";
     }
   };
 }
