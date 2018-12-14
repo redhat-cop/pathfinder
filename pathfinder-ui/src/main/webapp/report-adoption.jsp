@@ -116,6 +116,7 @@
 			if (logLevel=="DEBUG") console.log("DEBUG:: OrderCalc: "+(parent==null?"":parent['Name']+".")+app['Name'] +": order = "+order);
 			for(x=0;x<app['OutboundDeps'].length;x++){
 				var dependsOn=map[app['OutboundDeps'][x]];
+				if (undefined==dependsOn) continue;
 				if (app['Id']==dependsOn['Id']) continue; //infinite loop protection
 				if (recursion>100) break;
 				recursion+=1;
@@ -174,9 +175,17 @@
 				summary[i]['DependsOn']=[];
 				if (undefined!=summary[i]['OutboundDeps']){
 					for(d=0;d<summary[i]['OutboundDeps'].length;d++){
-						summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]]);
-						console.log("INFO :: AdoptionGraph:: DependsOn:: "+ summary[i]['Name']+" depends on "+summary[i]['DependsOn'][d]['Name']);
+						
+						var dependent=appIdToAppMap[summary[i]['OutboundDeps'][d]];
+						if (dependent!=undefined){ // this could happen if the dependency is on a non-assessable application
+							summary[i]['DependsOn'].push(dependent);
+							console.log("INFO :: AdoptionGraph:: DependsOn:: "+ summary[i]['Name']+" depends on "+summary[i]['DependsOn'][d]['Name']);
+						}
+						//summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]]);
+						
 					}
+				}else{
+					summary[i]['OutboundDeps']=[];
 				}
 			}
 			

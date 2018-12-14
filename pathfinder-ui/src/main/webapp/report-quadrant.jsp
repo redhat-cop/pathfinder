@@ -296,13 +296,19 @@
 									appNameToAppMap[summary[i].Name]=summary[i];
 								}
 								
-								// reference the OutboundDeps App Id's into App Names and add them in a field called DependsOn for easy reference when building the charts
+								// dereference the OutboundDeps App Id's into App Names and add them in a field called DependsOn for easy reference when building the charts
 								for(i=0;i<summary.length;i++){
 									if (null!=summary[i]['OutboundDeps']){
 										summary[i]['DependsOn']=[];
 										//var dependsOn=[];
-										for(d=0;d<summary[i]['OutboundDeps'].length;d++)
-										  summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]].Name);
+										for(d=0;d<summary[i]['OutboundDeps'].length;d++){
+										  //console.log("DEBUG:: summary[i]['Name']="+summary[i]['Name']+"; depsLength="+summary[i]['OutboundDeps'].length+"; d="+d+"; summary[i]['OutboundDeps'][d] = "+summary[i]['OutboundDeps'][d]);
+										  var dependent=appIdToAppMap[summary[i]['OutboundDeps'][d]];
+										  if (undefined!=dependent){
+										  	summary[i]['DependsOn'].push(dependent.Name);
+										  }
+										  //summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]].Name);
+ 										}
 									}
 								}
 								
