@@ -1,13 +1,20 @@
 language: java
 jdk: oraclejdk8
 
-env:
-  global:
-      - COMMIT=${TRAVIS_COMMIT::7}
-
 services:
-  - docker
+- docker
+
+env:
+  QUAY_USER:
+      secure: mHDnB+V385uKUo3e/ASuwWJ/ayE9FRlFoMpWxzdruIdMlUsgRpDrw8l4ButxlcZpi6wouV2cNp7DUEJTCFf9bdnBnFj3scXqfUasaArsCfaJinE5esr0yhMMPzBBhXdFtUk11DzWvz7dy5EE600L+ypD2jxEIUECSuwVEDdjls8X8eRq1p4Rh1xxY+qvDskF258UrPJSwX62Qf2jEzzSXX6zfWmaLOH/jkriJR9ap4w28cDRu7DEpuBFOMnXxfk7czv5sb+jMn3h1cjW3cY3TyCGYH3VaHLFN9h8Qz/FP9qQSwWsOEjjNF53KQXh0GYQOHH/xbYGcX6yAVxgWuBfnKEJ0a1LGBEsgORUEvLoBk2A62lGmus/L7HakOQ0eQSLCEE0e3oAQU/HvW5rS/oJR6W/6j6ngwtK18FEZVjzefFNlqR5wUiyDdb/sbWMIhDV/YiEOVv4K9Sy4wSuloHUTMq+dnry2xXgXpTlbLRw/gJliwQQDl9hqwcH8hrObQeXhD4IsxzCUjAQLh9iKFKWfMjGSSPbGAGfGgnJ2b8QV681evtJ39w5Px5Pzwzr6O2fHvZrSpIRVL1ma+uwxQcU8VGWzcpc924j18MnlHA1TzQ6mlQITPo9AS0a2nG+IAAGxZ1Ze13+n8YXtgEGxiMn/24DicB0kFr3GL2wdGpWroU=
+  QUAY_TOKEN:
+      secure: CaNFY2KrO/W2AKE49mKM1dQMeQTZ4HAyT8lqbZYmZ7GxgVucwNr+QLeHIPD11MDt+0oj0/PCuqKfsTRhnC7ySjKi/GLhbcTrJb4V0gz9/qVmVsBs9ZfSI3hO6DZuc3vMXoueJD568lUX5ti3IvgOyehDJKy0gDGjH20n7TT15dCmeOKWxQHPVoBEzyf/BMIE4Jr0Ad7SXNWaLN6vgRabegaL9S+WTfkfoXn2Wx1scEFWF88lyl8rZmVDGoEh460Hh1SWnzFsAaxwNG3kQPb8+UkthOyIcXhp6mWxZb98Pimi53OP9J7q6+sgyviOz79rkPxxvSETlfhDRA+RYMSWIrCxRZWvsS95kExwwEX5NTTwg3X6uOZgW9/bq9AaBEhggNxLUj1p8xjBvvoSBzAWC0nXe8H3AZp8nYmmDVpcvlVvRb2/oIhhoDqA6pE+aUs3GWe6wb0auyi023uycMOiaqrd3n7+zX5hVjU/S7zb11jZJbK5/H/BzEdpF4toIZb/FwYxEZJjEjlQJw+uurH29+S4I2F84BuGwP//IpGd1d4rFciMYlzoIKT2Mqyt9YODz7ZpS48VB9N/my6Pzj34Lhywe25pk5qlO0wYEeX63Zy57vzaO22YHjK3WBMRyZlzRD+AW2rz2wie1k6aBNXoLBpk4rEX2W40E0UoJV9u5d8=
+  global:
+  - COMMIT=${TRAVIS_COMMIT::7}
 
 after_success:
   - export IMAGE_NAME=pathfinder/pathfinder-server
+  - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
   - docker build -t $IMAGE_NAME:$COMMIT .
+  - docker tag $IMAGE_NAME:$COMMIT $IMAGE_NAME:latest
+  - docker push $IMAGE_NAME
