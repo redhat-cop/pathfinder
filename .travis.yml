@@ -13,7 +13,7 @@ env:
   - COMMIT=${TRAVIS_COMMIT::7}
 
 after_success:
-  - export IMAGE_NAME=pathfinder/pathfinder-server
+  - export IMAGE_NAME=noeloc/pathfinder
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
   - docker build -t $IMAGE_NAME:$COMMIT .
   - docker tag $IMAGE_NAME:$COMMIT $IMAGE_NAME:latest
