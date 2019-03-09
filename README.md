@@ -1,7 +1,12 @@
+# Pathfinder
+
+A workload assessment tool used to determine an applications suitability for running on OpenShift/Kubernetes
+
+[![Build Status](https://travis-ci.org/redhat-cop/pathfinder.svg?branch=master)](https://travis-ci.org/redhat-cop/pathfinder) [![Docker Repository on Quay](https://quay.io/repository/pathfinder/pathfinder-server/status "Docker Repository on Quay")](https://quay.io/repository/pathfinder/pathfinder-server)
+
 [![Waffle.io - Kanban board &amp; card count](https://badge.waffle.io/redhat-cop/pathfinder.svg?columns=all)](https://waffle.io/redhat-cop/pathfinder)
 
 # Setup environment on OpenShift (incl. minishift)
-
 
 The following commands will create a new project and deploy a mongo, pathfinder-server and pathfinder-ui instance into your environment
 ```
