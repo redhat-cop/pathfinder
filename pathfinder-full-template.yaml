@@ -175,10 +175,8 @@ objects:
             timeoutSeconds: 1
           resources:
             limits:
-              cpu: 750m
               memory: 1Gi
             requests:
-              cpu: 500m
               memory: 700Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
@@ -284,7 +282,7 @@ objects:
           - name: JWS_ADMIN_PASSWORD
             value: xfnfyTKW
           - name: PATHFINDER_SERVER
-            value: ${PATHFINDER_SERVER}
+            value: http://pathfinder-server:8080
           image: pathfinder-ui:latest
           imagePullPolicy: Always
           name: pathfinder-ui
