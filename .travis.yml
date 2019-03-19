@@ -1,0 +1,20 @@
+language: java
+jdk: oraclejdk8
+
+services:
+- docker
+
+env:
+  global:
+  - COMMIT=${TRAVIS_COMMIT::7}
+
+after_success:
+- export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
+- docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
+- docker build . -t $IMAGE_NAME_SERVER:$COMMIT -f ServerDockerfile --build-arg GIT_COMMIT=$COMMIT
+- docker tag $IMAGE_NAME_SERVER:$COMMIT $IMAGE_NAME_SERVER:latest
+- docker push $IMAGE_NAME_SERVER
+- export IMAGE_NAME_UI=quay.io/pathfinder/pathfinder-ui
+- docker build . -t $IMAGE_NAME_UI:$COMMIT -f UIDockerfile --build-arg GIT_COMMIT=$COMMIT
+- docker tag $IMAGE_NAME_UI:$COMMIT $IMAGE_NAME_UI:latest
+- docker push $IMAGE_NAME_UI
