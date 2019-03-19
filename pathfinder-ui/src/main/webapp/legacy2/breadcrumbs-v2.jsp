@@ -80,9 +80,9 @@ ol, ul {
 		    document.getElementById("customer").innerHTML=customer.CustomerName;
 		    
 		    //$('#breadcrumb-details>a').attr('href', '#');
-		    $('#breadcrumb-applications>a').attr('href', 'manageCustomerApplications.jsp?customerId='+customer.CustomerId);
-		    $('#breadcrumb-assessments>a').attr('href', 'assessments-v2.jsp?customerId='+customer.CustomerId);
-		    $('#breadcrumb-members>a').attr('href', 'members.jsp?customerId='+customer.CustomerId);
+		    $('#breadcrumb-applications>a').attr('href', 'manageCustomersApplications.jsp?customerId='+customer.CustomerId);
+		    $('#breadcrumb-assessments>a').attr('href', 'assessments.jsp?customerId='+customer.CustomerId);
+		    $('#breadcrumb-members>a').attr('href', 'manageCustomersMembers.jsp?customerId='+customer.CustomerId);
 		    
 		    if (undefined!=$('#breadcrumb-'+active+'>a').get()){
 		    	$('#breadcrumb-'+active+'>a').addClass("active");
@@ -93,9 +93,9 @@ ol, ul {
   		// Duplicate of the above setBreadcrumbs method for pages where we get the customer details without a specific extra call. Trying to migrate to this method over setBreadcrumbs...
   		function initTabs(active, customerId, customerName){
 		    document.getElementById("customer").innerHTML=customerName;
-		    $('#breadcrumb-applications>a').attr('href', 'manageCustomerApplications.jsp?customerId='+customerId);
-		    $('#breadcrumb-assessments>a').attr('href', 'assessments-v2.jsp?customerId='+customerId);
-		    $('#breadcrumb-members>a').attr('href', 'members.jsp?customerId='+customerId);
+		    $('#breadcrumb-applications>a').attr('href', 'manageCustomersApplications.jsp?customerId='+customerId);
+		    $('#breadcrumb-assessments>a').attr('href', 'assessments.jsp?customerId='+customerId);
+		    $('#breadcrumb-members>a').attr('href', 'manageCustomersMembers.jsp?customerId='+customerId);
 		    if (undefined!=$('#breadcrumb-'+active+'>a').get()){
 		    	$('#breadcrumb-'+active+'>a').addClass("active");
 		    	//$('#breadcrumb-'+active+'>a').attr("href","#"); // prevent navigation to current page

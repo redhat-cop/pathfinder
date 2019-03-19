@@ -43,19 +43,7 @@ import io.restassured.specification.RequestSpecification;
 @Path("/pathfinder/")
 public class Controller{
   
-//  static Properties properties=null;
   public static String getProperty(String name) throws IOException{
-//    if (null==properties){
-//      properties = new Properties();
-//      properties.load(Controller.class.getClassLoader().getResourceAsStream("pathfinder-ui.properties"));
-//    }
-//    System.out.println("request for property '"+name+"'");
-//    System.out.println(" - System.getProperty("+name+")='"+System.getProperty(name)+"'");
-    
-    
-//    if (null!=properties.getProperty(name)){
-//      return properties.getProperty(name);
-//    }else{
     if (name.equals("PATHFINDER_SERVER")) {
     	String result=null;
     	if (null!=System.getProperty("pathfinder.server")) result=System.getProperty("pathfinder.server");
@@ -70,29 +58,8 @@ public class Controller{
     }
     System.out.println("Request for System.getenv("+name+")='"+System.getenv(name)+"'");
     
-    //if (null==System.getenv(name) && name.equals("PATHFINDER_SERVER")){
-    //  System.out.println("DEFAULTING SERVER TO: 'http://localhost:8080' because no environment variable '"+name+"' was found");
-    //  return "http://localhost:8080";
-    //}
     return System.getenv(name);
-//    }
   }
-  
-  class ApplicationAssessmentSummary{
-    String question;
-    String answer;
-    String rating;
-    public ApplicationAssessmentSummary(String q, String a, String r){
-      this.question=q;
-      this.answer=a;
-      this.rating=r;
-    }
-    public String getQuestion(){return question;}
-    public String getAnswer(){return answer;}
-    public String getRating(){return rating;}
-  }
-  
-  
   
   
   @SuppressWarnings("rawtypes")
@@ -123,43 +90,6 @@ public class Controller{
       }
       System.out.println(score);
     }
-    
-    
-    
-    if (true) return;
-    
-    Tuple2 admin=new Tuple2<String,String>("admin", "admin");
-    Tuple2 mallen=new Tuple2<String,String>("mallen", "123");
-    Tuple2 user=admin;
-    
-    
-    String jwtToken=null;
-    if (null!=user){
-      io.restassured.response.Response loginResp = given()
-        .body("{\"username\":\""+user.getFirst()+"\",\"password\":\""+user.getSecond()+"\"}")
-        .post("http://localhost:8080/auth");
-  
-      System.out.println("Login():: statusCode = "+loginResp.getStatusCode());
-      System.out.println("Login():: response = "+loginResp.asString());
-      jwtToken=mjson.Json.read(loginResp.asString()).at("token").asString();
-      System.out.println("Login():: jwtToken="+jwtToken);
-    }
-//    if (!loginResp.asString().contains("token")){
-//      System.out.println("Login()::ERROR:: headers = "+loginResp.getHeaders());
-//      System.err.println("Login()::ERROR:: response = "+loginResp.asString());
-//    }else{
-    RequestSpecification req=given();
-    if (null!=user)
-      req.header("Authorization", "Bearer "+jwtToken);
-    io.restassured.response.Response customersResp=req.get("http://localhost:8080/api/pathfinder/customers/");
-    
-      System.out.println("Customers():: statusCode = "+customersResp.getStatusCode());
-      System.out.println("Customers():: response = "+customersResp.asString());
-      System.out.println("Customers():: headers = "+customersResp.getHeaders());
-      
-//    }
-     
-    
   }
   public Response getApps(){
     MongoCredential credential = MongoCredential.createCredential("userS1K", "pathfinder", "JBf2ibxFbqYAmAv0".toCharArray());
@@ -195,34 +125,6 @@ public class Controller{
     c.close();
     return null;
   }
-  
-
-//  @GET
-//  @Path("/customers/export")
-//  public Response export(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
-////  	response.setHeader(javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION, "attachment");
-////  	response.setHeader("Content-Type", "application/json");
-//  	
-//  	String token=request.getParameter("_t");
-//  	
-//  	String custIds=request.getParameter("ids");
-//  	String url=getProperty("PATHFINDER_SERVER")+"/api/pathfinder/customers/export?ids="+custIds+"&_t="+token;
-//  	System.out.println("request to: "+url);
-//  	
-//  	io.restassured.response.Response resp = given().get(url);
-//  	
-//  	String responseBody=resp.getBody().asString();
-//  	System.out.println("response was: "+responseBody);
-//  	
-////  	response.getWriter().println(Json.newObjectMapper(true).writeValueAsString(responseBody));
-//  	
-//  	return Response.status(200)
-////  			.header("Content-Type", "application/json")
-//  			.header(javax.ws.rs.core.HttpHeaders.CONTENT_DISPOSITION, "attachment;")
-////  			.entity(Json.newObjectMapper(true).writeValueAsString(responseBody))
-//  			.entity(responseBody)
-//  			.build();
-//  }
   
   @GET
   @Path("/logout")

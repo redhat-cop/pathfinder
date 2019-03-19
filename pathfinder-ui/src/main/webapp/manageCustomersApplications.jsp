@@ -154,7 +154,7 @@
     </div>
     
 
-		<%@include file="newApplicationForm.jsp"%>
+		<%@include file="forms/newApplicationForm.jsp"%>
 
 	</body>
 </html>
