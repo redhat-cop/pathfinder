@@ -136,7 +136,7 @@
     </div>
     
 
-		<%@include file="newMemberForm.jsp"%>
+		<%@include file="forms/newMemberForm.jsp"%>
 
 	</body>
 </html>

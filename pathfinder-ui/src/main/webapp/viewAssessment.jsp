@@ -69,7 +69,7 @@
 					//httpGetObject(Utils.SERVER+"/api/pathfinder/customers/"+customerId, function(customer){
 					//	// ### Populate the header with the Customer Name
 					//	//document.getElementById("customerName").innerHTML=customer.CustomerName;
-					//	//document.getElementById("breadcrumb1").innerHTML="<a href='assessments-v2.jsp?customerId="+customer.CustomerId+"'>"+customer.CustomerName+"</a>";
+					//	//document.getElementById("breadcrumb1").innerHTML="<a href='assessments.jsp?customerId="+customer.CustomerId+"'>"+customer.CustomerName+"</a>";
 					//	
 				  //  if (undefined!=setBreadcrumbs){
 				  //    setBreadcrumbs("assessments", customer);
@@ -401,7 +401,7 @@ function onClickHandlers(myChart) {
 										    // wait for the post response before redirecting or else the post will be cancelled
 										    console.log("Callback::after post: response= "+response);
 										    // TODO: this would be much nicer if the server provided a 302 so we could use a submit rather than an artificial wait
-										    //window.location.href = "assessments-v2.jsp?customerId="+customerId;
+										    //window.location.href = "assessments.jsp?customerId="+customerId;
 										  };
 										  
 										  console.log("POSTING: "+JSON.stringify(data));
@@ -416,7 +416,7 @@ function onClickHandlers(myChart) {
 											  //console.log("PostWait::status = "+xhr.responseText);
 											  if (xhr.status==200){
 											    console.log("PostWait::http 200 returned ok, redirecting...");
-											  	window.location.href = "assessments-v2.jsp?customerId="+customerId;
+											  	window.location.href = "assessments.jsp?customerId="+customerId;
 											  }
 											};
 										}
