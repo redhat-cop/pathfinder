@@ -19,7 +19,7 @@ Utils = {
 //  SERVER: "http://localhost:8080", 
 //  SERVER: "http://pathtest-pathfinder.6923.rh-us-east-1.openshiftapps.com",
 //  SERVER: "${pathfinderUrl}",
-  SERVER: "<%=Controller.getProperty("PATHFINDER_SERVER")%>",
+  SERVER: "<%=null!=Controller.getProperty("PATHFINDER_SELF")?Controller.getProperty("PATHFINDER_SELF"):Controller.getProperty("PATHFINDER_SERVER")%>",
   
   chartColors: {
   	"UNKNOWN": "#808080",

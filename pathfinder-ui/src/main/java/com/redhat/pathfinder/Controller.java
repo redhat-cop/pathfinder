@@ -3,24 +3,32 @@ package com.redhat.pathfinder;
 import static io.restassured.RestAssured.given;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
+import javax.net.ssl.HttpsURLConnection;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.bson.Document;
@@ -36,8 +44,7 @@ import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
 
-import groovy.lang.Tuple2;
-import io.restassured.specification.RequestSpecification;
+import io.restassured.http.Header;
 
 
 @Path("/pathfinder/")
@@ -124,6 +131,130 @@ public class Controller{
     
     c.close();
     return null;
+  }
+  
+  @GET
+  @Path("{path:.+}")
+  public Response getProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+  	
+  	// Uncomment to add auth to querystring instead
+//	proxyUrl+=(proxyUrl.contains("?")?"&":"?")+"_t="+request.getParameter("_t");
+  	
+  	io.restassured.response.Response resp = given()
+  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+        .get(proxyUrl);
+  	
+  	printRequestResponseInfo(request, proxyUrl, null, resp);
+  	
+  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+  	for(Header h:resp.getHeaders())
+  		rBuilder.header(h.getName(), h.getValue());
+  	return rBuilder.entity(resp.getBody().asString()).build();
+  }
+  
+  
+  @POST
+  @Path("{path:.+}")
+  public Response postProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+  	String body=IOUtils.toString(request.getInputStream());
+  	
+  	io.restassured.response.Response resp = given()
+  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+  			.body(body)
+        .post(proxyUrl);
+  	
+  	printRequestResponseInfo(request, proxyUrl, body, resp);
+  	
+  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+  	for(Header h:resp.getHeaders())
+  		rBuilder.header(h.getName(), h.getValue());
+  	return rBuilder.entity(resp.getBody().asString()).build();
+  }
+  
+  @DELETE
+  @Path("{path:.+}")
+  public Response deleteProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+  	String body=IOUtils.toString(request.getInputStream());
+  	
+  	Map<String, String> headers=new HashMap<>();
+  	for(Object key:Collections.list(request.getHeaderNames())){
+  		headers.put((String)key, request.getHeader((String)key));
+  		System.out.println("Browser->UI::request.header('"+key+"')="+request.getHeader((String)key));
+  	}
+  	headers.put("Authorization", request.getParameter("_t"));
+  	headers.remove("Pragma");
+  	headers.remove("Cache-Control");
+  	headers.remove("Cookie");
+  	headers.remove("Host");
+  	headers.remove("Content-Length");
+  	headers.put("Host", "localhost:8080");
+  	for(Entry<String, String> e:headers.entrySet()){
+  		System.out.println("UI->Server::request.header('"+e.getKey()+"')="+request.getHeader((String)e.getKey()));
+  	}
+  	
+  	URL url = new URL(proxyUrl);
+  	HttpURLConnection httpCon;
+  	if (proxyUrl.startsWith("https://")){
+  		httpCon = (HttpsURLConnection) url.openConnection();
+  	}else{
+  		httpCon = (HttpURLConnection) url.openConnection();
+  	}
+  	httpCon.setDoInput(true); // so we can send a batch list of id's to delete
+  	httpCon.setDoOutput(true);
+  	for(Entry<String, String> e:headers.entrySet())
+  		httpCon.setRequestProperty(e.getKey(), e.getValue());
+  	httpCon.setRequestMethod("DELETE");
+  	httpCon.connect();
+  	httpCon.getOutputStream().write(body.getBytes());
+  	
+  	String respAsString=IOUtils.toString(httpCon.getInputStream());
+  	
+//  	System.out.println("respCode="+httpCon.getResponseCode());
+//  	System.out.println("respAsString="+respAsString);
+  	
+  	// Not sure why, but restassured's DELETE seems not to work with a payload
+//  	io.restassured.response.Response resp = given()
+////  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+////  			.headers(new MapBuilder<String, String>() /*toMapBuilder(request)*/.put("Authorization", request.getParameter("_t")).build())
+////  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+////  			.header("Content-Type", "application/text")
+//  			.headers(headers)
+//  			.body(body)
+//        .post(proxyUrl);
+  	
+//  	printRequestResponseInfo(request, proxyUrl, body, resp);
+  	
+  	return Response.status(httpCon.getResponseCode()).entity(respAsString).build();
+  	
+//  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+//  	for(Header h:resp.getHeaders())
+//  		rBuilder.header(h.getName(), h.getValue());
+//  	return rBuilder.entity(resp.getBody().asString()).build();
+  }
+  
+  private void printRequestResponseInfo(HttpServletRequest request, String proxyUrl, String body, io.restassured.response.Response resp) throws IOException{
+  	System.out.println("Proxy:: "+request.getMethod()+":: "+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+""+request.getRequestURI() +" => "+ proxyUrl +" (status="+resp.getStatusCode()+")");
+  	System.out.println("Proxy:: "+request.getMethod()+":: Headers:");
+  	for (Object key : Collections.list(request.getHeaderNames()))
+  	  System.out.println("Proxy:: "+request.getMethod()+"::   - "+key+"="+request.getHeader((String)key));
+  	
+  	for(Header header:resp.getHeaders().asList())
+  		System.out.println("Proxy:: resp:: "+header);
+  	
+	  if (null!=body) System.out.println("Proxy:: "+request.getMethod()+":: Body = "+body);
+	  System.out.println("Proxy:: "+request.getMethod()+":: Response String = "+resp.getBody().asString());
+  }
+  
+  private MapBuilder<String,String> toMapBuilder(HttpServletRequest request){
+  	MapBuilder<String,String> result=new MapBuilder<>();
+  	for (Object key : Collections.list(request.getHeaderNames()))
+  		if (!"Content-Length".equals(key))// && !"Origin".equals(key))
+  			result.put((String)key, request.getHeader((String)key));
+  	
+  	return result;
   }
   
   @GET
