@@ -143,7 +143,7 @@ objects:
               -Dspring.cloud.kubernetes.secrets.name=mongodb -Dspring.cloud.kubernetes.secrets.paths=/tmp/secrets
           - name: JAVA_ENABLE_DEBUG
             value: "false"
-          image: pathfinder-server:latest
+          image: 172.30.1.1:5000/pathfinder/pathfinder-server:latest
           imagePullPolicy: Always
           name: pathfinder-server
           ports:
@@ -283,7 +283,7 @@ objects:
             value: xfnfyTKW
           - name: PATHFINDER_SERVER
             value: http://pathfinder-server:8080
-          image: pathfinder-ui:latest
+          image: 172.30.1.1:5000/pathfinder/pathfinder-ui:latest
           imagePullPolicy: Always
           name: pathfinder-ui
           ports:
