@@ -74,7 +74,8 @@ objects:
         kind: DockerImage
         name: quay.io/pathfinder/pathfinder-server
       generation: null
-      importPolicy: {}
+      importPolicy:
+        scheduled: true
       name: latest
       referencePolicy:
         type: ""
@@ -97,7 +98,8 @@ objects:
         kind: DockerImage
         name: quay.io/pathfinder/pathfinder-ui
       generation: null
-      importPolicy: {}
+      importPolicy:
+        scheduled: true
       name: latest
       referencePolicy:
         type: ""
