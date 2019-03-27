@@ -57,13 +57,13 @@ public class Controller{
     	if (null!=System.getProperty("PATHFINDER_SERVER")) result=System.getProperty("PATHFINDER_SERVER");
     	if (null!=System.getenv(name)) result=System.getenv(name);
     	if (null!=result) {
-    		System.out.println("Request for System.getenv("+name+")='"+result+"'");
+//    		System.out.println("Request for System.getenv("+name+")='"+result+"'");
     		return result;
     	}
-        System.out.println("DEFAULTING SERVER TO: 'http://localhost:8080' because no environment variable '"+name+"' was found");
-        return "http://localhost:8080";
+      System.out.println("DEFAULTING SERVER TO: 'http://localhost:8080' because no environment variable '"+name+"' was found");
+      return "http://localhost:8080";
     }
-    System.out.println("Request for System.getenv("+name+")='"+System.getenv(name)+"'");
+//    System.out.println("Request for System.getenv("+name+")='"+System.getenv(name)+"'");
     
     return System.getenv(name);
   }
