@@ -1,22 +1,39 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
-<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-	version="2.5">
-
-<!-- 
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+	<!-- 
 	<context-param>
 		<param-name>resteasy.scan</param-name>
 		<param-value>false</param-value>
 	</context-param>
  -->
-    <context-param>
+	<servlet>
+		<servlet-name>pathfinder-proxy</servlet-name>
+		<servlet-class>org.mitre.dsmiley.httpproxy.ProxyServlet</servlet-class>
+		<init-param>
+			<param-name>targetUri</param-name>
+			<param-value>http://pathfinder-server:8080/api</param-value>
+		</init-param>
+		<init-param>
+			<param-name>log</param-name>
+			<param-value>true</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>pathfinder-proxy</servlet-name>
+		<url-pattern>/api/*</url-pattern>
+	</servlet-mapping>
+
+
+
+	<context-param>
         <param-name>resteasy.resources</param-name>
         <param-value>com.redhat.pathfinder.Controller</param-value>
     </context-param>
 
 	<context-param>
 		<param-name>resteasy.servlet.mapping.prefix</param-name>
-		<param-value>/api</param-value>
+		<param-value>/local</param-value>
 	</context-param>
 
 	<listener>
@@ -25,14 +42,13 @@
 	<servlet>
 		<servlet-name>resteasy</servlet-name>
 		<servlet-class>org.jboss.resteasy.plugins.server.servlet.HttpServletDispatcher</servlet-class>
-        <load-on-startup>1</load-on-startup>
+        <load-on-startup>2</load-on-startup>
 	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>resteasy</servlet-name>
-		<url-pattern>/api/*</url-pattern>
+		<url-pattern>/local/*</url-pattern>
 	</servlet-mapping>
-
 	<session-config>
 		<session-timeout>60</session-timeout>
 	</session-config>
