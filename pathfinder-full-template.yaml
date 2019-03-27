@@ -285,6 +285,8 @@ objects:
             value: xfnfyTKW
           - name: PATHFINDER_SERVER
             value: http://pathfinder-server:8080
+          - name: PATHFINDER_SELF
+            value: .
           image: 172.30.1.1:5000/pathfinder/pathfinder-ui:latest
           imagePullPolicy: Always
           name: pathfinder-ui
