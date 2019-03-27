@@ -289,7 +289,7 @@ var json = {
             }
         ]
     }],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/pathfinder-ui/assessments-v2.jsp?customerId={CUSTID}'>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/pathfinder-ui/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page."
 };
 
 window.survey = new Survey.Model(json);
