@@ -315,7 +315,7 @@ survey
             xmlhttp.send(payload);
 
             if (undefined!=$('#surveyCompleteLink')){
-            	$('#surveyCompleteLink').attr('href', '/pathfinder-ui/assessments-v2.jsp?customerId='+Utils.getParameterByName("customerId"));
+            	$('#surveyCompleteLink').attr('href', '/pathfinder-ui/assessments.jsp?customerId='+Utils.getParameterByName("customerId"));
             }
     });
 

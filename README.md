@@ -10,19 +10,17 @@ A workload assessment tool used to determine an applications suitability for run
 
 The following commands will create a new project and deploy a mongo, pathfinder-server and pathfinder-ui instance into your environment
 ```
+wget https://raw.githubusercontent.com/redhat-cop/pathfinder/master/pathfinder-full-template.yaml
+
 oc new-project <your-new-project-name>
 oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
-
-wget https://raw.githubusercontent.com/redhat-cop/pathfinder/master/pathfinder-full-template.yaml
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
 
 
-
-
 # How to contribute code
 
-* In Github, fork the [https://github.com/redhat-cop/pathfinder](pathfinder) or [https://github.com/redhat-cop/pathfinder-ui](pathfinder-ui) project into your github account.
+* In Github, fork the [https://github.com/redhat-cop/pathfinder project into your github account.
 * Clone your forked project to your local machine
 * Make changes, commit and push to your forked Github repository
 * In Github, click the "Create Pull Request" and select your changes you want to contribute to the core pathfinder/pathfinder-ui project
