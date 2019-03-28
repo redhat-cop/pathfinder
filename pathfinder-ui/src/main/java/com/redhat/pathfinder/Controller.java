@@ -1,54 +1,41 @@
 package com.redhat.pathfinder;
 
-import static io.restassured.RestAssured.given;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
-
-import org.apache.commons.io.IOUtils;
-import org.bson.Document;
-import org.bson.codecs.BsonTypeClassMap;
-import org.bson.codecs.DocumentCodec;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-
 import com.google.common.base.Splitter;
 import com.google.common.collect.Lists;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoCredential;
 import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import io.restassured.http.Header;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.*;
+
+import static io.restassured.RestAssured.given;
 
 
 @Path("/pathfinder/")
 public class Controller{
+
+  private static final Logger log = LoggerFactory.getLogger(Controller.class);
   
   public static String getProperty(String name) throws IOException{
     if (name.equals("PATHFINDER_SERVER")) {
@@ -57,13 +44,11 @@ public class Controller{
     	if (null!=System.getProperty("PATHFINDER_SERVER")) result=System.getProperty("PATHFINDER_SERVER");
     	if (null!=System.getenv(name)) result=System.getenv(name);
     	if (null!=result) {
-//    		System.out.println("Request for System.getenv("+name+")='"+result+"'");
     		return result;
     	}
       System.out.println("DEFAULTING SERVER TO: 'http://localhost:8080' because no environment variable '"+name+"' was found");
       return "http://localhost:8080";
     }
-//    System.out.println("Request for System.getenv("+name+")='"+System.getenv(name)+"'");
     
     return System.getenv(name);
   }
@@ -133,84 +118,84 @@ public class Controller{
     return null;
   }
   
-  @GET
-  @Path("{path:.+}")
-  public Response getProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
-  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+//   @GET
+//   @Path("{path:.+}")
+//   public Response getProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+//   	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
   	
-  	// Uncomment to add auth to querystring instead
-//	proxyUrl+=(proxyUrl.contains("?")?"&":"?")+"_t="+request.getParameter("_t");
+//   	// Uncomment to add auth to querystring instead
+// //	proxyUrl+=(proxyUrl.contains("?")?"&":"?")+"_t="+request.getParameter("_t");
   	
-  	io.restassured.response.Response resp = given()
-  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
-        .get(proxyUrl);
+//   	io.restassured.response.Response resp = given()
+//   			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+//         .get(proxyUrl);
   	
-  	printRequestResponseInfo(request, proxyUrl, null, resp);
+//   	printRequestResponseInfo(request, proxyUrl, null, resp);
   	
-  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
-  	for(Header h:resp.getHeaders())
-  		rBuilder.header(h.getName(), h.getValue());
-  	return rBuilder.entity(resp.getBody().asString()).build();
-  }
+//   	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+//   	for(Header h:resp.getHeaders())
+//   		rBuilder.header(h.getName(), h.getValue());
+//   	return rBuilder.entity(resp.getBody().asString()).build();
+//   }
   
   
-  @POST
-  @Path("{path:.+}")
-  public Response postProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
-  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
-  	String body=IOUtils.toString(request.getInputStream());
+  // @POST
+  // @Path("{path:.+}")
+  // public Response postProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+  // 	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+  // 	String body=IOUtils.toString(request.getInputStream());
   	
-  	io.restassured.response.Response resp = given()
-  			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
-  			.body(body)
-        .post(proxyUrl);
+  // 	io.restassured.response.Response resp = given()
+  // 			.headers(toMapBuilder(request).put("Authorization", request.getParameter("_t")).build())
+  // 			.body(body)
+  //       .post(proxyUrl);
   	
-  	printRequestResponseInfo(request, proxyUrl, body, resp);
+  // 	printRequestResponseInfo(request, proxyUrl, body, resp);
   	
-  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
-  	for(Header h:resp.getHeaders())
-  		rBuilder.header(h.getName(), h.getValue());
-  	return rBuilder.entity(resp.getBody().asString()).build();
-  }
+  // 	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+  // 	for(Header h:resp.getHeaders())
+  // 		rBuilder.header(h.getName(), h.getValue());
+  // 	return rBuilder.entity(resp.getBody().asString()).build();
+  // }
   
-  @DELETE
-  @Path("{path:.+}")
-  public Response deleteProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
-  	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
-  	String body=IOUtils.toString(request.getInputStream());
+  // @DELETE
+  // @Path("{path:.+}")
+  // public Response deleteProxy(@PathParam("path") String path, @Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
+  // 	String proxyUrl=getProperty("PATHFINDER_SERVER")+request.getRequestURI().replaceAll(request.getContextPath(), "");
+  // 	String body=IOUtils.toString(request.getInputStream());
   	
-  	Map<String, String> headers=new HashMap<>();
-  	for(Object key:Collections.list(request.getHeaderNames())){
-  		headers.put((String)key, request.getHeader((String)key));
-  		System.out.println("Browser->UI::request.header('"+key+"')="+request.getHeader((String)key));
-  	}
-  	headers.put("Authorization", request.getParameter("_t"));
-  	headers.remove("Pragma");
-  	headers.remove("Cache-Control");
-  	headers.remove("Cookie");
-  	headers.remove("Host");
-  	headers.remove("Content-Length");
-  	headers.put("Host", "localhost:8080");
-  	for(Entry<String, String> e:headers.entrySet()){
-  		System.out.println("UI->Server::request.header('"+e.getKey()+"')="+request.getHeader((String)e.getKey()));
-  	}
+  // 	Map<String, String> headers=new HashMap<>();
+  // 	for(Object key:Collections.list(request.getHeaderNames())){
+  // 		headers.put((String)key, request.getHeader((String)key));
+  // 		System.out.println("Browser->UI::request.header('"+key+"')="+request.getHeader((String)key));
+  // 	}
+  // 	headers.put("Authorization", request.getParameter("_t"));
+  // 	headers.remove("Pragma");
+  // 	headers.remove("Cache-Control");
+  // 	headers.remove("Cookie");
+  // 	headers.remove("Host");
+  // 	headers.remove("Content-Length");
+  // 	headers.put("Host", "localhost:8080");
+  // 	for(Entry<String, String> e:headers.entrySet()){
+  // 		System.out.println("UI->Server::request.header('"+e.getKey()+"')="+request.getHeader((String)e.getKey()));
+  // 	}
   	
-  	URL url = new URL(proxyUrl);
-  	HttpURLConnection httpCon;
-  	if (proxyUrl.startsWith("https://")){
-  		httpCon = (HttpsURLConnection) url.openConnection();
-  	}else{
-  		httpCon = (HttpURLConnection) url.openConnection();
-  	}
-  	httpCon.setDoInput(true); // so we can send a batch list of id's to delete
-  	httpCon.setDoOutput(true);
-  	for(Entry<String, String> e:headers.entrySet())
-  		httpCon.setRequestProperty(e.getKey(), e.getValue());
-  	httpCon.setRequestMethod("DELETE");
-  	httpCon.connect();
-  	httpCon.getOutputStream().write(body.getBytes());
+  // 	URL url = new URL(proxyUrl);
+  // 	HttpURLConnection httpCon;
+  // 	if (proxyUrl.startsWith("https://")){
+  // 		httpCon = (HttpsURLConnection) url.openConnection();
+  // 	}else{
+  // 		httpCon = (HttpURLConnection) url.openConnection();
+  // 	}
+  // 	httpCon.setDoInput(true); // so we can send a batch list of id's to delete
+  // 	httpCon.setDoOutput(true);
+  // 	for(Entry<String, String> e:headers.entrySet())
+  // 		httpCon.setRequestProperty(e.getKey(), e.getValue());
+  // 	httpCon.setRequestMethod("DELETE");
+  // 	httpCon.connect();
+  // 	httpCon.getOutputStream().write(body.getBytes());
   	
-  	String respAsString=IOUtils.toString(httpCon.getInputStream());
+  // 	String respAsString=IOUtils.toString(httpCon.getInputStream());
   	
 //  	System.out.println("respCode="+httpCon.getResponseCode());
 //  	System.out.println("respAsString="+respAsString);
@@ -227,26 +212,26 @@ public class Controller{
   	
 //  	printRequestResponseInfo(request, proxyUrl, body, resp);
   	
-  	return Response.status(httpCon.getResponseCode()).entity(respAsString).build();
+//   	return Response.status(httpCon.getResponseCode()).entity(respAsString).build();
   	
-//  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
-//  	for(Header h:resp.getHeaders())
-//  		rBuilder.header(h.getName(), h.getValue());
-//  	return rBuilder.entity(resp.getBody().asString()).build();
-  }
+// //  	ResponseBuilder rBuilder=Response.status(resp.getStatusCode());
+// //  	for(Header h:resp.getHeaders())
+// //  		rBuilder.header(h.getName(), h.getValue());
+// //  	return rBuilder.entity(resp.getBody().asString()).build();
+//   }
   
-  private void printRequestResponseInfo(HttpServletRequest request, String proxyUrl, String body, io.restassured.response.Response resp) throws IOException{
-  	System.out.println("Proxy:: "+request.getMethod()+":: "+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+""+request.getRequestURI() +" => "+ proxyUrl +" (status="+resp.getStatusCode()+")");
-  	System.out.println("Proxy:: "+request.getMethod()+":: Headers:");
-  	for (Object key : Collections.list(request.getHeaderNames()))
-  	  System.out.println("Proxy:: "+request.getMethod()+"::   - "+key+"="+request.getHeader((String)key));
+//   private void printRequestResponseInfo(HttpServletRequest request, String proxyUrl, String body, io.restassured.response.Response resp) throws IOException{
+//   	System.out.println("Proxy:: "+request.getMethod()+":: "+request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+""+request.getRequestURI() +" => "+ proxyUrl +" (status="+resp.getStatusCode()+")");
+//   	System.out.println("Proxy:: "+request.getMethod()+":: Headers:");
+//   	for (Object key : Collections.list(request.getHeaderNames()))
+//   	  System.out.println("Proxy:: "+request.getMethod()+"::   - "+key+"="+request.getHeader((String)key));
   	
-  	for(Header header:resp.getHeaders().asList())
-  		System.out.println("Proxy:: resp:: "+header);
+//   	for(Header header:resp.getHeaders().asList())
+//   		System.out.println("Proxy:: resp:: "+header);
   	
-	  if (null!=body) System.out.println("Proxy:: "+request.getMethod()+":: Body = "+body);
-	  System.out.println("Proxy:: "+request.getMethod()+":: Response String = "+resp.getBody().asString());
-  }
+// 	  if (null!=body) System.out.println("Proxy:: "+request.getMethod()+":: Body = "+body);
+// 	  System.out.println("Proxy:: "+request.getMethod()+":: Response String = "+resp.getBody().asString());
+//   }
   
   private MapBuilder<String,String> toMapBuilder(HttpServletRequest request){
   	MapBuilder<String,String> result=new MapBuilder<>();
@@ -268,11 +253,6 @@ public class Controller{
   	return input.replaceAll("password=.+&", "password=****&");
   }
   
-  void log(String s){
-  	System.out.println(s);
-  	System.err.println(s);
-  }
-  
   @POST
   @Path("/login")
   public Response login(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
@@ -280,28 +260,25 @@ public class Controller{
     System.out.println("Controller::login() called");
     
     String uri=IOUtils.toString(request.getInputStream());
-    
-//    log("Controller::login() payload = "+maskPasswords(uri)); //username=&password=
-    
+       
     final Map<String, String> keyValues=Splitter.on('&').trimResults().withKeyValueSeparator("=").split(uri);
     
-//    System.out.println("Controller::login():: username="+keyValues.get("username") +", password="+keyValues.get("password"));
-    log("Controller::login():: username="+keyValues.get("username") +", password=****");
+    log.info("Controller::login():: username="+keyValues.get("username") +", password=****");
 
-    log("Controller::login():: Auth url (POST) = "+getProperty("PATHFINDER_SERVER")+"/auth");
+    log.info("Controller::login():: Auth url (POST) = "+getProperty("PATHFINDER_SERVER")+"/auth");
     
     io.restassured.response.Response loginResp = given()
         .body("{\"username\":\""+keyValues.get("username")+"\",\"password\":\""+keyValues.get("password")+"\"}")
         .post(getProperty("PATHFINDER_SERVER")+"/auth");
     
     if (loginResp.statusCode()!=200){
-    	log("Controller:login():: ERROR1 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
-    	log("Controller:login():: 3 OUT/ERROR loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
+    	log.info("Controller:login():: ERROR1 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
+    	log.info("Controller:login():: 3 OUT/ERROR loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
       String error="Username and/or password is unknown or incorrect"; // would grab the text from server side but spring wraps some debug info in there so until we can strip that we cant give details of failure
       return Response.status(302).location(new URI("../index.jsp?error="+URLEncoder.encode(error, "UTF-8"))).build();
     }
     
-    log("Controller:login():: 2 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
+    log.info("Controller:login():: 2 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
     mjson.Json jsonResp=mjson.Json.read(loginResp.asString());
     String jwtToken=jsonResp.at("token").asString();
     String username=jsonResp.at("username").asString();
