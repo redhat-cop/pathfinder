@@ -50,7 +50,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "LEADTIME",
-                "title": "How long does it take from when code is committed to it being deployed to production?",
+                "title": "How long does it take from when code is committed to it being deployed to a stage that is production ready?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|More than six months", "2-AMBER|Between one month and six months", "3-GREEN|Between one week and one month", "4-GREEN|Between one day and one week", "5-GREEN|Less than one day"]
@@ -75,7 +75,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "COMPLIANCE",
-                "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPPA etc. Does the application have any licensing requirements e.g. per core licensing",
+                "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPPA etc. Does the application have any licensing requirements? e.g. per core licensing",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|High compliance requirements - both Legal and licensing", "2-RED|Licensing compliance - licensing servers", "3-AMBER|Legal compliance - distinct hardware, isolated clusters, compliance certification","4-GREEN| None"]
@@ -83,10 +83,10 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "ARCHTYPE",
-                "title": "Is the application architecture suitable for containerisation?",
+                "title": "Which statement best describes the application architecture?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-AMBER|Massive Monolith (high memory, high CPU) singleton deployment", "2-AMBER|Massive Monolith (high memory, high CPU) , non singleton, difficult to scale", "3-AMBER|Complex Monolith -  strict runtime dependency startup order, non resilient architecture", "4-GREEN|Modern resilient monolith e.g. retries, circuit breaker etc", "5-GREEN|Independently deployable services"]
+                "choices": ["0-UNKNOWN|Unknown","1-AMBER|Massive Monolith (high memory, high CPU) singleton deployment, vertical scale only", "2-AMBER|Massive Monolith (high memory, high CPU) , non singleton, complex to scale horizonatally", "3-AMBER|Complex Monolith -  strict runtime dependency startup order, non resilient architecture", "4-GREEN|Modern resilient monolith e.g. retries, circuit breaker etc", "5-GREEN|Independently deployable services"]
             }
         ]
     }, {
@@ -95,7 +95,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPSHW",
-                "title": "Does the application require specific hardware features to run?",
+                "title": "Does the application require specific hardware capabilities to run?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Non X86 CPU requirements", "2-RED|Custom or legacy hardware required", "3-GREEN|GPU, specific worker node hardware requirements", "4-GREEN|X86 CPU architecture based"]
@@ -111,7 +111,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPS3RD",
-                "title": "Are 3rd party components supported in containers?",
+                "title": "Are 3rd party/Vendor components supported in containers?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Not recommended to run component in containers", "2-RED|Component not supported by vendor when running in a container", "3-AMBER|Supported but with restricted functionality/untested", "4-AMBER|Supported but relies on self built images", "5-GREEN|Fully vendor supported, certified images available"]
