@@ -234,7 +234,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "PROFILE",
-                "title": "What does the runtime profile of the application look like ?",
+                "title": "What best describes the applications runtime characteristics",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Deterministic predictable real time execution requirements", "2-AMBER|Latency sensitive applications e.g. voice, HFT", "3-AMBER|High burstable memory/cpu needs", "4-GREEN|Controlled burstable memory/cpu needs", "5-GREEN|Predictable production profile"]
