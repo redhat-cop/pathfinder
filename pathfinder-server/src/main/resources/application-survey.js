@@ -194,7 +194,7 @@ var json = {
                 "title": "Does the application have any unusual concerns around service discovery?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|Uses proprietary discovery technologies that are not k8s suitable e.g. hardcoded ip addresses, custom cluster manager", "2-RED|Application requires restart on cluster changes to pickup new service instances", "3-AMBER|Service discovery compatible with k8s e.g. hashicorp consul, netflix eureka", "4-GREEN|Standard k8s DNS name resolution, application resilient to cluster changes "]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|Uses proprietary discovery technologies that are not kubernetes suitable e.g. hardcoded ip addresses, custom cluster manager", "2-RED|Application requires restart on cluster changes to pickup new service instances", "3-AMBER|Service discovery compatible with kubernetes e.g. hashicorp consul, netflix eureka", "4-GREEN|Standard kubernetes DNS name resolution, application resilient to cluster changes "]
             },
             {
                 "type": "radiogroup",
@@ -202,7 +202,7 @@ var json = {
                 "title": "How is the application clustered ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|Manually configured clustering mechanism e.g. static clusters", "2-AMBER|Application clustering mostly provided by external off-PAAS cluster manager", "3-GREEN|Application clustering mostly provided by application runtime platform using a k8s suitable mechanism", "5-GREEN| No application clustering not required"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|Manually configured clustering mechanism e.g. static clusters", "2-AMBER|Application clustering mostly provided by external off-PAAS cluster manager", "3-GREEN|Application clustering mostly provided by application runtime platform using a kubernetes suitable mechanism", "5-GREEN| No application clustering not required"]
             }
         ]
     }, {
@@ -221,7 +221,7 @@ var json = {
                 "title": "Does the application provide metrics ?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-AMBER|No metrics exposed", "2-AMBER|Internal metrics but not exposed", "3-AMBER|Metrics exposed via binary protocols e.g. SNMP", "4-GREEN|3rd party metrics solution e.g. dynatrace, app-dynamics etc", "5-GREEN|Prometheus support, native k8s metrics, integration with autoscalers"]
+                "choices": ["0-UNKNOWN|Unknown","1-AMBER|No metrics exposed", "2-AMBER|Internal metrics but not exposed", "3-AMBER|Metrics exposed via binary protocols e.g. SNMP", "4-GREEN|3rd party metrics solution e.g. dynatrace, app-dynamics etc", "5-GREEN|Prometheus support, native kubernetes metrics, integration with autoscalers"]
             },
             {
                 "type": "radiogroup",
