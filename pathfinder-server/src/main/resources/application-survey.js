@@ -75,7 +75,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "COMPLIANCE",
-                "title": "Does the application have any legal compliance requirements e.g. PCI, HIPPA etc. Does the application have any licensing requirements e.g. per core licensing",
+                "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPPA etc. Does the application have any licensing requirements e.g. per core licensing",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|High compliance requirements - both Legal and licensing", "2-RED|Licensing compliance - licensing servers", "3-AMBER|Legal compliance - distinct hardware, isolated clusters, compliance certification","4-GREEN| None"]
@@ -103,7 +103,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPSOS",
-                "title": "What operating system does the application run on",
+                "title": "What operating system does the application require?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Non-supported OS - OSX,  AIX, UNIX, SOLARIS", "2-RED|Linux with custom kernel drivers or specific kernel version", "3-AMBER|Linux with custom capabilities e.g. setcomp", "4-AMBER|Standard Linux - root access required", "5-GREEN|Standard Linux - no root access required"]
@@ -120,7 +120,7 @@ var json = {
                 "type": "radiogroup",
                 "name": "DEPSIN",
                 "title": "Dependencies - (Incoming/Northbound)",
-                "comment": "How dependent are other systems on this application and how easy are they to change",
+                "comment": "How dependent are other systems on this application and how easy are they to change?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Difficult/Expensive to change dependent systems - legacy, 3rd party, external", "2-AMBER|Many dependent systems, possible to change but expensive and time consuming", "3-GREEN|Many dependent systems, possible to change as they're internally managed", "4-GREEN|Internal dependencies only", "5-GREEN|No dependent systems"]
@@ -142,7 +142,7 @@ var json = {
                 "type": "radiogroup",
                 "name": "DEPSOUT",
                 "title": "Dependencies - (Outgoing/Southbound)",
-                "comment": "How dependent is this application on other systems",
+                "comment": "How dependent is this application on other systems?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Availability only verified when processing traffic", "2-AMBER|Complex strict startup order required", "3-AMBER|Application not ready until dependencies are available ", "4-GREEN|Limited processing available if dependencies are unavailable", "5-GREEN|No dependencies"]
@@ -166,7 +166,7 @@ var json = {
         "questions": [{
                 "type": "radiogroup",
                 "name": "RESILIENCY",
-                "title": "How resilient is the application and how well does it recover from outages/restarts",
+                "title": "How resilient is the application and how well does it recover from outages/restarts?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Application cannot be restarted cleanly and requires manual intervention", "2-RED|Application errors when southbound dependencies are unavailable and doesn't recover automatically", "3-AMBER|Application functionality limited when dependency is unavailable but recovers once dependency is available", "4-GREEN|Application employs resilient architecture patterns e.g. circuit breaker, retries etc ", "5-GREEN|Chaos Engineering principals followed, application containers instances randomly terminated to test resiliency"]
@@ -174,8 +174,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "COMMS",
-                "title": "Communication",
-                "comment": "How does the external world communicate with the application",
+                "title": "How does the external world communicate with the application?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Non-IP protocols e.g. serial, IPX, AppleTalk", "2-RED|IP based - hostname/ip encapsulated in payload", "3-AMBER|TCP/UDP Traffic without host addressing e.g. SSH ", "4-GREEN|TCP/UDP encapsulated in SSL with SNI header", "5-GREEN|Web traffic HTTP/HTTPS"]
@@ -199,7 +198,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "CLUSTER",
-                "title": "How is the application clustered ?",
+                "title": "How is the application clustered?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Manually configured clustering mechanism e.g. static clusters", "2-AMBER|Application clustering mostly provided by external off-PAAS cluster manager", "3-GREEN|Application clustering mostly provided by application runtime platform using a kubernetes suitable mechanism", "5-GREEN| No application clustering not required"]
@@ -218,7 +217,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "METRICS",
-                "title": "Does the application provide metrics ?",
+                "title": "Does the application provide metrics?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-AMBER|No metrics exposed", "2-AMBER|Internal metrics but not exposed", "3-AMBER|Metrics exposed via binary protocols e.g. SNMP", "4-GREEN|3rd party metrics solution e.g. dynatrace, app-dynamics etc", "5-GREEN|Prometheus support, native kubernetes metrics, integration with autoscalers"]
@@ -226,7 +225,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "HEALTH",
-                "title": "How easy is it to determine the application health and if it's ready to handle traffic",
+                "title": "How easy is it to determine the application health and if it's ready to handle traffic?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|No health or readyiness query functionality available", "2-RED|Custom watchdog process monitoring and managing the application", "3-AMBER|Basic application health requires semi-complex scripting", "4-GREEN|Scriptable liveness and readyiness probes", "5-GREEN|Probes execute synthetic transactions to verify application health"]
@@ -234,7 +233,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "PROFILE",
-                "title": "What best describes the applications runtime characteristics",
+                "title": "What best describes the applications runtime characteristics?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Deterministic predictable real time execution requirements", "2-AMBER|Latency sensitive applications e.g. voice, HFT", "3-AMBER|High burstable memory/cpu needs", "4-GREEN|Controlled burstable memory/cpu needs", "5-GREEN|Predictable production profile"]
@@ -253,7 +252,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "CONFIG",
-                "title": "How is the application configured ?",
+                "title": "How is the application configured?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface", "2-RED|Externally stored and accessed using specific environment key e.g. hostname, ip address", "3-AMBER|Multiple configuration files in multiple filesystem locations", "4-GREEN|Configuration baked into application and enabled via system property at runtime", "5-GREEN|Configuration loaded by application from container mounted files, environment variables"]
@@ -261,7 +260,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "SECURITY",
-                "title": "How does the application acquire security credentials/certificates",
+                "title": "How does the application acquire security credentials/certificates?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|HSM, hardware based encryption devices", "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance", "3-AMBER|Keys/Certs compiled into application", "4-GREEN|Certificates/Keys loaded via shared disk", "5-GREEN|Certificates/Keys loaded via files or vault integration","6-GREEN|None needed"]
@@ -269,7 +268,7 @@ var json = {
             {
                 "type": "radiogroup",
                 "name": "DEPLOY",
-                "title": "How is the application currently deployed",
+                "title": "How is the application currently deployed?",
                 "isRequired": true,
                 "colCount": 1,
                 "choices": ["0-UNKNOWN|Unknown","1-RED|Manual documented steps, user interface driven interaction", "2-RED|Manual documented steps, some basic automation", "3-AMBER|Simple automated deployment scripts", "4-AMBER|Automated deployment, but manual, complex, promotion through stages", "5-GREEN|Full CD Pipeline in place, promoting Applications through the stages;  B/G + Canary capable"]
