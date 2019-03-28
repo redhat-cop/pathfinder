@@ -169,7 +169,7 @@ var json = {
                 "title": "How resilient is the application and how well does it recover from outages/restarts?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|Application cannot be restarted cleanly and requires manual intervention", "2-RED|Application errors when southbound dependencies are unavailable and doesn't recover automatically", "3-AMBER|Application functionality limited when dependency is unavailable but recovers once dependency is available", "4-GREEN|Application employs resilient architecture patterns e.g. circuit breaker, retries etc ", "5-GREEN|Chaos Engineering principals followed, application containers instances randomly terminated to test resiliency"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|Application cannot be restarted cleanly and requires manual intervention", "2-RED|Application errors when southbound dependencies are unavailable and doesn't recover automatically", "3-AMBER|Application functionality limited when dependency is unavailable but recovers once dependency is available", "4-GREEN|Application employs resilient architecture patterns e.g. circuit breaker, retries etc ", "5-GREEN|Chaos Engineering principals followed, application containers randomly terminated to test resiliency"]
             },
             {
                 "type": "radiogroup",
@@ -201,7 +201,7 @@ var json = {
                 "title": "How is the application clustered?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|Manually configured clustering mechanism e.g. static clusters", "2-AMBER|Application clustering mostly provided by external off-PAAS cluster manager", "3-GREEN|Application clustering mostly provided by application runtime platform using a kubernetes suitable mechanism", "5-GREEN| No application clustering not required"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|Manually configured clustering mechanism e.g. static clusters", "2-AMBER|Application clustering mostly provided by external off-PAAS cluster manager", "3-GREEN|Application clustering mostly provided by application runtime platform using a kubernetes suitable mechanism", "5-GREEN|No application clustering required"]
             }
         ]
     }, {
@@ -220,7 +220,7 @@ var json = {
                 "title": "Does the application provide metrics?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-AMBER|No metrics exposed", "2-AMBER|Internal metrics but not exposed", "3-AMBER|Metrics exposed via binary protocols e.g. SNMP", "4-GREEN|3rd party metrics solution e.g. dynatrace, app-dynamics etc", "5-GREEN|Prometheus support, native kubernetes metrics, integration with autoscalers"]
+                "choices": ["0-UNKNOWN|Unknown","1-AMBER|No metrics exposed", "2-AMBER|Internal metrics but not exposed", "3-AMBER|Metrics exposed via binary protocols e.g. SNMP", "4-GREEN|3rd party metrics solution e.g. Dynatrace, AppDynamics etc", "5-GREEN|Prometheus support, native kubernetes metrics, integration with autoscalers"]
             },
             {
                 "type": "radiogroup",
@@ -255,7 +255,7 @@ var json = {
                 "title": "How is the application configured?",
                 "isRequired": true,
                 "colCount": 1,
-                "choices": ["0-UNKNOWN|Unknown","1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface", "2-RED|Externally stored and accessed using specific environment key e.g. hostname, ip address", "3-AMBER|Multiple configuration files in multiple filesystem locations", "4-GREEN|Configuration baked into application and enabled via system property at runtime", "5-GREEN|Configuration loaded by application from container mounted files, environment variables"]
+                "choices": ["0-UNKNOWN|Unknown","1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface", "2-RED|Externally stored and accessed using specific environment key e.g. hostname, ip address", "3-AMBER|Multiple configuration files in multiple filesystem locations", "4-AMBER|All environment configuration built into the application and enabled via system property at runtime", "5-GREEN|Configuration loaded by application from container mounted files, environment variables"]
             },
             {
                 "type": "radiogroup",
