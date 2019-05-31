@@ -114,7 +114,12 @@
 					<%}%>
 			</div>
 		</section>
-
-
+		<footer>
+			<div class="inner2">
+				<a href="https://www.openshift.com/" title="Powered by OpenShift Online">
+					<img alt="Powered by OpenShift Online" src="https://www.openshift.com/images/logos/powered_by_openshift.png">
+				  </a>
+				</div>
+		</footer>
 	</body>
 </html>
