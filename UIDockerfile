@@ -1,3 +1,3 @@
 FROM registry.access.redhat.com/jboss-webserver-3/webserver31-tomcat8-openshift
 MAINTAINER noconnor@redhat.com
-ADD pathfinder-ui/target/root.war /opt/webserver/webapps/root.war
+ADD pathfinder-ui/target/root.war /opt/webserver/webapps/ROOT.war
