@@ -16,7 +16,7 @@
 	</properties>
 
 	<build>
-		<finalName>root.war</finalName>
+		<finalName>root</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>

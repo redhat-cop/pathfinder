@@ -1,3 +1,5 @@
+
+
 var defaultThemeColors = Survey
     .StylesManager
     .ThemeColors["default"];

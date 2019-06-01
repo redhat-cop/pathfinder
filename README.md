@@ -16,7 +16,9 @@ oc new-project <your-new-project-name>
 oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
-
+# License
+The code is made available under the Apache License, Version 2.0
+The questions are made available under a Creative Commons Attribution-ShareAlike 4.0 International License.
 
 # How to contribute code
 
