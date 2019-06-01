@@ -239,9 +239,9 @@ objects:
       app: pathfinder-ui
       application: pathfinder-ui
       bundle: pathfinder
-    name: pathfinder-ui
+    name: app
   spec:
-    path: "/pathfinder-ui" 
+    path: "" 
     to:
       kind: Service
       name: pathfinder-ui
