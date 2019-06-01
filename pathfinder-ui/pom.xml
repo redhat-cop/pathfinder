@@ -16,7 +16,7 @@
 	</properties>
 
 	<build>
-		<finalName>${project.artifactId}</finalName>
+		<finalName>root.war</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
