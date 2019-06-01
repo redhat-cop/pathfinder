@@ -4,7 +4,6 @@ A workload assessment tool used to determine an applications suitability for run
 
 [![Build Status](https://travis-ci.org/redhat-cop/pathfinder.svg?branch=master)](https://travis-ci.org/redhat-cop/pathfinder) [![Docker Repository on Quay](https://quay.io/repository/pathfinder/pathfinder-server/status "Docker Repository on Quay")](https://quay.io/repository/pathfinder/pathfinder-server)
 
-[![Waffle.io - Kanban board &amp; card count](https://badge.waffle.io/redhat-cop/pathfinder.svg?columns=all)](https://waffle.io/redhat-cop/pathfinder)
 
 # Setup environment on OpenShift (incl. minishift)
 
@@ -18,6 +17,7 @@ oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
 # License
 The code is made available under the Apache License, Version 2.0
+
 The questions are made available under a Creative Commons Attribution-ShareAlike 4.0 International License.
 
 # How to contribute code
