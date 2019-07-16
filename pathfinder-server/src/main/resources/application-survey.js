@@ -354,11 +354,18 @@ survey
         d2.choicesByUrl.valueName = "Id";
         d2.choicesByUrl.titleName = "Name";
         d2.choicesByUrl.run();
+
 	  }
     });
 
 if (null!=results){
 	survey.data=results;
+
+	//Force the user to answer the dependencies question in the case of re-editing the survey
+    var d11 = survey.getQuestionByName('DEPSIN');
+    d11.value="";
+    var d21 = survey.getQuestionByName('DEPSOUT');
+    d21.value="";
 }
 
 $("#surveyElement").Survey({
