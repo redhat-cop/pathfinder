@@ -290,7 +290,7 @@ var json = {
             }
         ]
     }],
-    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/pathfinder-ui/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page."
+    completedHtml: "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page."
 };
 
 window.survey = new Survey.Model(json);
@@ -316,7 +316,7 @@ survey
             xmlhttp.send(payload);
 
             if (undefined!=$('#surveyCompleteLink')){
-            	$('#surveyCompleteLink').attr('href', '/pathfinder-ui/assessments.jsp?customerId='+Utils.getParameterByName("customerId"));
+            	$('#surveyCompleteLink').attr('href', '/assessments.jsp?customerId='+Utils.getParameterByName("customerId"));
             }
     });
 
