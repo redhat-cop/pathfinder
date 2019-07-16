@@ -644,8 +644,8 @@
 							<option>Gradient</option>
 						</select-->
 						<script>
-							var greyscale=true;
-							var dependencies=true;
+							var greyscale=false;
+							var dependencies=false;
 							var labels=false;
 							
 							function greyscaleToggle(t){
