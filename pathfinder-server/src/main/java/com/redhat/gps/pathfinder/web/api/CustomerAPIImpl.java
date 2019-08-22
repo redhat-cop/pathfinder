@@ -29,7 +29,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.io.IOException;
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -44,6 +46,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Example;
@@ -59,10 +62,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.codahale.metrics.annotation.Timed;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
@@ -256,13 +255,22 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value="/survey", method=GET, produces={"application/javascript"})
     public String getSurvey() throws IOException {
-      return getSurveyContent().replaceAll("\"SERVER_URL", "Utils.SERVER+\"").replaceAll("JWT_TOKEN", "\"+jwtToken+\"") ;
+      return getSurveyContent()
+          .replaceAll("\"SERVER_URL", "Utils.SERVER+\"")
+          .replaceAll("JWT_TOKEN", "\"+jwtToken+\"") ;
     }
     
     private String getSurveyContent() throws IOException{
-      return IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("application-survey.js"), "UTF-8");
+      String surveyJson = getResourceAsString("survey.json");
+      String surveyJs = getResourceAsString("application-survey.js");
+      return surveyJs.replace("$$QUESTIONS_JSON$$", surveyJson);
     }
-    
+
+    private String getResourceAsString(String resource) throws IOException {
+      InputStream is = CustomerAPIImpl.class.getClassLoader().getResourceAsStream(resource);
+      Validate.notNull(is);
+      return IOUtils.toString(is, "UTF-8");
+    }
     
     // Non-Swagger api - returns payload for the assessment summary page
     @RequestMapping(value="/customers/{customerId}/applications/{appId}/assessments/{assessmentId}/viewAssessmentSummary", method=GET, produces={APPLICATION_JSON_VALUE})
@@ -287,7 +295,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       }
       
 //      // Get the survey json content (and fiddle with it so it's readable)
-      List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<ApplicationAssessmentSummary>(), getSurveyContent(), assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
+      String survey = IOUtils.toString(CustomerAPIImpl.class.getClassLoader().getResourceAsStream("survey.json"), "UTF-8");
+      System.out.println("survey is " + survey);
+      List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(), survey, assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
         @Override
         public void parse(List<ApplicationAssessmentSummary> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
           result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
@@ -314,54 +324,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     
     public interface QuestionParser<T>{
       public void parse(T result, String name, String answerOrdinal, String answerRating, String answerText, String questionText);
-    }
-    public class QuestionReader<T>{
-      public T read(T result, String survey, Assessments assessment, QuestionParser<T> parser){
-        String raw=survey;
-        int start=raw.indexOf("pages: [{")+7;
-        int end=raw.indexOf("}],", start)+2;
-        String x=raw.substring(start, end);
-        mjson.Json surveyJson=mjson.Json.read(x);
-        for(mjson.Json page:surveyJson.asJsonList()){
-          for(mjson.Json question:page.at("questions").asJsonList()){
-            
-            if (question.at("type").asString().equals("radiogroup")){
-              
-              Map<String, String> answerRankingMap=new HashMap<String, String>();
-              for(mjson.Json a:question.at("choices").asJsonList()){
-                String answer=a.asString();
-                answerRankingMap.put(answer.substring(0, answer.indexOf("-")), answer.substring(answer.indexOf("-")+1)); // answer id to ranking map
-              }
-              
-              try{
-                if (assessment.getResults().containsKey(question.at("name").asString())){
-                  
-                  String name=question.at("name").asString();
-                  String answerOrdinal=((String)assessment.getResults().get(question.at("name").asString())).split("-")[0]; // should return integer of the value chosen
-                  String answerRating=answerRankingMap.get(answerOrdinal).split("\\|")[0];
-                  String answerText=answerRankingMap.get(answerOrdinal).split("\\|")[1];
-                  String questionText=question.at("title").asString();
-                  
-                  parser.parse(result, name, answerOrdinal, answerRating, answerText, questionText);
-//                  d.callback(name, answerOrdinal, answerRating, answerText, questionText);
-//                  result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
-                }
-                
-              }catch(Exception e){
-                log.error(e.getMessage(), e);
-                log.error("Error on: assessment.results="+assessment.getResults());
-                log.error("Error on: assessment.results.containsKey("+question.at("name").asString()+")="+assessment.getResults().containsKey(question.at("name").asString()));
-                log.error("Error on: question.name="+question.at("name").asString());
-                log.error("Error on: assessment.results["+question.at("name").asString()+"]="+assessment.getResults().get(question.at("name").asString()));
-              }
-              
-            }else if (question.at("type").asString().equals("rating")){
-              // leave this out since it's things like "Select the app..."
-            }
-          }
-        }
-        return result;
-      }
     }
     
     ////// ###############
