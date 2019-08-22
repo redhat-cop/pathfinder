@@ -296,7 +296,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       
 //      // Get the survey json content (and fiddle with it so it's readable)
       String survey = IOUtils.toString(CustomerAPIImpl.class.getClassLoader().getResourceAsStream("survey.json"), "UTF-8");
-      System.out.println("survey is " + survey);
       List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(), survey, assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
         @Override
         public void parse(List<ApplicationAssessmentSummary> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){

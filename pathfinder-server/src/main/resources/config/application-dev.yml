@@ -137,8 +137,8 @@ jhipster:
 #dbhostport: 9191
 
 #pathfinder-local
-database-user: userGJH
-database-password: oSKdBMtHkTCVeEE8
+database-user: dbuser
+database-password: dbpass
 dbhostport: 9191
 
 
