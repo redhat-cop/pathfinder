@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
     <name>${project.groupId}.${project.artifactId}</name>
-    <groupId>com.redhat.gps.pathfinder</groupId>
     <artifactId>pathfinder-server</artifactId>
     <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
-    <organization>
-        <name>RedHat Inc</name>
-    </organization>
-    <inceptionYear>2018</inceptionYear>
+
+    <parent>
+        <groupId>com.redhat.gps.pathfinder</groupId>
+        <artifactId>pathfinder</artifactId>
+        <version>1.0.2-SNAPSHOT</version>
+    </parent>
 
     <properties>
         <!-- Build properties -->
@@ -32,7 +32,6 @@
         <profile.swagger />
 
         <!-- Dependency versions -->
-        <jhipster-dependencies.version>0.1.7</jhipster-dependencies.version>
         <!-- The spring-boot version should match the one managed by
         https://mvnrepository.com/artifact/io.github.jhipster/jhipster-dependencies/${jhipster-dependencies.version} -->
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
@@ -771,6 +770,9 @@
                               <goal>build-info</goal>
                               <goal>repackage</goal>
                           </goals>
+                          <configuration>
+                              <classifier>exec</classifier>
+                          </configuration>
                       </execution>
                   </executions>
                   <configuration>
