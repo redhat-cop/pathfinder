@@ -1,16 +1,17 @@
 package com.redhat.acceptance;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Platform;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.junit.Test;
+import org.springframework.test.context.junit4.SpringRunner;
 
+import static org.junit.Assert.assertTrue;
+
+@RunWith(SpringRunner.class)
 public class BasicTest{
 //  public static final String FIREFOX_DRIVER="/home/mallen/Work/pathfinder-ng/acceptance/geckodriver-linux-0.20.1";
 //  public static final String CHROME_DRIVER="/home/mallen/Work/pathfinder-ng/acceptance/chromedriver-linux-2.41";

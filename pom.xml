@@ -6,31 +6,33 @@
   <artifactId>pathfinder</artifactId>
   <version>1.0.2-SNAPSHOT</version>
   <packaging>pom</packaging>
+  <organization>
+    <name>RedHat Inc</name>
+  </organization>
+  <inceptionYear>2018</inceptionYear>
+
+  <properties>
+    <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+    <jhipster-dependencies.version>0.1.7</jhipster-dependencies.version>
+  </properties>
 
   <modules>
-    <!-- <module>acceptance</module> -->
+    <module>acceptance</module>
     <module>pathfinder-ui</module>
     <module>pathfinder-server</module>
-    <!-- 
-    <module>pathfinder-server-war</module>
-    <module>pathfinder-server-lib</module>
-    <module>pathfinder-server-boot</module>
-     -->
-    <!--module>acceptance</module -->
   </modules>
 
-  <profiles>
-    <profile>
-      <id>war</id>
-      <activation>
-        <activeByDefault>false</activeByDefault>
-      </activation>
-      <modules>
-        <module>pathfinder-server-war</module>
-      </modules>
-    </profile>
+  <dependencyManagement>
 
-  </profiles>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot.version}</version>
+      </dependency>
+    </dependencies>
+
+  </dependencyManagement>
 
 </project>
 
