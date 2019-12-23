@@ -1,5 +1,3 @@
-
-
 var defaultThemeColors = Survey
     .StylesManager
     .ThemeColors["default"];
@@ -17,6 +15,11 @@ Survey
     .StylesManager
     .applyTheme();
 
+Survey
+    .JsonObject
+    .metaData
+    .addProperty("questionbase", "tooltip");
+
 Survey.requiredText = "AA";
 
 
@@ -28,6 +31,30 @@ Survey.ChoicesRestfull.onBeforeSendRequest = function(sender, options) {
 var json = $$QUESTIONS_JSON$$;
 
 window.survey = new Survey.Model(json);
+
+survey
+    .onAfterRenderQuestion
+    .add(function (survey, options) {
+        //Return if there is no description to show in popup
+        if (!options.question.tooltip)
+            return;
+
+        var header = options
+            .htmlElement
+            .querySelector("h5");
+        header.title = options.question.tooltip;
+
+        var span = document.createElement("span");
+        span.style.display='inline-block';
+        span.style.color='white';
+        span.style.background-color='#1ab394';
+        span.style.border-radius='50%';
+        span.style.padding='0 7px'';
+        span.style.cursor='help';
+        span.innerText = "?";
+        span.className = "survey-tooltip";
+        header.appendChild(span);
+    });
 
 survey
     .onComplete
@@ -94,7 +121,6 @@ survey
 
 if (null!=results){
 	survey.data=results;
-
 	//Force the user to answer the dependencies question in the case of re-editing the survey
     var d11 = survey.getQuestionByName('DEPSIN');
     d11.value="";
