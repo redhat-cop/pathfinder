@@ -23,16 +23,6 @@ package com.redhat.gps.pathfinder.config.dbmigrations;
  */
 
 import com.github.mongobee.changeset.ChangeLog;
-import com.github.mongobee.changeset.ChangeSet;
-import com.redhat.gps.pathfinder.config.PathfinderQuestionConfig;
-import com.redhat.gps.pathfinder.domain.*;
-import com.redhat.gps.pathfinder.security.AuthoritiesConstants;
-import org.springframework.data.mongodb.core.MongoTemplate;
-
-import java.time.Instant;
-import java.util.ArrayList;
-
-import static com.redhat.gps.pathfinder.web.api.QuestionsMetaDataAPI.MIN_ASSESSMENT_VALUES;
 
 /**
  * Creates the initial database setup
