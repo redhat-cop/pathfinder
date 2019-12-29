@@ -325,15 +325,10 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
 
     <build>
-        <defaultGoal>spring-boot:run</defaultGoal>
+        <defaultGoal>clean install</defaultGoal>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -351,7 +346,6 @@
                             <artifactId>lombok</artifactId>
                             <version>1.16.18</version>
                         </path>
-
                     </annotationProcessorPaths>
                 </configuration>
             </plugin>
@@ -364,32 +358,32 @@
                     <downloadJavadocs>true</downloadJavadocs>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-enforcer-plugin</artifactId>
-                <version>${maven-enforcer-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>enforce-versions</id>
-                        <goals>
-                            <goal>enforce</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <rules>
-                        <requireMavenVersion>
-                            <message>You are running an older version of Maven. JHipster requires at least Maven ${maven.version}</message>
-                            <version>[${maven.version},)</version>
-                        </requireMavenVersion>
-                        <requireJavaVersion>
-                            <!-- Until JHipster supports JDK 9 -->
-                            <message>You are running an incompatible version of Java. JHipster requires JDK ${java.version}</message>
-                            <version>[1.8,1.9)</version>
-                        </requireJavaVersion>
-                    </rules>
-                </configuration>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-enforcer-plugin</artifactId>-->
+<!--                <version>${maven-enforcer-plugin.version}</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>enforce-versions</id>-->
+<!--                        <goals>-->
+<!--                            <goal>enforce</goal>-->
+<!--                        </goals>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--                <configuration>-->
+<!--                    <rules>-->
+<!--                        <requireMavenVersion>-->
+<!--                            <message>You are running an older version of Maven. JHipster requires at least Maven ${maven.version}</message>-->
+<!--                            <version>[${maven.version},)</version>-->
+<!--                        </requireMavenVersion>-->
+<!--                        <requireJavaVersion>-->
+<!--                            &lt;!&ndash; Until JHipster supports JDK 9 &ndash;&gt;-->
+<!--                            <message>You are running an incompatible version of Java. JHipster requires JDK ${java.version}</message>-->
+<!--                            <version>[1.8,1.9)</version>-->
+<!--                        </requireJavaVersion>-->
+<!--                    </rules>-->
+<!--                </configuration>-->
+<!--            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -460,40 +454,40 @@
                     <runOrder>alphabetical</runOrder>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>${jacoco-maven-plugin.version}</version>
-                <executions>
-                    <execution>
-                        <id>pre-unit-tests</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <!-- Sets the path to the file which contains the execution data. -->
-                            <destFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</destFile>
-                        </configuration>
-                    </execution>
-                    <!-- Ensures that the code coverage report for unit tests is created after unit tests have been run -->
-                    <execution>
-                        <id>post-unit-test</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</dataFile>
-                            <outputDirectory>${project.testresult.directory}/coverage/jacoco</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.sonarsource.scanner.maven</groupId>
-                <artifactId>sonar-maven-plugin</artifactId>
-                <version>${sonar-maven-plugin.version}</version>
-            </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.jacoco</groupId>-->
+<!--                <artifactId>jacoco-maven-plugin</artifactId>-->
+<!--                <version>${jacoco-maven-plugin.version}</version>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>pre-unit-tests</id>-->
+<!--                        <goals>-->
+<!--                            <goal>prepare-agent</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            &lt;!&ndash; Sets the path to the file which contains the execution data. &ndash;&gt;-->
+<!--                            <destFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</destFile>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                    &lt;!&ndash; Ensures that the code coverage report for unit tests is created after unit tests have been run &ndash;&gt;-->
+<!--                    <execution>-->
+<!--                        <id>post-unit-test</id>-->
+<!--                        <phase>test</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>report</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <dataFile>${project.testresult.directory}/coverage/jacoco/jacoco.exec</dataFile>-->
+<!--                            <outputDirectory>${project.testresult.directory}/coverage/jacoco</outputDirectory>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
+<!--            <plugin>-->
+<!--                <groupId>org.sonarsource.scanner.maven</groupId>-->
+<!--                <artifactId>sonar-maven-plugin</artifactId>-->
+<!--                <version>${sonar-maven-plugin.version}</version>-->
+<!--            </plugin>-->
 
             <plugin>
                 <!--
@@ -592,7 +586,7 @@
         <profile>
             <id>dev</id>
             <activation>
-                <activeByDefault>true</activeByDefault>
+                <activeByDefault>false</activeByDefault>
             </activation>
             <dependencies>
                 <dependency>
@@ -641,6 +635,10 @@
         </profile>
         <profile>
             <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+
             <dependencies>
                 <dependency>
                     <groupId>org.springframework.boot</groupId>
@@ -715,11 +713,18 @@
                             <configuration>
                                 <failOnNoGitDirectory>false</failOnNoGitDirectory>
                                 <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                                <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
                                 <includeOnlyProperties>
                                     <includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
                                     <includeOnlyProperty>^git.commit.id.describe$</includeOnlyProperty>
                                     <includeOnlyProperty>^git.branch$</includeOnlyProperty>
                                 </includeOnlyProperties>
+                                <format>json</format>
+                                <gitDescribe>
+                                    <skip>false</skip>
+                                    <always>false</always>
+                                    <dirty>-dirty</dirty>
+                                </gitDescribe>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -746,40 +751,40 @@
 <!--            </dependencies>-->
 <!--        </profile>-->
 
-        <profile>
-          <id>spring-boot</id>
-          <activation>
-            <activeByDefault>true</activeByDefault>
-          </activation>
-          <build>
-            <plugins>
-              <plugin>
-                  <groupId>org.springframework.boot</groupId>
-                  <artifactId>spring-boot-maven-plugin</artifactId>
-                  <version>${spring-boot.version}</version>
-                  <executions>
-                      <execution>
-                          <goals>
-                              <goal>build-info</goal>
-                              <goal>repackage</goal>
-                          </goals>
-                          <configuration>
-                              <classifier>exec</classifier>
-                          </configuration>
-                      </execution>
-                  </executions>
-                  <configuration>
-                      <mainClass>${start-class}</mainClass>
-                      <executable>true</executable>
-                      <fork>true</fork>
-                      <!--
-                      Enable the line below to have remote debugging of your application on port 5005
-                      <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>
-                      -->
-                  </configuration>
-              </plugin>
-            </plugins>
-          </build>
-        </profile>
+<!--        <profile>-->
+<!--          <id>spring-boot</id>-->
+<!--          <activation>-->
+<!--            <activeByDefault>true</activeByDefault>-->
+<!--          </activation>-->
+<!--          <build>-->
+<!--            <plugins>-->
+<!--              <plugin>-->
+<!--                  <groupId>org.springframework.boot</groupId>-->
+<!--                  <artifactId>spring-boot-maven-plugin</artifactId>-->
+<!--                  <version>${spring-boot.version}</version>-->
+<!--                  <executions>-->
+<!--                      <execution>-->
+<!--                          <goals>-->
+<!--                              <goal>build-info</goal>-->
+<!--                              <goal>repackage</goal>-->
+<!--                          </goals>-->
+<!--                          <configuration>-->
+<!--                              <classifier>exec</classifier>-->
+<!--                          </configuration>-->
+<!--                      </execution>-->
+<!--                  </executions>-->
+<!--                  <configuration>-->
+<!--                      <mainClass>${start-class}</mainClass>-->
+<!--                      <executable>true</executable>-->
+<!--                      <fork>true</fork>-->
+<!--                      &lt;!&ndash;-->
+<!--                      Enable the line below to have remote debugging of your application on port 5005-->
+<!--                      <jvmArguments>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005</jvmArguments>-->
+<!--                      &ndash;&gt;-->
+<!--                  </configuration>-->
+<!--              </plugin>-->
+<!--            </plugins>-->
+<!--          </build>-->
+<!--        </profile>-->
     </profiles>
 </project>
