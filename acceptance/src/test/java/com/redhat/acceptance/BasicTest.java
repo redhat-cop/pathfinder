@@ -34,16 +34,19 @@ public class BasicTest{
 //      browser=new FirefoxDriver(o);
 //      
 //    }else{
-    System.setProperty("webdriver.chrome.driver", "chromedriver-linux-2.41");
+    // System.setProperty("webdriver.chrome.driver", "chromedriver-linux-2.41");
+    System.setProperty("webdriver.chrome.driver", "chromedriver-79.0.3945.36-osx");
+    
 //      System.setProperty("webdriver.chrome.driver", CHROME_DRIVER);
       ChromeOptions o=new ChromeOptions();
-      o.setBinary("/usr/bin/google-chrome-stable");
-      o.addArguments("--headless");
+//      o.setBinary("/usr/bin/google-chrome-stable");
+      o.setBinary("/Applications/Google Chrome.app/Contents/MacOS/Google Chrome");
+//      o.addArguments("--headless");
       o.addArguments("--disable-extensions"); // disabling extensions
       o.addArguments("--disable-gpu"); // applicable to windows os only
       o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
       o.addArguments("--no-sandbox");
-      browser=new ChromeDriver();
+      browser=new ChromeDriver(o);
       
 //    }
     
@@ -53,7 +56,7 @@ public class BasicTest{
     //Firefox's proxy driver executable is in a folder already
     //  on the host system's PATH environment variable.
     browser.get("http://saucelabs.com");
-    WebElement header=browser.findElement(By.id("page-header"));
+    WebElement header=browser.findElement(By.id("cookieconsent:desc"));
     assertTrue((header.isDisplayed()));
 
     browser.close();

@@ -41,17 +41,17 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-            <!-- jhipster-needle-maven-add-dependency-management -->
         </dependencies>
     </dependencyManagement>
 
     <properties>
-        <selenium.webdriver.chrome.url>chromedriver-linux-2.41</selenium.webdriver.chrome.url>
+        <!-- <selenium.webdriver.chrome.url>chromedriver-linux-2.41</selenium.webdriver.chrome.url> -->
+        <selenium.webdriver.chrome.url>chromedriver-79.0.3945.36-osx</selenium.webdriver.chrome.url>
         <selenium.webdriver.firefox.url>geckodriver-linux-0.21.0</selenium.webdriver.firefox.url>
         <cucumber.version>1.1.8</cucumber.version> <!-- 1.8 is the latest -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.selenium.plugin.version>3.141.0</maven.selenium.plugin.version>
+        <maven.selenium.plugin.version>3.141.59</maven.selenium.plugin.version>
         <maven.embedmongo.plugin.version>0.4.1</maven.embedmongo.plugin.version>
     </properties>
 
@@ -153,18 +153,20 @@
                     </resource>
                 </resources>
                 <plugins>
-
                     <plugin>
                         <groupId>org.springframework.boot</groupId>
                         <artifactId>spring-boot-maven-plugin</artifactId>
                         <configuration>
                             <mainClass>com.redhat.gps.pathfinder.PathfinderInitializerServlet</mainClass>
+                            <profiles>
+                                <profile>integrationtest</profile>
+                            </profiles>
+                            <useTestClasspath>true</useTestClasspath>
                         </configuration>
                         <dependencies>
                             <dependency>
                                 <groupId>com.redhat.gps.pathfinder</groupId>
                                 <artifactId>pathfinder-server</artifactId>
-                                <classifier>exec</classifier>
                                 <version>1.0.2-SNAPSHOT</version>
                             </dependency>
                         </dependencies>
@@ -388,44 +390,42 @@
             <artifactId>pathfinder-server</artifactId>
             <version>1.0.2-SNAPSHOT</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
             <version>1.7.9</version>
-        </dependency>
+        </dependency> -->
 
         <!-- cucumber bdd framework -->
         <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-jvm</artifactId>
-            <version>1.2.5</version>
-            <type>pom</type>
-        </dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-core</artifactId>
+            <version>4.8.0</version>
+        </dependency>        
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>1.2.5</version>
-            <scope>test</scope>
+            <version>4.8.0</version>
         </dependency>
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-junit</artifactId>
-            <version>1.2.5</version>
+            <version>4.8.0</version>
             <scope>test</scope>
-        </dependency>
+        </dependency> 
         <dependency>
-            <groupId>info.cukes</groupId>
+            <groupId>io.cucumber</groupId>
             <artifactId>cucumber-spring</artifactId>
-            <version>1.2.5</version>
-            <scope>test</scope>
+            <version>4.8.0</version>
         </dependency>
+        
 
         <!-- spring dependencies -->
-        <dependency>
+        <!-- <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
             <version>${spring-boot.version}</version>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
@@ -439,11 +439,11 @@
             <artifactId>rest-assured</artifactId>
             <version>1.8.1</version>
         </dependency>
-        <dependency>
+        <!-- <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>4.2.5</version>
-        </dependency>
+        </dependency> -->
 
 
         <!--

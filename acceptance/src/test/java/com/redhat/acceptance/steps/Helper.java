@@ -9,8 +9,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assert;
 import org.openqa.selenium.*;
+import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.ui.Select;
 
 import java.io.File;
@@ -40,14 +42,16 @@ public class Helper {
 
   private Helper() {
 
-	}
+  }
 
   static Helper get() {
+
     if (instance == null) {
-    	instance = new Helper();
-			instance.load();
-			instance.getBrowser();
-		}
+      instance = new Helper();
+      instance.load();
+      instance.getBrowser();
+    }
+
     return instance;
   }
 
@@ -58,18 +62,21 @@ public class Helper {
       retrieveDriver();
 
       System.setProperty("webdriver.chrome.driver", getSeleniumWebDriver());
-      ChromeOptions o = new ChromeOptions();
+      System.out.println("WEB DRIVER>>>>" + getSeleniumWebDriver());
 
+      ChromeOptions o = new ChromeOptions();
       o.setBinary(getChromeExecutable());
       o.addArguments("--headless");
       o.addArguments("--disable-extensions"); // disabling extensions
       o.addArguments("--disable-gpu"); // applicable to windows os only
       o.addArguments("--disable-dev-shm-usage"); // overcome limited resource problems
       o.addArguments("--no-sandbox");
-      browser = new ChromeDriver();
+      o.addArguments("--disable-web-security");
+      browser = new ChromeDriver(o);
       browser.manage().window().setSize(new Dimension(1600, 1000));
       browser.manage().window().setPosition(new Point(2500, 0));
     }
+
     return browser;
   }
 
@@ -218,6 +225,7 @@ public class Helper {
 
   boolean isLoggedIn() {
     try {
+      System.out.println("Checking Login in");
       return browser.findElement(By.id("logged-status")).getText().contains("Logged in as");
     } catch (Exception e) {
       return false;

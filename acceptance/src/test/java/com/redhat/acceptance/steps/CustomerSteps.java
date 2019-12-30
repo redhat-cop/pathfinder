@@ -20,12 +20,12 @@ package com.redhat.acceptance.steps;
 import com.google.common.collect.Lists;
 import com.redhat.acceptance.steps.Helper.Pages;
 import com.redhat.gps.pathfinder.service.util.MapBuilder;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
-import cucumber.api.java.en.When;
-import cucumber.api.java.en_tx.Givenyall;
-import cucumber.api.java.en_tx.Whenyall;
+import io.cucumber.java.After;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
+import io.cucumber.java.en.And;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -72,18 +72,28 @@ public class CustomerSteps {
   public void beforeAll() {
     helper = Helper.get();
     browser = helper.getBrowser();
+    System.out.println("CustomerSteps Running....");
+  }
+
+  @After
+  public void afterAll(){
+    browser.close();
   }
 
   @Given("^we login:$")
   public void login(List<Map<String, String>> table) throws Throwable {
+    System.out.println("We login....");
     helper.cleanup();
     if (!helper.isLoggedIn()) {
+      System.out.println("Successfully logged in");
       helper.login(table.get(0).get("Username"), table.get(0).get("Password"));
       helper.navigateTo(Pages.CUSTOMERS);
+    }else{
+      System.out.println("Failed to Login in");
     }
   }
 
-  @Givenyall("^navigate to the \"(.*?)\" page$")
+  @And("^navigate to the \"(.*?)\" page$")
   public void navigate_to_the_page(String pageName) throws Throwable {
     helper.navigateTo(Pages.valueOf(pageName.toUpperCase()));
   }
@@ -93,7 +103,7 @@ public class CustomerSteps {
     helper.clickButton(buttonText);
   }
 
-  @Whenyall("^enter the following into the \"(.*?)\" dialog:$")
+  @And("^enter the following into the \"(.*?)\" dialog:$")
   public void we_enter_the_following_into_the_dialog(String dialogTitle, List<Map<String, String>> table) throws Throwable {
 
     helper.enterDetailsIntoTheDialog(dialogTitle, table);
@@ -204,7 +214,7 @@ public class CustomerSteps {
     }
   }
 
-  @Givenyall("^create the following customers:$")
+  @Given("^create the following customers:$")
   public void createCustomers(List<Map<String, String>> table) throws Throwable {
     helper.navigateTo(CUSTOMERS);
     for (Map<String, String> row : table) {

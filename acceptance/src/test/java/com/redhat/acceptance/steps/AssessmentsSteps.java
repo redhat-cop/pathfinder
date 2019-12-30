@@ -2,9 +2,11 @@ package com.redhat.acceptance.steps;
 
 import com.google.common.collect.Lists;
 import com.redhat.acceptance.steps.Helper.Pages;
-import cucumber.api.java.Before;
-import cucumber.api.java.en.Given;
-import cucumber.api.java.en.Then;
+import io.cucumber.java.Before;
+import io.cucumber.java.en.And;
+import io.cucumber.java.en.Given;
+import io.cucumber.java.en.Then;
+import io.cucumber.java.en.When;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -28,6 +30,7 @@ public class AssessmentsSteps {
   public void beforeAll() {
     helper = Helper.get();
     browser = helper.getBrowser();
+    System.out.println("AssessmentsSteps Running....");
   }
 
   @Given("^we login with \"(.*?)\":$")
@@ -41,7 +44,7 @@ public class AssessmentsSteps {
     }
   }
 
-  @Given("^create and open customer:$")
+  @And("^create and open customer:$")
   public void createAndEnterCustomer(List<Map<String, String>> table) throws Throwable {
     new CustomerSteps().createCustomers(table);
     helper.clickLink(table.get(0).get("Name"));
