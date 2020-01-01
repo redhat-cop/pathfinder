@@ -19,7 +19,7 @@ package com.redhat.acceptance.steps;
 
 import com.google.common.collect.Lists;
 import com.redhat.acceptance.steps.Helper.Pages;
-import com.redhat.gps.pathfinder.service.util.MapBuilder;
+import com.redhat.acceptance.utils.MapBuilder;
 import cucumber.api.java.Before;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
