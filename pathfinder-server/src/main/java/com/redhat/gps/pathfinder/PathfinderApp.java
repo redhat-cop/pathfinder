@@ -5,11 +5,14 @@ import com.redhat.gps.pathfinder.config.DefaultProfileUtil;
 import io.github.jhipster.config.JHipsterConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.MetricFilterAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.MetricRepositoryAutoConfiguration;
+import org.springframework.boot.actuate.info.GitInfoContributor;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.info.GitProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.env.Environment;
@@ -51,6 +54,11 @@ import java.util.Collection;
 public class PathfinderApp {
 
     private static final Logger log = LoggerFactory.getLogger(PathfinderApp.class);
+
+    @Autowired
+    public void getGitInfo(GitProperties properties) {
+        properties.forEach((k) -> log.info("GITINFO {} -> {} " ,k.getKey(),k.getValue()));
+    }
 
     private final Environment env;
 

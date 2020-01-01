@@ -1,7 +1,7 @@
 /**
- * MongoDB database migrations using MongoBee.
+ * Service layer beans.
  */
-package com.redhat.gps.pathfinder.config.dbmigrations;
+package com.redhat.gps.pathfinder.service.util;
 
 /*-
  * #%L
