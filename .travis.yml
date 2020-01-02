@@ -4,6 +4,11 @@ jdk: openjdk8
 services:
 - docker
 
+branches:
+  only:
+    - master
+    - stable
+
 env:
   global:
   - COMMIT=${TRAVIS_COMMIT::7}
