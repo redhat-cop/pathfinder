@@ -23,6 +23,10 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.4.20.v20190813</version>
 				<configuration>
+					<webApp>
+						<descriptor>${project.basedir}/src/main/webapp/WEB-INF/local-test-web.xml</descriptor>
+					</webApp>
+
 					<systemProperty>
 						<name>com.sun.management.jmxremote.port</name>
 						<value>9530</value>
