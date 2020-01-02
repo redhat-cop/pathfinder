@@ -73,7 +73,7 @@ public class QuestionProcessor {
             pageComment.put("isRequired", "false");
             newQuestions.put(pageComment);
             page.remove("questions");
-            page.put("quesions", newQuestions);
+            page.put("questions", newQuestions);
             newPages.put(j, page);
         }
 
