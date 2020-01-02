@@ -3,7 +3,7 @@ logging:
         ROOT: DEBUG
         com.redhat.gps.pathfinder: DEBUG
         io.github.jhipster: WARN
-        org.springframework: DEBUG
+        org.springframework: INFO
         org.springframework.security: DEBUG
 
 spring:

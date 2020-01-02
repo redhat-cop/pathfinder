@@ -47,11 +47,11 @@ survey
         var span = document.createElement("span");
         span.style.display='inline-block';
         span.style.color='white';
-        span.style.background-color='#1ab394';
-        span.style.border-radius='50%';
-        span.style.padding='0 7px'';
+        span.style.backgroundColor='red';
+        span.style.borderRadius='50%';
+        span.style.padding='0 7px';
         span.style.cursor='help';
-        span.innerText = "?";
+        span.innerText = "info";
         span.className = "survey-tooltip";
         header.appendChild(span);
     });

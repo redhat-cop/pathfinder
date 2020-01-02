@@ -70,7 +70,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private final AssessmentsRepository assmRepo;
     private final ReviewsRepository reviewRepository;
     private final MembersRepository membersRepo;
-    private final String finalSurveyJson;
+    private String SurveyJSPayload;
+    private String SurveyQuestionsJSON;
 
     public CustomerAPIImpl(CustomerRepository custRepo,
                            ApplicationsRepository appsRepo,
@@ -84,28 +85,26 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
-        this.finalSurveyJson = getSurveyContent();
+        getSurveyContent();
     }
 
-    private String getSurveyContent() throws IOException {
+    private void getSurveyContent() throws IOException {
         String result = "";
-        String surveyJson;
         try {
             String rawQuestionsJson = getResourceAsString("questions/question-data-default.json");
             String QuestionsJsonSchema = getResourceAsString("questions/question-schema.json");
-            surveyJson = QuestionProcessor.GenerateSurveyPages(rawQuestionsJson, QuestionsJsonSchema);
+            SurveyQuestionsJSON = QuestionProcessor.GenerateSurveyPages(rawQuestionsJson, QuestionsJsonSchema);
         } catch (Exception e) {
-            surveyJson = getResourceAsString("questions/default-survey.json");
+            SurveyQuestionsJSON = getResourceAsString("questions/default-survey.json");
             log.error("Unable to find/parse question-data-default...using default-survey");
             e.printStackTrace();
         }
         try {
             String surveyJs = getResourceAsString("questions/application-survey.js");
-            result = surveyJs.replace("$$QUESTIONS_JSON$$", surveyJson);
+            SurveyJSPayload = surveyJs.replace("$$QUESTIONS_JSON$$", SurveyQuestionsJSON);
         } catch (Exception ex) {
             log.error("Unable to process and enrich the question template....FATAL ERROR");
         }
-        return result;
     }
 
 
@@ -204,7 +203,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 Assessments assessment = app.getAssessments().get(app.getAssessments().size() - 1);
 
                 Map<String, Map<String, String>> questionKeyToText = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<String, Map<String, String>>(),
-                        finalSurveyJson,
+                        SurveyQuestionsJSON,
                         assessment,
                         new QuestionParser<Map<String, Map<String, String>>>() {
                             @Override
@@ -273,7 +272,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
     public String getSurvey() throws IOException {
-        return finalSurveyJson
+        return SurveyJSPayload
                 .replaceAll("\"SERVER_URL", "Utils.SERVER+\"")
                 .replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
     }
@@ -323,7 +322,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         }
 
         List<ApplicationAssessmentSummary> result = new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(),
-                finalSurveyJson,
+                SurveyQuestionsJSON,
                 assessment,
                 new QuestionParser<List<ApplicationAssessmentSummary>>() {
                     @Override
@@ -1370,7 +1369,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
         // Get the questions, answers, ratings etc...
         Map<String, Map<String, String>> questionInfo = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<String, Map<String, String>>(),
-                finalSurveyJson,
+                SurveyQuestionsJSON,
                 assessment,
                 new QuestionParser<Map<String, Map<String, String>>>() {
                     @Override
