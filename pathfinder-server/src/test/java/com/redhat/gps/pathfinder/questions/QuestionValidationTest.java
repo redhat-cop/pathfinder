@@ -48,7 +48,7 @@ public class QuestionValidationTest {
 
         Schema schema = SchemaLoader.load(jsonSchema);
         schema.validate(jsonSubject);
-        System.out.println("Validation passed" + jsonSubject.toString());
+        System.out.println("Validation passed " + jsonSubject.toString());
     }
 
     @Test
@@ -66,7 +66,7 @@ public class QuestionValidationTest {
             Schema schema = SchemaLoader.load(jsonSchema);
             schema.validate(jsonSubject);
         });
-        System.out.println(exception.getMessage());
+        System.out.println("Exception as expected :" +exception.getMessage());
     }
 
     @Test
@@ -84,7 +84,7 @@ public class QuestionValidationTest {
             Schema schema = SchemaLoader.load(jsonSchema);
             schema.validate(jsonSubject);
         });
-        System.out.println(exception.getMessage());
+        System.out.println("Exception as expected :" +exception.getMessage());
     }
 
     @Test
