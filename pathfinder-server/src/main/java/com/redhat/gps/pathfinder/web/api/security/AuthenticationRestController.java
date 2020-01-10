@@ -1,9 +1,5 @@
 package com.redhat.gps.pathfinder.web.api.security;
 
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.HashMap;
-import java.util.Map;
 
 /*-
  * #%L
@@ -29,8 +25,7 @@ import java.util.Map;
 
 
 import java.util.Objects;
-
-import javax.servlet.Filter;
+import java.net.URISyntaxException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,24 +40,18 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.web.FilterChainProxy;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 //import org.zerhusen.security.JwtAuthenticationRequest;
 //import org.zerhusen.security.JwtTokenUtil;
 //import org.zerhusen.security.JwtUser;
 //import org.zerhusen.security.service.JwtAuthenticationResponse;
 
-import com.google.common.base.Function;
 import com.redhat.gps.pathfinder.domain.Member;
 import com.redhat.gps.pathfinder.repository.MembersRepository;
 import com.redhat.gps.pathfinder.service.util.MapBuilder;
-import com.redhat.gps.pathfinder.service.util.Tuple;
 
 import mjson.Json;
 

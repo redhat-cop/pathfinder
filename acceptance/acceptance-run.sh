@@ -1,1 +1,1 @@
-mvn clean install -Dspring.profiles.active=dev,swagger -Pacceptance,pathfinder
+mvn clean install -Dspring.profiles.active=dev,swagger -Pmongo,acceptance,pathfinder

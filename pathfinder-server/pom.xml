@@ -3,7 +3,6 @@
     <modelVersion>4.0.0</modelVersion>
     <name>${project.groupId}.${project.artifactId}</name>
     <artifactId>pathfinder-server</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <parent>
@@ -34,7 +33,9 @@
         <!-- Dependency versions -->
         <!-- The spring-boot version should match the one managed by
         https://mvnrepository.com/artifact/io.github.jhipster/jhipster-dependencies/${jhipster-dependencies.version} -->
+        <!-- 
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+         -->
         <mapstruct.version>1.2.0.Final</mapstruct.version>
 
         <!-- Plugin versions -->

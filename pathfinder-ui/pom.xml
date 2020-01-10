@@ -5,10 +5,15 @@
     mvn clean package -DskipTests jetty:run-war -Djetty.port=8083
     
     -->
+  
+  <parent>
+	  <groupId>com.redhat.gps.pathfinder</groupId>
+	  <artifactId>pathfinder</artifactId>
+	  <version>1.0.2-SNAPSHOT</version>
+  </parent>
+  
 	<name>${project.groupId}.${project.artifactId}</name>
-	<groupId>com.redhat.gps.pathfinder</groupId>
 	<artifactId>pathfinder-ui</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -90,17 +95,11 @@
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
-			<version>1.7.25</version>
 		</dependency>
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>23.5-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
 </project>

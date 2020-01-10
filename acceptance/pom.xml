@@ -1,486 +1,475 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <!--
-  # to run acceptance for CI (ie. start containers, deploy apps, run tests and stop containers) 
-  mvn clean install -Pacceptance,pathfinder -o
-  
-  # DEV MODE - start pathfinder & mongo then just wait
-  mvn clean package cargo:run -Pmongo,pathfinder -Dspring.profiles.active=dev,swagger
-  
-  # start mongo only (and wait/block):
-  mvn clean package -Dembedmongo.wait -Pmongo
-  
-  
-  Selenium Compatibility Matrix:
-  ==============================
-  chromedriver-linux-2.41  -> Chrome v67-69
-  chromedriver-linux-2.40  -> Chrome v66-68
-  chromedriver-linux-2.37  -> Chrome v66-68
-  geckodriver-linux-0.21.0 -> Firefox 57+ & Selenium 3.11+ 
-  geckodriver-linux-0.20.1 -> Firefox ???
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+		<!--
+	# to run acceptance for CI (ie. start containers, deploy apps, run tests and stop containers) 
+	mvn clean install -Pacceptance,pathfinder -o
+	
+	# DEV MODE - start pathfinder & mongo then just wait
+	mvn clean package cargo:run -Pmongo,pathfinder -Dspring.profiles.active=dev,swagger
+	
+	# start mongo only (and wait/block):
+	mvn clean package -Dembedmongo.wait -Pmongo
+	
+	
+	Selenium Compatibility Matrix:
+	==============================
+	chromedriver-linux-2.41	-> Chrome v67-69
+	chromedriver-linux-2.40	-> Chrome v66-68
+	chromedriver-linux-2.37	-> Chrome v66-68
+	geckodriver-linux-0.21.0 -> Firefox 57+ & Selenium 3.11+ 
+	geckodriver-linux-0.20.1 -> Firefox ???
+		-->
+
+		<parent>
+				<groupId>com.redhat.gps.pathfinder</groupId>
+				<artifactId>pathfinder</artifactId>
+				<version>1.0.2-SNAPSHOT</version>
+		</parent>
+
+		<modelVersion>4.0.0</modelVersion>
+		<name>${project.groupId}.${project.artifactId}</name>
+		<artifactId>pathfinder-acceptance</artifactId>
+		<version>1.0.2-SNAPSHOT</version>
+
+		<properties>
+				<selenium.webdriver.chrome.url>chromedriver-linux-2.41</selenium.webdriver.chrome.url>
+				<selenium.webdriver.firefox.url>geckodriver-linux-0.21.0</selenium.webdriver.firefox.url>
+				<cucumber.version>1.1.8</cucumber.version> <!-- 1.8 is the latest -->
+				<maven.compiler.source>1.8</maven.compiler.source>
+				<maven.compiler.target>1.8</maven.compiler.target>
+				<maven.selenium.plugin.version>3.141.0</maven.selenium.plugin.version>
+				<maven.embedmongo.plugin.version>0.4.1</maven.embedmongo.plugin.version>
+				<spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+		</properties>
+
+		<build>
+				<plugins>
+						<!-- disable test by default, acceptance will use the failsafe plugin -->
+						<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-surefire-plugin</artifactId>
+								<version>2.15</version>
+								<configuration>
+										<skip>true</skip>
+								</configuration>
+						</plugin>
+						<plugin>
+								<groupId>org.apache.maven.plugins</groupId>
+								<artifactId>maven-compiler-plugin</artifactId>
+								<version>3.1</version>
+								<configuration>
+										<source>${maven.compiler.source}</source>
+										<target>${maven.compiler.target}</target>
+								</configuration>
+						</plugin>
+				</plugins>
+		</build>
+
+		<profiles>
+				<!-- this profile MUST be above the cargo one in THIS POM - so that it starts before cargo -->
+				<profile>
+						<id>mongo</id>
+						<build>
+								<plugins>
+										<plugin>
+												<groupId>com.github.joelittlejohn.embedmongo</groupId>
+												<artifactId>embedmongo-maven-plugin</artifactId>
+												<version>${maven.embedmongo.plugin.version}</version>
+												<executions>
+														<execution>
+																<id>start-mongodb</id>
+																<phase>package</phase>
+																<!--
+																<phase>pre-integration-test</phase>
+																-->
+																<goals>
+																		<goal>start</goal>
+																</goals>
+																<configuration>
+																		<!-- optional, default 27017 -->
+																		<port>27017</port>
+																		<!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
+																		<randomPort>false</randomPort>
+																		<!-- optional, default 2.2.1 -->
+																		<version>2.2.1</version>
+																		<!-- optional, default is a new dir in java.io.tmpdir -->
+																		<databaseDirectory>/tmp/mongotest</databaseDirectory>
+																		<!-- optional (file|console|none), default console -->
+																		<logging>console</logging>
+																		<!-- optional, can be used when logging=file, default is ./embedmongo.log -->
+																		<logFile>${project.build.directory}/mongodb.log</logFile>
+																		<!-- optional, can be used when logging=file, default is utf-8 -->
+																		<logFileEncoding>utf-8</logFileEncoding>
+																		<!-- optional, default is to listen on all interfaces -->
+																		<bindIp>127.0.0.1</bindIp>
+																		<!-- optional, default is http://fastdl.mongodb.org/ -->
+																		<downloadPath>http://fastdl.mongodb.org/</downloadPath>
+																		<!-- optional, default is /tmp -->
+																		<unixSocketPrefix>${user.home}/.embedmongo</unixSocketPrefix>
+																		<!--optional, one of wiredTiger or mmapv1 (default is mmapv1) -->
+																		<storageEngine>wiredTiger</storageEngine>
+																		<!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
+																		<skip>false</skip>
+
+																</configuration>
+														</execution>
+														<execution>
+																<id>stop-mongodb</id>
+																<phase>post-integration-test</phase>
+																<goals>
+																		<goal>stop</goal>
+																</goals>
+														</execution>
+												</executions>
+										</plugin>
+								</plugins>
+						</build>
+				</profile>
+<!-- 
+				<profile>
+						<id>server</id>
+						<activation>
+								<activeByDefault>false</activeByDefault>
+						</activation>
+						<build>
+								<resources>
+										<resource>
+												<directory>src/main/resources</directory>
+												<filtering>true</filtering>
+										</resource>
+								</resources>
+								<plugins>
+										<plugin>
+												<groupId>org.springframework.boot</groupId>
+												<artifactId>spring-boot-maven-plugin</artifactId>
+												<configuration>
+														<mainClass>com.redhat.gps.pathfinder.PathfinderInitializerServlet</mainClass>
+												</configuration>
+												<dependencies>
+														<dependency>
+																<groupId>com.redhat.gps.pathfinder</groupId>
+																<artifactId>pathfinder-server</artifactId>
+																<classifier>exec</classifier>
+																<version>1.0.2-SNAPSHOT</version>
+														</dependency>
+												</dependencies>
+												<executions>
+														<execution>
+																<id>start-container</id>
+																<phase>package</phase>
+																<goals>
+																		<goal>start</goal>
+																</goals>
+														</execution>
+														<execution>
+																<id>stop-container</id>
+																<phase>post-integration-test</phase>
+																<goals>
+																		<goal>stop</goal>
+																</goals>
+														</execution>
+												</executions>
+										</plugin>
+								</plugins>
+						</build>
+				</profile>
+ -->
+	
+
+				<profile>
+						<id>pathfinder</id>
+						<activation>
+								<activeByDefault>false</activeByDefault>
+						</activation>
+						<build>
+								<resources>
+										<resource>
+												<directory>src/main/resources</directory>
+												<filtering>true</filtering>
+										</resource>
+								</resources>
+								<plugins>
+										<plugin>
+												<groupId>org.codehaus.cargo</groupId>
+												<artifactId>cargo-maven2-plugin</artifactId>
+												<version>1.6.0</version>
+												<executions>
+														<execution>
+																<id>start-container</id>
+																<phase>pre-integration-test</phase>
+																<goals>
+																		<goal>start</goal>
+																</goals>
+														</execution>
+														<execution>
+																<id>stop-container</id>
+																<phase>post-integration-test</phase>
+																<goals>
+																		<goal>stop</goal>
+																</goals>
+														</execution>
+												</executions>
+												<configuration>
+														<container>
+																<!-- Tomcat deploy info @ https://github.com/droolsjbpm/kie-wb-distributions/blob/master/kie-wb/kie-wb-distribution-wars/src/main/tomcat7/README.txt -->
+																<!-- tomcat -> http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/7.0.35/tomcat-7.0.35.zip -->
+																<containerId>tomcat8x</containerId>
+																<artifactInstaller>
+																		<groupId>org.apache.tomcat</groupId>
+																		<artifactId>tomcat</artifactId>
+																		<version>8.5.0</version>
+																		<!--
+																		<version>7.0.68</version>
+																		<version>7.0.35</version>
+																		-->
+																</artifactInstaller>
+																<output>${project.build.directory}/logs/container.log</output>
+																<log>${project.build.directory}/logs/cargo-plugin.log</log>
+																<logLevel>debug</logLevel>
+																<timeout>120000</timeout>
+																<!--systemProperties>
+																		<PATHFINDER_SERVER>http://localhost:8080</PATHFINDER_SERVER>
+																</systemProperties-->
+																<!-- these end up in <tomcat_home>/common/lib -->
+																<dependencies>
+																		<!--
+																			<dependency>
+																				<groupId>org.slf4j</groupId>
+																				<artifactId>slf4j-api</artifactId>
+																			</dependency>
+																			<dependency>
+																				<groupId>org.slf4j</groupId>
+																				<artifactId>slf4j-log4j12</artifactId>
+																			</dependency>
+																			<dependency>
+																				<groupId>log4j</groupId>
+																				<artifactId>log4j</artifactId>
+																			</dependency>
+																		 -->
+																</dependencies>
+														</container>
+														<configuration>
+																<properties>
+																		<!--
+																			-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -Xnoagent
+																			-Dcom.sun.management.jmxremote.port=6000
+																			-Dcom.sun.management.jmxremote.authenticate=false
+																			-Dcom.sun.management.jmxremote.ssl=false
+																		-->
+																		<!--
+																		<cargo.jvmargs>
+																			-Xmx1024m
+																			-XX:MaxPermSize=256m
+																		</cargo.jvmargs>
+																		<cargo.servlet.port>16080</cargo.servlet.port>
+																		-->
+
+																		<cargo.jvmargs>
+																				-DPATHFINDER_SERVER=http://localhost:8083/pathfinder-server
+																		</cargo.jvmargs>
+
+																		<cargo.servlet.port>8083</cargo.servlet.port>
+																</properties>
+																<!--
+																<configfiles>
+																	<configfile>
+																		<file>${project.build.directory}/classes/tomcat7x/server.xml</file>
+																		<todir>conf/</todir>
+																		<tofile>server.xml</tofile>
+																	</configfile>
+																	<configfile>
+																		<file>${project.build.directory}/classes/tomcat7x/tomcat-users.xml</file>
+																		<todir>conf/</todir>
+																		<tofile>tomcat-users.xml</tofile>
+																	</configfile>
+																	<configfile>
+																		<file>${project.build.directory}/classes/tomcat7x/context.xml</file>
+																		<todir>conf/</todir>
+																		<tofile>context.xml</tofile>
+																	</configfile>
+																</configfiles>
+																-->
+														</configuration>
+														<deployables>
+															<deployable>
+																<groupId>com.redhat.gps.pathfinder</groupId>
+																<artifactId>pathfinder-ui</artifactId>
+																<type>war</type>
+																<properties>
+																	<context>/</context>
+																</properties>
+															</deployable>
+															<deployable>
+																<groupId>com.redhat.gps.pathfinder</groupId>
+																<artifactId>pathfinder-server-war</artifactId>
+																<type>war</type>
+																<properties>
+																	<context>pathfinder-server</context>
+																</properties>
+															</deployable>
+															<!-- 
+															 -->
+														</deployables>
+												</configuration>
+										</plugin>
+								</plugins>
+						</build>
+				</profile>
+
+				<profile>
+						<id>acceptance</id>
+						<activation><activeByDefault>false</activeByDefault></activation>
+						<build>
+								<plugins>
+										<plugin>
+												<groupId>org.apache.maven.plugins</groupId>
+												<artifactId>maven-surefire-plugin</artifactId>
+												<version>2.15</version>
+												<configuration>
+														<skip>true</skip>
+												</configuration>
+										</plugin>
+										<plugin>
+												<groupId>org.apache.maven.plugins</groupId>
+												<artifactId>maven-failsafe-plugin</artifactId>
+												<version>2.22.2</version>
+												<configuration>
+														<failIfNoTests>false</failIfNoTests>
+														<parallel>none</parallel>
+														<threadCount>1</threadCount>
+														<includes>
+																<include>**/*RunCucumber*Test*.java</include>
+														</includes>
+												</configuration>
+												<executions>
+														<execution>
+																<phase>integration-test</phase>
+																<id>integration-test</id>
+																<goals>
+																		<goal>integration-test</goal>
+																		<goal>verify</goal>
+																</goals>
+														</execution>
+												</executions>
+										</plugin>
+								</plugins>
+						</build>
+				</profile>
+		</profiles>
+
+		<dependencies>
+				<dependency>
+						<groupId>com.redhat.gps.pathfinder</groupId>
+						<artifactId>pathfinder-ui</artifactId>
+						<version>1.0.2-SNAPSHOT</version>
+						<type>war</type>
+				</dependency>
+				<dependency>
+						<groupId>com.redhat.gps.pathfinder</groupId>
+						<artifactId>pathfinder-server</artifactId>
+						<version>1.0.2-SNAPSHOT</version>
+				</dependency>
+				<dependency>
+						<groupId>com.redhat.gps.pathfinder</groupId>
+						<artifactId>pathfinder-server-war</artifactId>
+						<version>1.0.2-SNAPSHOT</version>
+						<type>war</type>
+				</dependency>
+				<!--
+				<dependency>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-log4j12</artifactId>
+				</dependency>
+				-->
+				<!-- cucumber bdd framework -->
+				<dependency>
+						<groupId>info.cukes</groupId>
+						<artifactId>cucumber-jvm</artifactId>
+						<version>1.2.5</version>
+						<type>pom</type>
+				</dependency>
+				<dependency>
+						<groupId>info.cukes</groupId>
+						<artifactId>cucumber-java</artifactId>
+						<version>1.2.5</version>
+						<scope>test</scope>
+				</dependency>
+				<dependency>
+						<groupId>info.cukes</groupId>
+						<artifactId>cucumber-junit</artifactId>
+						<version>1.2.5</version>
+						<scope>test</scope>
+				</dependency>
+<!--
+				<dependency>
+						<groupId>info.cukes</groupId>
+						<artifactId>cucumber-spring</artifactId>
+						<version>1.2.5</version>
+						<scope>test</scope>
+				</dependency>
+-->
+				<!-- spring dependencies -->
+				<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-web</artifactId>
+						<version>${spring-boot.version}</version>
+				</dependency>
+				<dependency>
+						<groupId>org.springframework.boot</groupId>
+						<artifactId>spring-boot-starter-test</artifactId>
+						<version>${spring-boot.version}</version>
+						<scope>test</scope>
+				</dependency>
+<!--
+-->
+				<!-- for http interactions -->
+				<dependency>
+						<groupId>com.jayway.restassured</groupId>
+						<artifactId>rest-assured</artifactId>
+						<version>1.8.1</version>
+				</dependency>
+				<dependency>
+						<groupId>org.apache.httpcomponents</groupId>
+						<artifactId>httpclient</artifactId>
+						<version>4.2.5</version>
+				</dependency>
 
 
-    -->
-    <modelVersion>4.0.0</modelVersion>
-    <name>${project.groupId}.${project.artifactId}</name>
-    <artifactId>pathfinder-acceptance</artifactId>
-    <version>1.0.2-SNAPSHOT</version>
+				<!--
+				linux - https://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip
+				osx - https://chromedriver.storage.googleapis.com/2.37/chromedriver_mac64.zip
+				 -->
+				<dependency>
+						<groupId>org.seleniumhq.selenium</groupId>
+						<artifactId>selenium-remote-driver</artifactId>
+						<version>${maven.selenium.plugin.version}</version>
+						<scope>test</scope>
+				</dependency>
+				<dependency>
+						<groupId>org.seleniumhq.selenium</groupId>
+						<artifactId>selenium-java</artifactId>
+						<version>${maven.selenium.plugin.version}</version>
+						<scope>test</scope>
+				</dependency>
+				<dependency>
+						<groupId>org.seleniumhq.selenium</groupId>
+						<artifactId>selenium-api</artifactId>
+						<version>${maven.selenium.plugin.version}</version>
+						<scope>test</scope>
+				</dependency>
 
-    <parent>
-        <groupId>com.redhat.gps.pathfinder</groupId>
-        <artifactId>pathfinder</artifactId>
-        <version>1.0.2-SNAPSHOT</version>
-    </parent>
+				<dependency>
+						<groupId>org.seleniumhq.selenium</groupId>
+						<artifactId>selenium-server</artifactId>
+						<version>${maven.selenium.plugin.version}</version>
+				</dependency>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>io.github.jhipster</groupId>
-                <artifactId>jhipster-dependencies</artifactId>
-                <version>${jhipster-dependencies.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-            <!-- jhipster-needle-maven-add-dependency-management -->
-        </dependencies>
-    </dependencyManagement>
+				<dependency>
+						<groupId>org.testng</groupId>
+						<artifactId>testng</artifactId>
+						<version>6.14.3</version>
+						<scope>test</scope>
+				</dependency>
 
-    <properties>
-        <selenium.webdriver.chrome.url>chromedriver-linux-2.41</selenium.webdriver.chrome.url>
-        <selenium.webdriver.firefox.url>geckodriver-linux-0.21.0</selenium.webdriver.firefox.url>
-        <cucumber.version>1.1.8</cucumber.version> <!-- 1.8 is the latest -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.selenium.plugin.version>3.141.0</maven.selenium.plugin.version>
-        <maven.embedmongo.plugin.version>0.4.1</maven.embedmongo.plugin.version>
-    </properties>
-
-    <build>
-        <plugins>
-            <!-- disable test by default, acceptance will use the failsafe plugin -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.15</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <profiles>
-
-        <!-- this profile MUST be above the cargo one in THIS POM - so that it starts before cargo -->
-        <profile>
-            <id>mongo</id>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>com.github.joelittlejohn.embedmongo</groupId>
-                        <artifactId>embedmongo-maven-plugin</artifactId>
-                        <version>${maven.embedmongo.plugin.version}</version>
-                        <executions>
-                            <execution>
-                                <id>start-mongodb</id>
-                                <phase>package</phase>
-                                <!--
-                                <phase>pre-integration-test</phase>
-                                -->
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- optional, default 27017 -->
-                                    <port>27017</port>
-                                    <!-- optional, default is false, if true allocates a random port and overrides embedmongo.port -->
-                                    <randomPort>false</randomPort>
-                                    <!-- optional, default 2.2.1 -->
-                                    <version>2.2.1</version>
-                                    <!-- optional, default is a new dir in java.io.tmpdir -->
-                                    <databaseDirectory>/tmp/mongotest</databaseDirectory>
-                                    <!-- optional (file|console|none), default console -->
-                                    <logging>console</logging>
-                                    <!-- optional, can be used when logging=file, default is ./embedmongo.log -->
-                                    <logFile>${project.build.directory}/mongodb.log</logFile>
-                                    <!-- optional, can be used when logging=file, default is utf-8 -->
-                                    <logFileEncoding>utf-8</logFileEncoding>
-                                    <!-- optional, default is to listen on all interfaces -->
-                                    <bindIp>127.0.0.1</bindIp>
-                                    <!-- optional, default is http://fastdl.mongodb.org/ -->
-                                    <downloadPath>http://fastdl.mongodb.org/</downloadPath>
-                                    <!-- optional, default is /tmp -->
-                                    <unixSocketPrefix>${user.home}/.embedmongo</unixSocketPrefix>
-                                    <!--optional, one of wiredTiger or mmapv1 (default is mmapv1) -->
-                                    <storageEngine>wiredTiger</storageEngine>
-                                    <!-- optional, skips this plugin entirely, use on the command line like -Dembedmongo.skip -->
-                                    <skip>false</skip>
-
-                                </configuration>
-                            </execution>
-                            <execution>
-                                <id>stop-mongodb</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>pathfinder</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                    </resource>
-                </resources>
-                <plugins>
-
-                    <plugin>
-                        <groupId>org.springframework.boot</groupId>
-                        <artifactId>spring-boot-maven-plugin</artifactId>
-                        <configuration>
-                            <mainClass>com.redhat.gps.pathfinder.PathfinderInitializerServlet</mainClass>
-                        </configuration>
-                        <dependencies>
-                            <dependency>
-                                <groupId>com.redhat.gps.pathfinder</groupId>
-                                <artifactId>pathfinder-server</artifactId>
-                                <classifier>exec</classifier>
-                                <version>1.0.2-SNAPSHOT</version>
-                            </dependency>
-                        </dependencies>
-                        <executions>
-                            <execution>
-                                <id>start-container</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-container</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-
-                    <!--
-                              <plugin>
-                                <groupId>org.codehaus.mojo</groupId>
-                                <artifactId>exec-maven-plugin</artifactId>
-                                <version>1.6.0</version>
-                                <executions>
-                                  <execution>
-                                    <goals>
-                                      <goal>exec</goal>
-                                    </goals>
-                                  </execution>
-                                </executions>
-                                <configuration>
-                                  <executable>maven</executable>
-                                  <arguments>
-                                    <argument>-X</argument>
-                                    <argument>myproject:dist</argument>
-                                  </arguments>
-                                </configuration>
-                              </plugin>
-                     -->
-
-
-                    <plugin>
-                        <groupId>org.codehaus.cargo</groupId>
-                        <artifactId>cargo-maven2-plugin</artifactId>
-                        <version>1.6.0</version>
-                        <executions>
-                            <execution>
-                                <id>start-container</id>
-                                <phase>pre-integration-test</phase>
-                                <goals>
-                                    <goal>start</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-container</id>
-                                <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                        <configuration>
-                            <container>
-                                <!-- Tomcat deploy info @ https://github.com/droolsjbpm/kie-wb-distributions/blob/master/kie-wb/kie-wb-distribution-wars/src/main/tomcat7/README.txt -->
-                                <!-- tomcat -> http://repo1.maven.org/maven2/org/apache/tomcat/tomcat/7.0.35/tomcat-7.0.35.zip -->
-                                <containerId>tomcat8x</containerId>
-                                <!--
-                                -->
-                                <artifactInstaller>
-                                    <groupId>org.apache.tomcat</groupId>
-                                    <artifactId>tomcat</artifactId>
-                                    <version>8.5.0</version>
-                                    <!--
-                                    <version>7.0.68</version>
-                                    <version>7.0.35</version>
-                                    -->
-                                </artifactInstaller>
-                                <output>${project.build.directory}/logs/container.log</output>
-                                <log>${project.build.directory}/logs/cargo-plugin.log</log>
-                                <timeout>120000</timeout>
-                                <systemProperties>
-                                    <PATHFINDER_SERVER>http://localhost:8080</PATHFINDER_SERVER>
-                                    <!--
-                                      <target.server>http://localhost:8082</target.server>
-                                    -->
-                                </systemProperties>
-                                <!-- these end up in <tomcat_home>/common/lib -->
-                                <!--
-                                -->
-                                <dependencies>
-                                    <!--
-                                      <dependency>
-                                        <groupId>org.slf4j</groupId>
-                                        <artifactId>slf4j-api</artifactId>
-                                      </dependency>
-                                      <dependency>
-                                        <groupId>org.slf4j</groupId>
-                                        <artifactId>slf4j-log4j12</artifactId>
-                                      </dependency>
-                                      <dependency>
-                                        <groupId>log4j</groupId>
-                                        <artifactId>log4j</artifactId>
-                                      </dependency>
-                                     -->
-                                </dependencies>
-                            </container>
-                            <configuration>
-                                <properties>
-                                    <!--
-                                      -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000 -Xnoagent
-                                      -Dcom.sun.management.jmxremote.port=6000
-                                      -Dcom.sun.management.jmxremote.authenticate=false
-                                      -Dcom.sun.management.jmxremote.ssl=false
-                                    -->
-                                    <!--
-                                    <cargo.jvmargs>
-                                      -Xmx1024m
-                                      -XX:MaxPermSize=256m
-                                    </cargo.jvmargs>
-                                    <cargo.servlet.port>16080</cargo.servlet.port>
-                                    -->
-
-                                    <cargo.jvmargs>
-                                        -DPATHFINDER_SERVER=http://localhost:8080/local/pathfinder
-                                    </cargo.jvmargs>
-
-                                    <cargo.servlet.port>8083</cargo.servlet.port>
-                                </properties>
-                                <!--
-                                <configfiles>
-                                  <configfile>
-                                    <file>${project.build.directory}/classes/tomcat7x/server.xml</file>
-                                    <todir>conf/</todir>
-                                    <tofile>server.xml</tofile>
-                                  </configfile>
-                                  <configfile>
-                                    <file>${project.build.directory}/classes/tomcat7x/tomcat-users.xml</file>
-                                    <todir>conf/</todir>
-                                    <tofile>tomcat-users.xml</tofile>
-                                  </configfile>
-                                  <configfile>
-                                    <file>${project.build.directory}/classes/tomcat7x/context.xml</file>
-                                    <todir>conf/</todir>
-                                    <tofile>context.xml</tofile>
-                                  </configfile>
-                                </configfiles>
-                                -->
-                            </configuration>
-                            <deployables>
-                                <deployable>
-                                    <groupId>com.redhat.gps.pathfinder</groupId>
-                                    <artifactId>pathfinder-ui</artifactId>
-                                    <type>war</type>
-                                    <properties>
-                                        <context>/</context>
-                                    </properties>
-                                </deployable>
-                            </deployables>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-
-        <profile>
-            <id>acceptance</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-surefire-plugin</artifactId>
-                        <version>2.15</version>
-                        <configuration>
-                            <skip>true</skip>
-                        </configuration>
-                    </plugin>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-failsafe-plugin</artifactId>
-                        <version>2.22.2</version>
-                        <configuration>
-                            <failIfNoTests>false</failIfNoTests>
-                            <parallel>none</parallel>
-                            <threadCount>1</threadCount>
-                            <includes>
-                                <include>**/*RunCucumber*Test*.java</include>
-                            </includes>
-                        </configuration>
-                        <executions>
-                            <execution>
-                                <phase>integration-test</phase>
-                                <id>integration-test</id>
-                                <goals>
-                                    <goal>integration-test</goal>
-                                    <goal>verify</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.redhat.gps.pathfinder</groupId>
-            <artifactId>pathfinder-ui</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
-            <type>war</type>
-        </dependency>
-        <dependency>
-            <groupId>com.redhat.gps.pathfinder</groupId>
-            <artifactId>pathfinder-server</artifactId>
-            <version>1.0.2-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.9</version>
-        </dependency>
-
-        <!-- cucumber bdd framework -->
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-jvm</artifactId>
-            <version>1.2.5</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-java</artifactId>
-            <version>1.2.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-junit</artifactId>
-            <version>1.2.5</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>info.cukes</groupId>
-            <artifactId>cucumber-spring</artifactId>
-            <version>1.2.5</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- spring dependencies -->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-            <version>${spring-boot.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <version>${spring-boot.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- for http interactions -->
-        <dependency>
-            <groupId>com.jayway.restassured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>1.8.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.2.5</version>
-        </dependency>
-
-
-        <!--
-        linux - https://chromedriver.storage.googleapis.com/2.37/chromedriver_linux64.zip
-        osx - https://chromedriver.storage.googleapis.com/2.37/chromedriver_mac64.zip
-         -->
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-remote-driver</artifactId>
-            <version>${maven.selenium.plugin.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${maven.selenium.plugin.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-api</artifactId>
-            <version>${maven.selenium.plugin.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-server</artifactId>
-            <version>${maven.selenium.plugin.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>6.14.3</version>
-            <scope>test</scope>
-        </dependency>
-
-    </dependencies>
+		</dependencies>
 </project>

@@ -93,7 +93,7 @@
 			<div class="w-100">
 				<div class="modal-content" style="margin: auto;">
 					<div class="modal-body">
-						<form id="loginForm" action="local/pathfinder/login" method="post">
+						<form id="loginForm" action="pathfinder/login" method="post">
 							<div class="form-group">
 								<label for="username" class="control-label">Username:</label>
 								<input id="username" name="username" type="text" class="form-control">

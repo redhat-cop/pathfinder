@@ -12,7 +12,7 @@
 		<a id="customers" href="manageCustomers.jsp">
 			<img class="logo" id="logo" src="assets/images/RH_Pathfinder_Icon_Color-56.png"/><span class="logo-text vbold">Path</span><span class="logo-text normal">finder</span>
 		</a>
-		<p id="logged-status">Logged in as <%=request.getSession().getAttribute("x-displayName")%> <a href="local/pathfinder/logout"> (Logout)</a></p>
+		<p id="logged-status">Logged in as <%=request.getSession().getAttribute("x-displayName")%> <a href="pathfinder/logout"> (Logout)</a></p>
 	<%}%>
 </header>
 

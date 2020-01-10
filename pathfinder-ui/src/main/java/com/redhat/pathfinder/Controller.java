@@ -1,19 +1,20 @@
 package com.redhat.pathfinder;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.Lists;
-import com.mongodb.MongoClient;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import com.mongodb.client.MongoDatabase;
-import org.apache.commons.io.IOUtils;
-import org.bson.Document;
-import org.bson.codecs.BsonTypeClassMap;
-import org.bson.codecs.DocumentCodec;
-import org.bson.codecs.configuration.CodecRegistries;
-import org.bson.codecs.configuration.CodecRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static io.restassured.RestAssured.given;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,16 +24,26 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLEncoder;
-import java.util.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 
-import static io.restassured.RestAssured.given;
+import org.apache.commons.io.IOUtils;
+import org.bson.Document;
+import org.bson.codecs.BsonTypeClassMap;
+import org.bson.codecs.DocumentCodec;
+import org.bson.codecs.configuration.CodecRegistries;
+import org.bson.codecs.configuration.CodecRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Splitter;
+import com.google.common.collect.Lists;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
+import com.mongodb.client.MongoDatabase;
 
 
-@Path("/pathfinder/")
+@Path("/")
 public class Controller{
 
   private static final Logger log = LoggerFactory.getLogger(Controller.class);
@@ -246,7 +257,7 @@ public class Controller{
   @Path("/logout")
   public Response logout(@Context HttpServletRequest request, @Context HttpServletResponse response) throws URISyntaxException, IOException{
     request.getSession().invalidate();
-    return Response.status(302).location(new URI("../index.jsp")).build();
+    return newResponse(302).location(new URI("../index.jsp")).build();
   }
   
   private String maskPasswords(String input) {
@@ -275,7 +286,7 @@ public class Controller{
     	log.info("Controller:login():: ERROR1 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
     	log.info("Controller:login():: 3 OUT/ERROR loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
       String error="Username and/or password is unknown or incorrect"; // would grab the text from server side but spring wraps some debug info in there so until we can strip that we cant give details of failure
-      return Response.status(302).location(new URI("../index.jsp?error="+URLEncoder.encode(error, "UTF-8"))).build();
+      return newResponse(302).location(new URI("../index.jsp?error="+URLEncoder.encode(error, "UTF-8"))).build();
     }
     
     log.info("Controller:login():: 2 loginResp(code="+loginResp.statusCode()+").asString() = "+loginResp.asString());
@@ -292,7 +303,7 @@ public class Controller{
     request.getSession().setAttribute("x-username", username);
     request.getSession().setAttribute("x-displayName", displayName);
     
-    return Response.status(302).location(new URI("../manageCustomers.jsp")).header("x-access-token", jwtToken).build();
+    return newResponse(302).location(new URI("../manageCustomers.jsp")).header("x-access-token", jwtToken).build();
   }
   
   @POST
@@ -301,8 +312,16 @@ public class Controller{
     session.removeAttribute("username");
     session.invalidate();
     // TODO: and invalidate it on the server end too!
-    return Response.status(302).location(new URI("/index.jsp")).build();
+    return newResponse(302).location(new URI("/index.jsp")).build();
   }
   
+  private ResponseBuilder newResponse(int status){
+  	return Response.status(status)
+       .header("Access-Control-Allow-Origin",  "*")
+       .header("Content-Type","application/json")
+       .header("Cache-Control", "no-store, must-revalidate, no-cache, max-age=0")
+       .header("Pragma", "no-cache")
+       .header("X-Content-Type-Options", "nosniff");
+  }
   
 }
