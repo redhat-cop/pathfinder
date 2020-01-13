@@ -50,7 +50,7 @@
       {
         "type": "radiogroup",
         "name": "COMPLIANCE",
-        "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPPA etc. Does the application have any licensing requirements? e.g. per core licensing",
+        "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPAA etc. Does the application have any licensing requirements? e.g. per core licensing",
         "isRequired": true,
         "colCount": 1,
         "choices": ["0-UNKNOWN|Unknown","1-RED|High compliance requirements - both Legal and licensing", "2-RED|Licensing compliance - licensing servers", "3-AMBER|Legal compliance - distinct hardware, isolated clusters, compliance certification","4-GREEN| None"]
