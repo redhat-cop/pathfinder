@@ -1,68 +1,70 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <!-- # to build a spring boot app mvn clean install # to build a war (deployable is in pathfinder-server-war) mvn clean install -Pwar -->
-  <modelVersion>4.0.0</modelVersion>
-  <name>${project.groupId}.${project.artifactId}</name>
-  <groupId>com.redhat.gps.pathfinder</groupId>
-  <artifactId>pathfinder</artifactId>
-  <version>1.0.2-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <organization>
-    <name>RedHat Inc</name>
-  </organization>
-  <inceptionYear>2018</inceptionYear>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <!-- # to build a spring boot app mvn clean install # to build a war (deployable is in pathfinder-server-war) mvn clean install -Pwar -->
+    <modelVersion>4.0.0</modelVersion>
+    <name>${project.groupId}.${project.artifactId}</name>
+    <groupId>com.redhat.gps.pathfinder</groupId>
+    <artifactId>pathfinder</artifactId>
+    <version>1.0.2-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <organization>
+        <name>RedHat Inc</name>
+    </organization>
+    <inceptionYear>2018</inceptionYear>
 
-  <properties>
-    <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
-    <jhipster-dependencies.version>0.1.7</jhipster-dependencies.version>
-  </properties>
+    <properties>
+        <revision>1.0.2-SNAPSHOT</revision>
+        <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+        <jhipster-dependencies.version>0.1.7</jhipster-dependencies.version>
+    </properties>
 
-  <modules>
-<!--
-    <module>acceptance</module>
--->
-    <module>pathfinder-ui</module>
-    <module>pathfinder-server</module>
-    <module>pathfinder-server-war</module>
-  </modules>
-
-  <profiles>
-    <profile>
-      <id>war</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <modules>
+    <modules>
+        <!--
+            <module>acceptance</module>
+        -->
+        <module>pathfinder-ui</module>
+        <module>pathfinder-server</module>
         <module>pathfinder-server-war</module>
-      </modules>
-    </profile>
-  </profiles>
+    </modules>
 
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring-boot.version}</version>
-      </dependency>
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-api</artifactId>
-		<version>1.7.9</version>
-	</dependency>
-<!--
-	<dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-log4j12</artifactId>
-		<version>1.7.9</version>
-	</dependency>
-	<dependency>
-		<groupId>log4j</groupId>
-		<artifactId>log4j</artifactId>
-		<version>1.2.17</version>
-	</dependency>
--->
-    </dependencies>
-  </dependencyManagement>
+    <profiles>
+        <profile>
+            <id>war</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <modules>
+                <module>pathfinder-server-war</module>
+            </modules>
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.9</version>
+            </dependency>
+            <!--
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-log4j12</artifactId>
+                    <version>1.7.9</version>
+                </dependency>
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <version>1.2.17</version>
+                </dependency>
+            -->
+        </dependencies>
+    </dependencyManagement>
 
 </project>
 
