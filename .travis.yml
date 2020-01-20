@@ -2,24 +2,18 @@ language: java
 jdk: openjdk8
 
 services:
-- docker
+  - docker
 
 branches:
   only:
     - master
     - stable
 
-env:
-  global:
-  - COMMIT=${TRAVIS_COMMIT::7}
-
 after_success:
-- export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
-- docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
-- docker build . -t $IMAGE_NAME_SERVER:$COMMIT -f ServerDockerfile --build-arg GIT_COMMIT=$COMMIT
-- docker tag $IMAGE_NAME_SERVER:$COMMIT $IMAGE_NAME_SERVER:latest
-- docker push $IMAGE_NAME_SERVER
-- export IMAGE_NAME_UI=quay.io/pathfinder/pathfinder-ui
-- docker build . -t $IMAGE_NAME_UI:$COMMIT -f UIDockerfile --build-arg GIT_COMMIT=$COMMIT
-- docker tag $IMAGE_NAME_UI:$COMMIT $IMAGE_NAME_UI:latest
-- docker push $IMAGE_NAME_UI
+  - export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
+  - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
+  - docker build . -t $IMAGE_NAME_SERVER:$TRAVIS_BRANCH -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build_arg BUILDID=$TRAVIS_BUILD_NUMBER --build_arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker push $IMAGE_NAME_SERVER
+  - export IMAGE_NAME_UI=quay.io/pathfinder/pathfinder-ui
+  - docker build . -t $IMAGE_NAME_UI:$TRAVIS_BRANCH -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build_arg BUILDID=$TRAVIS_BUILD_NUMBER --build_arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker push $IMAGE_NAME_UI
