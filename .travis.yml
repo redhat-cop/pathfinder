@@ -4,11 +4,6 @@ jdk: openjdk8
 services:
   - docker
 
-branches:
-  only:
-    - master
-    - stable
-
 after_success:
   - export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
