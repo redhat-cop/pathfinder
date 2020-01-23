@@ -4,13 +4,14 @@ jdk: openjdk8
 services:
   - docker
 
+script:
+  - set |grep TRAVIS
+
 after_success:
-  - echo $IMAGE_NAME_UI
-  - echo $TRAVIS_BRANCH
   - export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
   - docker build . -t $IMAGE_NAME_SERVER:$TRAVIS_BRANCH -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
   - docker push $IMAGE_NAME_SERVER:$TRAVIS_BRANCH
   - export IMAGE_NAME_UI=quay.io/pathfinder/pathfinder-ui
   - docker build . -t $IMAGE_NAME_UI:$TRAVIS_BRANCH -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
-  - docker push $IMAGE_NAME_UI::$TRAVIS_BRANCH
+  - docker push $IMAGE_NAME_UI:$TRAVIS_BRANCH
