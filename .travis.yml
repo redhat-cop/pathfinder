@@ -5,13 +5,17 @@ services:
   - docker
 
 script:
-  - set |grep TRAVIS
+  - export PATHFINDER_UI_IMAGE=quay.io/pathfinder/pathfinder-ui
+  - export PATHFINDER_UI_IMAGE_FULL=$PATHFINDER_UI_IMAGE:$TRAVIS_BRANCH
+  - export PATHFINDER_SERVER_IMAGE=quay.io/pathfinder/pathfinder-server
+  - export PATHFINDER_SERVER_IMAGE_FULL=$PATHFINDER_SERVER_IMAGE:$TRAVIS_BRANCH
+  - set |grep PATHFINDER
 
 after_success:
-  - export IMAGE_NAME_SERVER=quay.io/pathfinder/pathfinder-server
+  - set |grep TRAVIS
+  - set |grep PATHFINDER
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
-  - docker build . -t $IMAGE_NAME_SERVER:$TRAVIS_BRANCH -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
-  - docker push $IMAGE_NAME_SERVER:$TRAVIS_BRANCH
-  - export IMAGE_NAME_UI=quay.io/pathfinder/pathfinder-ui
-  - docker build . -t $IMAGE_NAME_UI:$TRAVIS_BRANCH -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
-  - docker push $IMAGE_NAME_UI:$TRAVIS_BRANCH
+  - docker build . -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker push $PATHFINDER_SERVER_IMAGE_FULL
+  - docker build . -t $PATHFINDER_UI_IMAGE_FULL -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker push $PATHFINDER_UI_IMAGE_FULL
