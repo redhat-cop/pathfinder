@@ -15,7 +15,7 @@ after_success:
   - set |grep TRAVIS
   - set |grep PATHFINDER
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
-  - docker build . -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker build -t ${PATHFINDER_SERVER_IMAGE_FULL} -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE .
   - docker push $PATHFINDER_SERVER_IMAGE_FULL
-  - docker build . -t $PATHFINDER_UI_IMAGE_FULL -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE
+  - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile --build-arg BRANCH=${TRAVIS_BRANCH} --build-arg BUILDID=${TRAVIS_BUILD_NUMBER} --build-arg GITMSG=${TRAVIS_COMMIT_MESSAGE} .
   - docker push $PATHFINDER_UI_IMAGE_FULL
