@@ -11,9 +11,8 @@ script:
   - export PATHFINDER_SERVER_IMAGE_FULL=$PATHFINDER_SERVER_IMAGE:$TRAVIS_BRANCH
 
 after_success:
-  - set |grep PATHFINDER
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
   - docker build -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT  .
   - docker push $PATHFINDER_SERVER_IMAGE_FULL
-  - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile .
+  - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT  .
   - docker push $PATHFINDER_UI_IMAGE_FULL
