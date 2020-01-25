@@ -9,13 +9,11 @@ script:
   - export PATHFINDER_UI_IMAGE_FULL=$PATHFINDER_UI_IMAGE:$TRAVIS_BRANCH
   - export PATHFINDER_SERVER_IMAGE=quay.io/pathfinder/pathfinder-server
   - export PATHFINDER_SERVER_IMAGE_FULL=$PATHFINDER_SERVER_IMAGE:$TRAVIS_BRANCH
-  - set |grep TRAVIS
-  - set |grep PATHFINDER
 
 after_success:
   - set |grep PATHFINDER
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
-  - docker build -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg BUILDID=$TRAVIS_BUILD_NUMBER .
+  - docker build -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg GITMSG=$TRAVIS_COMMIT_MESSAGE --build-arg COMMITHASH=$TRAVIS_COMMIT --build-arg BUILDURL=$TRAVIS_BUILD_WEB_URL .
   - docker push $PATHFINDER_SERVER_IMAGE_FULL
   - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile .
   - docker push $PATHFINDER_UI_IMAGE_FULL
