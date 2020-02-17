@@ -36,7 +36,11 @@
         https://mvnrepository.com/artifact/io.github.jhipster/jhipster-dependencies/${jhipster-dependencies.version} -->
         <!-- 
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
+<<<<<<< HEAD
         <mapstruct.version>1.2.0.Final</mapstruct.version>-->
+=======
+        <!--        <mapstruct.version>1.2.0.Final</mapstruct.version>-->
+>>>>>>> 63a7eebb14d0161f28c7ee14558cc1ce91ad68d7
 
         <!-- Plugin versions -->
         <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
@@ -164,11 +168,6 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>de.flapdoodle.embed</groupId>
-            <artifactId>de.flapdoodle.embed.mongo</artifactId>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
