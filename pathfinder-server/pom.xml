@@ -561,6 +561,9 @@
                                     <goal>build-info</goal>
                                     <goal>repackage</goal>
                                 </goals>
+                                <configuration>
+                                    <classifier>exec</classifier>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
