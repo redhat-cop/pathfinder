@@ -185,7 +185,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
           if (null==app.getAssessments()) continue;
           Assessments assessment=app.getAssessments().get(app.getAssessments().size()-1);
           
-          Map<String,Map<String,String>> questionKeyToText=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
+          Map<String,Map<String,String>> questionKeyToText=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyDefinition(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
             @Override
             public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
               result.put(name, new MapBuilder<String, String>()
@@ -261,9 +261,13 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
     }
     
     private String getSurveyContent() throws IOException{
-      String surveyJson = getResourceAsString("survey.json");
+      String surveyJson = getSurveyDefinition();
       String surveyJs = getResourceAsString("application-survey.js");
       return surveyJs.replace("$$QUESTIONS_JSON$$", surveyJson);
+    }
+
+    private String getSurveyDefinition() throws IOException{
+        return getResourceAsString("survey.json");
     }
 
     private String getResourceAsString(String resource) throws IOException {
@@ -294,9 +298,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         return null;
       }
       
-//      // Get the survey json content (and fiddle with it so it's readable)
-      String survey = IOUtils.toString(CustomerAPIImpl.class.getClassLoader().getResourceAsStream("survey.json"), "UTF-8");
-      List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(), survey, assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
+      // Get the survey json content (and fiddle with it so it's readable)
+      List<ApplicationAssessmentSummary> result=new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(), getSurveyDefinition(), assessment, new QuestionParser<List<ApplicationAssessmentSummary>>(){
         @Override
         public void parse(List<ApplicationAssessmentSummary> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
           result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
@@ -1442,7 +1445,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
       
       
       // Get the questions, answers, ratings etc...
-      Map<String,Map<String,String>> questionInfo=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyContent(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
+      Map<String,Map<String,String>> questionInfo=new QuestionReader<Map<String,Map<String,String>>>().read(new HashMap<String,Map<String,String>>(), getSurveyDefinition(), assessment, new QuestionParser<Map<String,Map<String,String>>>(){
         @Override
         public void parse(Map<String,Map<String,String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText){
           result.put(name, new MapBuilder<String, String>()
