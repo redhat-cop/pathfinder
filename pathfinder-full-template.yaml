@@ -13,7 +13,7 @@ objects:
     creationTimestamp: null
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     ports:
@@ -44,7 +44,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     lookupPolicy:
@@ -68,7 +68,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     lookupPolicy:
@@ -92,7 +92,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     replicas: 1
@@ -117,7 +117,7 @@ objects:
         labels:
           app: pathfinder-server
           deploymentconfig: pathfinder-server
-          bundle: pathfinder
+          bundle: pathfinder-${VERSION}
       spec:
         containers:
         - env:
@@ -158,9 +158,9 @@ objects:
             timeoutSeconds: 1
           resources:
             limits:
-              memory: 1Gi
+              memory: 500Mi
             requests:
-              memory: 700Mi
+              memory: 300Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
@@ -196,7 +196,7 @@ objects:
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     ports:
@@ -219,7 +219,7 @@ objects:
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder
   spec:
     path: "" 
@@ -238,7 +238,7 @@ objects:
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     replicas: 1
@@ -257,7 +257,7 @@ objects:
           app: pathfinder-ui
           application: pathfinder-ui
           deploymentConfig: pathfinder-ui
-          bundle: pathfinder
+          bundle: pathfinder-${VERSION}
         name: pathfinder-ui
       spec:
         containers:
@@ -291,7 +291,11 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          resources: {}
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              memory: 300Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
