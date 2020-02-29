@@ -220,7 +220,7 @@ objects:
       app: pathfinder-ui
       application: pathfinder-ui
       bundle: pathfinder-${VERSION}
-    name: pathfinder
+    name: pathfinder-${VERSION}
   spec:
     path: "" 
     tls:

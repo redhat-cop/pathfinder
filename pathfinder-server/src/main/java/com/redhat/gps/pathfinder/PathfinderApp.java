@@ -55,7 +55,7 @@ public class PathfinderApp {
 
     private static final Logger log = LoggerFactory.getLogger(PathfinderApp.class);
 
-    @Autowired
+    @Autowired(required = false)
     public void getGitInfo(GitProperties properties) {
         properties.forEach((k) -> log.info("GITINFO {} -> {} " ,k.getKey(),k.getValue()));
     }

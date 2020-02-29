@@ -28,6 +28,10 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.4.20.v20190813</version>
 				<configuration>
+					<war>${project.basedir}/target/root.war</war>
+					<webAppConfig>
+						<overrideDescriptor>src/main/webapp/WEB-INF/override-web.xml</overrideDescriptor>
+					</webAppConfig>
 					<systemProperty>
 						<name>com.sun.management.jmxremote.port</name>
 						<value>9530</value>
@@ -36,6 +40,7 @@
 						<name>com.sun.management.jmxremote.authenticate</name>
 						<value>false</value>
 					</systemProperty>
+					<dumpOnStart>false</dumpOnStart>
 				</configuration>
 			</plugin>
 		</plugins>

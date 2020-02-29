@@ -302,6 +302,11 @@ public class Controller{
     request.getSession().setAttribute("x-access-token", jwtToken);
     request.getSession().setAttribute("x-username", username);
     request.getSession().setAttribute("x-displayName", displayName);
+
+    if (null!=System.getProperty("disableTracking")){
+      System.out.println("Controller::login():: disabling tracking");
+      request.getSession().setAttribute("disableTracking","true");
+    }
     
     return newResponse(302).location(new URI("../manageCustomers.jsp")).header("x-access-token", jwtToken).build();
   }
