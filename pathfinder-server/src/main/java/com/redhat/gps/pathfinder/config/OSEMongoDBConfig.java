@@ -22,13 +22,14 @@ package com.redhat.gps.pathfinder.config;
  * #L%
  */
 
-import com.mongodb.*;
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientOptions;
+import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.mongo.MongoProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -36,7 +37,6 @@ import org.springframework.core.env.Environment;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Configuration
@@ -100,11 +100,10 @@ public class OSEMongoDBConfig {
     @Bean
     public MongoClient mongo() throws UnknownHostException {
         MongoClientOptions tmpoptions;
-        if (options == null) {
-            tmpoptions = MongoClientOptions.builder().build();
-        } else {
-            tmpoptions = options;
-        }
+        tmpoptions = MongoClientOptions.builder()
+                .applicationName("Pathfinder")
+                .build();
+
         this.mongo = createMongoClient(tmpoptions);
         return this.mongo;
     }
