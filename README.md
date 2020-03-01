@@ -15,6 +15,11 @@ oc new-project <your-new-project-name>
 oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
+
+# Usage Tracking
+Pathfinder uses analytics to track usage of the application. This can be turned off by setting the "-DdisableTracking=true" JVM option on the Pathfinder UI application.
+See the file "run-local.sh" under the pathfinder-ui directory for an example of how to do this.
+
 # License
 The code is made available under the Apache License, Version 2.0
 
