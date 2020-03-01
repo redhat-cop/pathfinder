@@ -56,6 +56,12 @@ public class Applications implements Serializable {
     @Field("stereotype")
     private String stereotype;
 
+    @DBRef(lazy = true)
+    private List<Assessments> Assessments;
+
+    @DBRef(lazy = true)
+    private ApplicationAssessmentReview review;
+
     @Override
     public String toString() {
         return "Applications{" +
@@ -96,11 +102,7 @@ public class Applications implements Serializable {
         this.stereotype = stereotype;
     }
 
-    @DBRef
-    private List<Assessments> Assessments;
 
-    @DBRef
-    private ApplicationAssessmentReview review;
 
     public List<Assessments> getAssessments() {
         return Assessments;

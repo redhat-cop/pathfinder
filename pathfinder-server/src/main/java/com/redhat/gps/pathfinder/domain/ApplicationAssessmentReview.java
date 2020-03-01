@@ -46,7 +46,7 @@ public class ApplicationAssessmentReview implements Serializable {
     @Field("Date")
     private String ReviewDate;
 
-    @DBRef
+    @DBRef(lazy = true)
     private Assessments Assessments;
 
     @NotNull
@@ -69,7 +69,7 @@ public class ApplicationAssessmentReview implements Serializable {
     @Field("BusinessPriority")
     private String BusinessPriority;
 
-    @DBRef
+    @DBRef(lazy = true)
     private Applications Application;
 
     public ApplicationAssessmentReview() {}
