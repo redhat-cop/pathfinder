@@ -35,6 +35,8 @@ import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -963,13 +965,19 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 resp.setCustomerAppCount(customer.getApplications() == null ? 0 : customer.getApplications().size());
                 resp.setCustomerMemberCount(customer.getMembers() == null ? 0 : customer.getMembers().size());
 
-                int totalAssessible = (int)customer.getApplications().stream()
-                        .filter(ap -> ap.getStereotype().equalsIgnoreCase(ApplicationType.StereotypeEnum.TARGETAPP.toString())).count();
+                List<Applications> appList =
+                        Optional.ofNullable(customer.getApplications())
+                                .map(Collection::stream)
+                                .orElseGet(Stream::empty)
+                                .filter(ap -> ap.getStereotype().equalsIgnoreCase(ApplicationType.StereotypeEnum.TARGETAPP.toString()))
+                                .collect(Collectors.toList());
 
-                if (totalAssessible > 0) {
+                if (!appList.isEmpty()) {
+                    int totalAssessible = appList.size();
                     AtomicInteger assessedCount = new AtomicInteger();
                     AtomicInteger reviewedCount = new AtomicInteger();
-                    customer.getApplications().stream().filter(app->app!=null).forEach(app-> {
+
+                    appList.forEach(app-> {
                                 ApplicationAssessmentReview review = app.getReview();
                                 // if review is null, then it's not been reviewed
                                 reviewedCount.addAndGet((review != null ? 1 : 0));
