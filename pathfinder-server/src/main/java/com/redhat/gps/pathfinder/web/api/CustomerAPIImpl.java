@@ -2,7 +2,6 @@ package com.redhat.gps.pathfinder.web.api;
 
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Joiner;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.redhat.gps.pathfinder.QuestionProcessor;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
@@ -35,6 +34,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
@@ -942,55 +942,56 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         log.debug("customersGet....");
         ArrayList<CustomerType> response = new ArrayList<>();
 
+        log.debug("customersGet....findallStart");
         List<Customer> customers = custRepo.findAll();
+        log.debug("customersGet....findallStop");
+
         if (customers == null) {
             return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
         } else {
-            for (Customer customer : customers) {
-                if (isAuthorizedFor(customer)) {
-                    // then add the customer to the response
-                    CustomerType resp = new CustomerType();
-                    resp.setCustomerId(customer.getId());
-                    resp.setCustomerName(customer.getName());
-                    resp.setCustomerDescription(customer.getDescription());
-                    resp.setCustomerSize(customer.getSize());
-                    resp.setCustomerVertical(customer.getVertical());
+            customers.stream().filter(c -> isAuthorizedFor(c)).forEach(customer -> {
+                // then add the customer to the response
+                CustomerType resp = new CustomerType();
+                resp.setCustomerId(customer.getId());
+                resp.setCustomerName(customer.getName());
+                resp.setCustomerDescription(customer.getDescription());
+                resp.setCustomerSize(customer.getSize());
+                resp.setCustomerVertical(customer.getVertical());
+                resp.setCustomerAssessor(customer.getAssessor());
+                resp.setCustomerRTILink(customer.getRtilink());
+                resp.setCustomerPercentageComplete(0);
+                resp.setCustomerAppCount(customer.getApplications() == null ? 0 : customer.getApplications().size());
+                resp.setCustomerMemberCount(customer.getMembers() == null ? 0 : customer.getMembers().size());
 
-                    int total = customer.getApplications() != null ? Collections2.filter(customer.getApplications(), Predicates.assessableApplications).size() : 0;
-                    resp.setCustomerAssessor(customer.getAssessor());
-                    resp.setCustomerRTILink(customer.getRtilink());
+                int totalAssessible = (int)customer.getApplications().stream()
+                        .filter(ap -> ap.getStereotype().equalsIgnoreCase(ApplicationType.StereotypeEnum.TARGETAPP.toString())).count();
 
-                    int assessedCount = 0;
-                    int reviewedCount = 0;
-                    if (total > 0) {
-                        for (Applications app : customer.getApplications()) {
-                            if (app == null) continue;  // TODO: Remove this MAT!!!!
-                            ApplicationAssessmentReview review = app.getReview();
-                            // if review is null, then it's not been reviewed
-                            reviewedCount += (review != null ? 1 : 0);
+                if (totalAssessible > 0) {
+                    AtomicInteger assessedCount = new AtomicInteger();
+                    AtomicInteger reviewedCount = new AtomicInteger();
+                    customer.getApplications().stream().filter(app->app!=null).forEach(app-> {
+                                ApplicationAssessmentReview review = app.getReview();
+                                // if review is null, then it's not been reviewed
+                                reviewedCount.addAndGet((review != null ? 1 : 0));
 
-                            List<Assessments> assmList = app.getAssessments();
-                            if ((assmList != null) && (!assmList.isEmpty())) {
-                                assessedCount += 1;
-                            }
-                        }
-                        // reviewedCount + assessedCount / potential total (ie. total * 2)
-                        BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount + reviewedCount) / (double) (total * 2));
-                        percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
-                        resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
+                                List<Assessments> assmList = app.getAssessments();
+                                if ((assmList != null) && (!assmList.isEmpty())) {
+                                    assessedCount.addAndGet(1);
+                                }
+                            });
 
-                    } else {
-                        resp.setCustomerPercentageComplete(0);
-                    }
-
-                    resp.setCustomerAppCount(customer.getApplications() == null ? 0 : customer.getApplications().size());
-                    resp.setCustomerMemberCount(customer.getMembers() == null ? 0 : customer.getMembers().size());
-                    response.add(resp);
+                    // reviewedCount + assessedCount / potential total (ie. total * 2)
+                    BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount.get() + reviewedCount.get()) / (double) (totalAssessible * 2));
+                    percentageComplete.setScale(0, BigDecimal.ROUND_DOWN);
+                    resp.setCustomerPercentageComplete(percentageComplete.intValue());// a merge of assessed & reviewed
                 }
-            }
-            return new ResponseEntity<>(response, HttpStatus.OK);
+                response.add(resp);
+            });
         }
+        log.debug("customersGet....done");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
+
 
     @Timed
     public ResponseEntity<Void> customersDelete(@ApiParam(value = "Target Customer Names") @Valid @RequestBody ApplicationNames body) {
