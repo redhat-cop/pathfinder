@@ -17,7 +17,7 @@
 		<servlet-class>org.mitre.dsmiley.httpproxy.ProxyServlet</servlet-class>
 		<init-param>
 			<param-name>targetUri</param-name>
-			<param-value>${PATHFINDER_SERVER}</param-value>
+			<param-value>http://pathfinder-server:8080/api</param-value>
 		</init-param>
 		<init-param>
 			<param-name>log</param-name>
