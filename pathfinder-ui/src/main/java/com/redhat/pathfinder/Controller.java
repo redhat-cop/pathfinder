@@ -108,7 +108,7 @@ public class Controller{
     for(Document d:db.getCollection("assessments").find()){
       System.out.println(d.toJson(codec));
     }
-    
+
 //    for(Document d:db.getCollection("customer").find()){
 //      System.out.println(d.toJson(codec));
 ////      Class.forName(className)
@@ -120,7 +120,7 @@ public class Controller{
 ////      }
 ////      d.get("_class");
 //    }
-    
+
 //    String mongoURI=String.format("mongodb://%s:%s@%s:%s/%s", "userS1K","JBf2ibxFbqYAmAv0","localhost","9191","pathfinder");
 //    MongoClient c=new MongoClient(mongoURI);
 //    MongoDatabase db=c.getDatabase("pathfinder");
@@ -306,6 +306,11 @@ public class Controller{
     if (null!=System.getProperty("disableTracking")){
       System.out.println("Controller::login():: disabling tracking");
       request.getSession().setAttribute("disableTracking","true");
+    }
+
+    if (null!=System.getProperty("demoMode")){
+      System.out.println("Controller::login():: demoMode enabled");
+      request.getSession().setAttribute("demoMode","true");
     }
     
     return newResponse(302).location(new URI("../manageCustomers.jsp")).header("x-access-token", jwtToken).build();
