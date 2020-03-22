@@ -6,6 +6,7 @@
 -->
 <html>
 <%@include file="head.jsp"%>
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 
 <!--
 	<script src="assets/js/jquery.min.js"></script>
@@ -118,12 +119,14 @@
 				</a>
 			</header>
 		</div>
+		</div>
 
 		<%}%>
-			</div>
+
 		</section>
 		<section class="credits">
 			<div class="display: inline-block">
+
 				<a href="https://www.openshift.com/" title="Powered by OpenShift Online">
 					<img alt="Powered by OpenShift Online" src="https://www.openshift.com/images/logos/powered_by_openshift.png">
 				  </a>

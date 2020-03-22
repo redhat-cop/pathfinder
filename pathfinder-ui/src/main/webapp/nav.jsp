@@ -1,4 +1,5 @@
 <!-- Header -->
+<%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
 <header id="header">
 
 	<%if (request.getSession().getAttribute("x-access-token")==null){%>
@@ -9,11 +10,17 @@
 			<a id="logged-status" href="index.jsp">Login</a> 
 		<%}%>
 	<%}else{%>
+
 		<a id="customers" href="manageCustomers.jsp">
 			<img class="logo" id="logo" src="assets/images/RH_Pathfinder_Icon_Color-56.png"/><span class="logo-text vbold">Path</span><span class="logo-text normal">finder</span>
 		</a>
 		<p id="logged-status">Logged in as <%=request.getSession().getAttribute("x-displayName")%> <a href="pathfinder/logout"> (Logout)</a></p>
 	<%}%>
+	<c:if test = "${not empty demoMode}">
+      <div style="background-color: yellow;color:#a30000;border: 1px solid black;padding: 3px;text-align: center;">
+          Demo Mode - Do not add sensitive data, database regularly purged
+      </div>
+    </c:if>
 </header>
 
 <!-- Nav -->
