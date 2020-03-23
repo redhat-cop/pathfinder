@@ -379,9 +379,7 @@
 								<span id="assessmentNotes">Loading...</span>
 							</div>
 
-							<br />
-							<br />
-							<br />
+							<br /> <br /> <br />
 
 							<div class="row">
 								<div class="col-sm-8">
@@ -407,7 +405,6 @@
 										id="form" method="post">
 										<input type="hidden" id="AssessmentId" name="AssessmentId"
 											value="<%=request.getParameter("assessment")%>" />
-										<!--input type="hidden" id="ReviewTimestamp" name="ReviewTimestamp" value="2018-03-14 03:23:29pm"/-->
 										<div class="row">
 											<div class="col-sm-2">
 												<h4>Proposed Action</h4>
@@ -422,9 +419,6 @@
 											<div class="col-sm-2">
 												<h4>Work Priority</h4>
 												(1=low, 10=high)
-											</div>
-											<div class="col-sm-4">
-												<h4>Supporting Notes</h4>
 											</div>
 										</div>
 										<div class="row">
@@ -475,9 +469,14 @@
 													<option>10</option>
 												</select>
 											</div>
+										</div>
+										<div class="row" style="height: 10px;">
+											<!-- spacer between review options and submit button -->
+										</div>
+										<div class="row">
 											<div class="col-sm-4">
 												<textarea id="ReviewNotes" name="ReviewNotes"
-													style="width: 325px; height: 100px;"></textarea>
+													style="width: 593px; height: 100px;"></textarea>
 											</div>
 										</div>
 
@@ -486,15 +485,10 @@
 										</div>
 
 										<div class="row">
-											<div class="col-sm-12" style="text-align: right;">
+											<div class="col-sm-12" style="text-align: left;">
 												<input type="button" onclick="postReview('form');"
 													value="Submit Review">
-												<!--
-											<input type="submit" onclick="postReview('form');" value="Submit Review">
-											-->
-
 											</div>
-
 										</div>
 										<script>
 											function postReview(formId) {
@@ -580,7 +574,7 @@
 					</div>
 				</div>
 			</div>
-		</div>		
+		</div>
 	</section>
 </body>
 </html>

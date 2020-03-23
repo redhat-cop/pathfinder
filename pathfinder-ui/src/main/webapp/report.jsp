@@ -178,7 +178,6 @@ table.dataTable tbody tr td {
 						</script>
 
 					</div>
-					<!-- /col-sm-? -->
 
 					<div class="col-sm-8">
 
@@ -643,24 +642,11 @@ table.dataTable tbody tr td {
 
 
 				<br /> <br /> <br />
-				<h2>
-					<!--				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
-					<img src="assets/images/twisty-off.png" style="width:30px;"/>
-					<img src="assets/images/twisty-on.png"  style="width:30px;display:none"/>
-				</a>
--->
-					<!--
-				<i class="glyphicon glyphicon-triangle-right"></i>
-				-->
-					Identified Risks
-				</h2>
+				<h2>Identified Risks</h2>
 				<div class="row">
 					<div class="col-sm-10">
 
 						<script>
-//							$(".twisty").click(function(){
-//							  $('img',this).toggle();
-//							});
 							
 							function drawRisks(data){
 							  var risks=[];
