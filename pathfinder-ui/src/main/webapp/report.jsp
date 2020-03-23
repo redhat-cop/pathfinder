@@ -1,43 +1,37 @@
 <!DOCTYPE HTML>
 <html>
-  
-  <%@include file="head.jsp"%>
-  
-  <link href="assets/css/breadcrumbs.css" rel="stylesheet" />
-	
-  <!-- #### DATATABLES DEPENDENCIES ### -->
-  <!-- Firefox doesnt support link imports yet
+
+<%@include file="head.jsp"%>
+
+<link href="assets/css/breadcrumbs.css" rel="stylesheet" />
+
+<!-- #### DATATABLES DEPENDENCIES ### -->
+<!-- Firefox doesnt support link imports yet
   <link rel="import" href="datatables-dependencies.jsp">
   -->
-  <%@include file="datatables-dependencies.jsp"%>
-	<script src="assets/js/datatables-plugins.js"></script>
-	<script type="text/javascript" src="utils.jsp"></script>
-	<!-- for pie/line/bubble graphing -->
-	<!--
+<%@include file="datatables-dependencies.jsp"%>
+<script src="assets/js/datatables-plugins.js"></script>
+<script type="text/javascript" src="utils.jsp"></script>
+<!-- for pie/line/bubble graphing -->
+<!--
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 	<script src="assets/js/Chart-2.6.0.min.js"></script>
 	-->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
-	<script src="https://unpkg.com/lodash@4.17.10/lodash.min.js"></script>
-	
-	<!-- plugin to add labels to bubble chart in chartjs -->
-	<script src="assets/js/chartjs-plugin-datalabels-0.4.0.js"></script>
-  
-	<body class="is-preload">
-  	<%@include file="nav.jsp"%>
-  	
-		<%@include file="breadcrumbs.jsp"%>
-		
-		<div class="container-fluid">
-		
-	<!--
-		<section id="banner2">
-			<div class="inner">
-				<h1>Report for <span id="customerName"></span></h1>
-			</div>
-		</section>
-	-->
-		
+<script
+	src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
+<script src="https://unpkg.com/lodash@4.17.10/lodash.min.js"></script>
+
+<!-- plugin to add labels to bubble chart in chartjs -->
+<script src="assets/js/chartjs-plugin-datalabels-0.4.0.js"></script>
+
+<body class="is-preload">
+	<%@include file="nav.jsp"%>
+
+	<%@include file="breadcrumbs.jsp"%>
+
+	<div class="container-fluid">
+
+
 		<script>
 		var customerId=Utils.getParameterByName("customerId");
 		
@@ -52,60 +46,67 @@
 			
 		});
 		</script>
-						
+
 		<section class="wrapper">
 			<div class="inner">
-				
-				<div id="title" alt="required for automated testing" style="display:none;">REPORT</div>
-				
+
+				<div id="title" alt="required for automated testing"
+					style="display: none;">REPORT</div>
+
 				<!-- ### Page specific stuff here ### -->
-				
-				
+
+
 				<h2>Current Landscape</h2>
 				<div class="row">
 					<div class="col-sm-3">
-						<canvas id="gauge-1" style="width:200px;height:110px;"></canvas>
+						<canvas id="gauge-1" style="width: 200px; height: 110px;"></canvas>
 					</div>
 					<div class="col-sm-3">
-						<canvas id="gauge-2" style="width:200px;height:110px;"></canvas>
+						<canvas id="gauge-2" style="width: 200px; height: 110px;"></canvas>
 					</div>
 					<div class="col-sm-3">
-						<canvas id="gauge-3" style="width:200px;height:110px;"></canvas>
+						<canvas id="gauge-3" style="width: 200px; height: 110px;"></canvas>
 					</div>
 				</div>
 				<%@include file="report-summary.jsp"%>
 
-				
-				
-				<br/><br/><br/>
+
+
+				<br /> <br /> <br />
 				<h2>Adoption Candidate Distribution</h2>
 				<div class="row">
 					<div class="col-sm-4">
 						<style>
-						  /* override the datatables formatting to compress the screen real-estate used */
-							input[type=search] {
-								height: 23px;
-								//width: 100px;
-								padding: 0px;
-								line-height: 1;
-							}
-							.dataTables_length label select{
-								height: 23px;
-								width:  50px;
-								padding: 0px;
-							}
-							.dataTables_wrapper .dataTables_paginate .paginate_button.current, .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover{
-								height: 23px;
-								padding: 0px !important;
-							}
-							table.dataTable thead th, table.dataTable thead td{
-								padding: 0px 0px !important;
-								font-size:10pt;
-							}
-							table.dataTable tbody tr td{
-								font-size:10pt;
-							}
-						</style>
+/* override the datatables formatting to compress the screen real-estate used */
+input[type=search] {
+	height: 23px; //
+	width: 100px;
+	padding: 0px;
+	line-height: 1;
+}
+
+.dataTables_length label select {
+	height: 23px;
+	width: 50px;
+	padding: 0px;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button.current,
+	.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover
+	{
+	height: 23px;
+	padding: 0px !important;
+}
+
+table.dataTable thead th, table.dataTable thead td {
+	padding: 0px 0px !important;
+	font-size: 10pt;
+}
+
+table.dataTable tbody tr td {
+	font-size: 10pt;
+}
+</style>
 						<script>
 							//$(document).ready(function() {
 							function redrawApplications(applicationAssessmentSummary){
@@ -145,26 +146,28 @@
 							}
 							//);
 						</script>
-				  	<div id="wrapper">
-					    <div>
-					    </div>
-					    <div id="tableDiv">
-						    <table id="appFilter" class="display" cellspacing="0" width="100%">
-					        <thead>
-				            <tr>
-			                <th align="left"></th>
-			                <th align="left" title="Application Name">Application</th>
-			                <th align="left" title="Business Criticality">Critical</th>
-			                <th align="left" title="Work Priority">Priority</th>
-			                <th align="left" title="Confidence">Confidence</th>
-			                <th align="left" title="Recommended Decision or Action to take">Decision</th>
-			                <th align="left" title="Estimated Effort">Effort</th>
-				            </tr>
-					        </thead>
-						    </table>
-						  </div>
-				  	</div> <!-- dtable wrapper -->
-				  	
+						<div id="wrapper">
+							<div></div>
+							<div id="tableDiv">
+								<table id="appFilter" class="display" cellspacing="0"
+									width="100%">
+									<thead>
+										<tr>
+											<th align="left"></th>
+											<th align="left" title="Application Name">Application</th>
+											<th align="left" title="Business Criticality">Critical</th>
+											<th align="left" title="Work Priority">Priority</th>
+											<th align="left" title="Confidence">Confidence</th>
+											<th align="left"
+												title="Recommended Decision or Action to take">Decision</th>
+											<th align="left" title="Estimated Effort">Effort</th>
+										</tr>
+									</thead>
+								</table>
+							</div>
+						</div>
+						<!-- dtable wrapper -->
+
 						<script>
 							var appFilter=[];
 							function onChange2(t){
@@ -173,25 +176,12 @@
 								redrawAdoptionPlan(applicationAssessmentSummary);
 							}
 						</script>
-				  	
-					</div> <!-- /col-sm-? -->
-					
+
+					</div>
+					<!-- /col-sm-? -->
+
 					<div class="col-sm-8">
-					<!--\
-						x=business priority, y=# of dependencies, size=effort, color=Action (REHOST=red, )
-						x=business criticality, y=work priority, size=effort, color=Action (REHOST=red, )
-						x=confidence, y=business criticality, size=effort, color=Action (REHOST=red, )
-					-->
-					
-						<!--
-						bubble chart
-						x=biz priority
-						y=deps (inbound)
-						color?=action
-						size=effort
-						//transparency=certainty
-						-->
-						
+
 						<script>
 						  var decisionColors=[];
 						  // colors got from https://brand.redhat.com/elements/color/
@@ -279,7 +269,6 @@
 								}
 								
 								var result={datasets};
-								//console.log(JSON.stringify(datasets));
 								return result;
 						  }
 						  
@@ -302,17 +291,14 @@
 										summary[i]['DependsOn']=[];
 										//var dependsOn=[];
 										for(d=0;d<summary[i]['OutboundDeps'].length;d++){
-										  //console.log("DEBUG:: summary[i]['Name']="+summary[i]['Name']+"; depsLength="+summary[i]['OutboundDeps'].length+"; d="+d+"; summary[i]['OutboundDeps'][d] = "+summary[i]['OutboundDeps'][d]);
-										  var dependent=appIdToAppMap[summary[i]['OutboundDeps'][d]];
+											var dependent=appIdToAppMap[summary[i]['OutboundDeps'][d]];
 										  if (undefined!=dependent){
 										  	summary[i]['DependsOn'].push(dependent.Name);
 										  }
-										  //summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]].Name);
  										}
 									}
 								}
-								
-								//console.log(JSON.stringify(summary));
+
 								
 								if (!initial){
 									//bubbleChart.destroy();
@@ -330,8 +316,6 @@
 									return;
 								}
 								
-								//console.log(JSON.stringify(getDataOriginal(summary)));
-								
 							  var ctx=document.getElementById("bubbleChart").getContext('2d');
 								bubbleChart=new Chart(ctx,{
 									"type":"bubble",
@@ -348,11 +332,8 @@
 										},
 										tooltips:{
 											enabled: true,
-											//tooltipTemplate: "<\%if (label){\%><\%=value\%><\%} else {\%> No data <\%}\%>",
 											callbacks: {
 									      label: function(tooltipItem, data) {
-									        //var datasetLabel = data.datasets[tooltipItem.datasetIndex].label || 'Other';
-									        //var label = data.labels[tooltipItem.index];
 									        return data.datasets[tooltipItem.datasetIndex].label || 'Unknown';
 									      }
 									    }
@@ -410,9 +391,6 @@
 													weight: 'bold'
 												},
 												formatter: function(value, context) {
-													//return Math.round(value.r);
-													//console.log("ctx = "+JSON.stringify(context));
-													//var valuex = context.dataset.data[context.dataIndex];
 													var valuex = context.dataset.label[0];
 													console.log("valuex="+JSON.stringify(valuex));
 													return valuex;
@@ -423,7 +401,6 @@
 										}
 									}
 								});
-								//bubbleChart.generateLegend();
 								
 								Chart.pluginService.register({
 								  beforeDraw: function(chart) {
@@ -451,17 +428,8 @@
 									    ctx.fillText(bottomLeftText, bottomLeftX, bottomLeftTextY);
 									    ctx.fillText(bottomRightText, bottomRightX, bottomRightTextY);
 									    
-									    //var goldilocks=$('#goldilocks').val();
 											var x=(width/2)+15, y=0, w=(width/2)-15, h=(height/2)-13;
 									    
-									    //if (goldilocks=="Solid"){
-										  //  // quadrant color / fill top right
-										  //  ctx.fillStyle = "rgba(46, 212, 0, 0.5)";
-											//	ctx.globalAlpha = 0.4;
-										  //  ctx.fillRect(x,y,w,h);
-										  //  ctx.globalAlpha = 1.0;
-									    //}else if (goldilocks=="Gradient"){
-									    	// adjust the width of the green gradient area (higher = wider)
 										    var adjustment=140;
 										    x=x-adjustment;
 										    w=w+adjustment;
@@ -473,7 +441,6 @@
 												
 												ctx.fillStyle=grd;
 												ctx.fillRect(x,y,w,(h*2)-5);
-									    //}
 									    
 									    
 								    	// draw the dependency line(s)
@@ -513,34 +480,16 @@
 												    var subtractWidth = radius * width / length;
 												    var subtractHeight = radius * height / length;
 										    		
-										    		//targetBubble.x-=subtractWidth;
-										    		//targetBubble.y-=subtractHeight;
-										    		
-										    		//targetBubble.x+=(radius);
-										    		//targetBubble.y+=(radius);
-										    		
 										    		ctx.beginPath();
 										    		drawArrow(ctx,x,y,targetBubble.x-subtractWidth, targetBubble.y-subtractHeight, 20);
-										    		
-										    		// draw arrow
-												    //var arrowSize=15;   // length of arrow head in pixels
-												    //var angle=Math.atan2(targetBubble.y-y,targetBubble.x-x);
-												    //ctx.moveTo(x, y);
-												    //ctx.lineTo(targetBubble.x, targetBubble.y);
-												    ////ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle-Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle-Math.PI/6));
-												    ////ctx.moveTo(targetBubble.x, targetBubble.y);
-												    ////ctx.lineTo(targetBubble.x-arrowSize*Math.cos(angle+Math.PI/6),targetBubble.y-arrowSize*Math.sin(angle+Math.PI/6));
-												    
+																				    
 										    		ctx.stroke();
 										    		console.log("BubbleGraph:: drawn dependency line from '"+label+"' to '"+targetBubble.Name+"' which is from '"+x+","+y+"' to '"+targetBubble.x+","+targetBubble.y+"'");
 										    		
 										    	}
 										    	
 										    }
-										  }
-									    
-									    //console.log("chart="+JSON.stringify(chart.config));
-									    
+										  }							    
 											ctx.save();
 										}								    
 									}
@@ -570,79 +519,75 @@
 							});
 							
 						</script>
-						
+
 						<style>
-						#bubbleLegend{
-					    justify-content:space-around;
-					    list-style-type:none;
-						}
-						#bubbleLegend ul li{
-//							float: right;
-//							position: relative;
-//							top: 30px;
-//							left: -30px;
-							display: inline-block;
-							width: 120px;
-						}
-						</style>
-						
+#bubbleLegend {
+	justify-content: space-around;
+	list-style-type: none;
+}
+
+#bubbleLegend ul li { //
+	float: right; //
+	position: relative; //
+	top: 30px; //
+	left: -30px;
+	display: inline-block;
+	width: 120px;
+}
+</style>
+
 						<div id="bubbleLegend">
 							<ul>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#92d400;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#333">REHOST</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#f0ab00;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#EEE">REPLATFORM</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#cc0000;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#EEE">REFACTOR</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#3B0083;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#EEE">REPURCHASE</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#A3DBE8;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#333">RETAIN</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#004153;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#EEE">RETIRE</text>
-									</svg>
-								</li>
-								<li>
-									<svg height="25" width="200">
-									  <rect width="120" height="25" stroke="black" style="fill:#808080;stroke-width:0;stroke:rgb(0,0,0)" />
-									  <text x="7" y="17" font-family="Overpass" font-size="13" fill="#EEE">NOT REVIEWED</text>
-									</svg>
-								</li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#92d400;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#333">REHOST</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#f0ab00;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#EEE">REPLATFORM</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#cc0000;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#EEE">REFACTOR</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#3B0083;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#EEE">REPURCHASE</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#A3DBE8;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#333">RETAIN</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#004153;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#EEE">RETIRE</text>
+									</svg></li>
+								<li><svg height="25" width="200">
+									  <rect width="120" height="25" stroke="black"
+											style="fill:#808080;stroke-width:0;stroke:rgb(0,0,0)" />
+									  <text x="7" y="17" font-family="Overpass" font-size="13"
+											fill="#EEE">NOT REVIEWED</text>
+									</svg></li>
 							</ul>
 						</div>
-						
-						
-						<div class="chartjs-wrapper" style="width:850px;height:530px;">
+
+
+						<div class="chartjs-wrapper" style="width: 850px; height: 530px;">
 							<canvas id="bubbleChart" class="chartjs" width="850" height="531"></canvas>
 						</div>
-   					
-						<!--select id="goldilocks" onchange="redrawBubble(applicationAssessmentSummary, false);">
-							<option>None</option>
-							<option>Solid</option>
-							<option>Gradient</option>
-						</select-->
+
 						<script>
 							var greyscale=false;
 							var dependencies=false;
@@ -665,38 +610,53 @@
 							}
 							
 						</script>
-						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:120px;font-size:10pt;line-height:1rem;" type="button" id="greyscale" value="Show Decisions" onclick="greyscaleToggle(this);"/>
-						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:150px;font-size:10pt;line-height:1rem;" type="button" id="dependencies" value="Show Dependencies" onclick="dependenciesToggle(this);"/>
-						<input class="btn btn-default form-control" style="height:28px;padding:0px;width:150px;font-size:10pt;line-height:1rem;" type="button" id="labels" value="Show Labels" onclick="labelsToggle(this);"/>
-						
-					</div> <!-- col-sm-? -->
-				</div> <!-- /row -->
-				
-				
-				<br/><br/><br/>
+						<input class="btn btn-default form-control"
+							style="height: 28px; padding: 0px; width: 120px; font-size: 10pt; line-height: 1rem;"
+							type="button" id="greyscale" value="Show Decisions"
+							onclick="greyscaleToggle(this);" /> <input
+							class="btn btn-default form-control"
+							style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
+							type="button" id="dependencies" value="Show Dependencies"
+							onclick="dependenciesToggle(this);" /> <input
+							class="btn btn-default form-control"
+							style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
+							type="button" id="labels" value="Show Labels"
+							onclick="labelsToggle(this);" />
+
+					</div>
+					<!-- col-sm-? -->
+				</div>
+				<!-- /row -->
+
+
+				<br /> <br /> <br />
 				<h2>Suggested Adoption Plan</h2>
 				<div class="row">
 					<div class="col-sm-10">
 						<canvas id="adoption" style="width: 500px; height: 100px;"></canvas>
 						<%@include file="report-adoption.jsp"%>
-					</div> <!-- col-sm-? -->
-				</div> <!-- /row -->
-				
-				
-				
-				<br/><br/><br/>
+					</div>
+					<!-- col-sm-? -->
+				</div>
+				<!-- /row -->
+
+
+
+				<br /> <br /> <br />
 				<h2>
-<!--				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
+					<!--				<a class="twisty" style="text-decoration:none" role="button" aria-expanded="false" aria-controls="collapser" data-toggle="collapse" href="#collapser" >
 					<img src="assets/images/twisty-off.png" style="width:30px;"/>
 					<img src="assets/images/twisty-on.png"  style="width:30px;display:none"/>
 				</a>
--->				<!--
+-->
+					<!--
 				<i class="glyphicon glyphicon-triangle-right"></i>
 				-->
-				Identified Risks</h2>
+					Identified Risks
+				</h2>
 				<div class="row">
 					<div class="col-sm-10">
-						
+
 						<script>
 //							$(".twisty").click(function(){
 //							  $('img',this).toggle();
@@ -725,45 +685,50 @@
 						    } );
 						  }
 						</script>
-						A list of questions with answers that that could cause migratory risk to a container platform.
-<!--						
+						A list of questions with answers that that could cause migratory
+						risk to a container platform.
+						<!--						
 						<div class="collapse" id="collapser">
--->						
-						<div >
-					  	<div id="wrapper">
-						    <div id="tableDiv">
-							    <table id="risks" class="display" cellspacing="0" width="100%">
-							        <thead>
-							            <tr>
-							                <th align="left">Question</th>
-							                <th align="left">Answer</th>
-							                <th align="left">Application(s)</th>
-							            </tr>
-							        </thead>
-							    </table>
-							  </div>
-					  	</div>
+-->
+						<div>
+							<div id="wrapper">
+								<div id="tableDiv">
+									<table id="risks" class="display" cellspacing="0" width="100%">
+										<thead>
+											<tr>
+												<th align="left">Question</th>
+												<th align="left">Answer</th>
+												<th align="left">Application(s)</th>
+											</tr>
+										</thead>
+									</table>
+								</div>
+							</div>
 						</div>
-					
+
 					</div>
 				</div>
 
-				<div class="row">
-				&nbsp;
-				</div>
+				<div class="row">&nbsp;</div>
 
 			</div>
 		</section>
+</body>
 
-	</body>
-	
-	<br/><br/><br/><br/><br/><br/><br/><br/>
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
+<br />
 </html>
 
 
 
 
-				<script>
+<script>
 					httpGetObject(Utils.SERVER+"/api/pathfinder/customers/"+customerId+"/report", function(report){
 						new Chart(document.getElementById("gauge-1"),buildGuage(report.assessmentSummary.Easy,report.assessmentSummary.Total, "rgb(146,212,0)","rgb(220, 220, 220)","Low risk - Cloud-Native Ready"));
 						new Chart(document.getElementById("gauge-2"),buildGuage(report.assessmentSummary.Medium,report.assessmentSummary.Total, "rgb(240,171,0)","rgb(220, 220, 220)","Medium Risk - Modernizable"));
