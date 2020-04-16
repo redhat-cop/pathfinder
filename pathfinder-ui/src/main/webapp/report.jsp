@@ -17,8 +17,8 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 	<script src="assets/js/Chart-2.6.0.min.js"></script>
 	-->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.bundle.min.js"></script>
-	<script src="https://unpkg.com/lodash@4.17.10/lodash.min.js"></script>
+        <script src="assets2/js/Chart.bundle.min.js"></script>
+        <script src="assets2/js/lodash.min.js"></script>	
 	
 	<!-- plugin to add labels to bubble chart in chartjs -->
 	<script src="assets/js/chartjs-plugin-datalabels-0.4.0.js"></script>

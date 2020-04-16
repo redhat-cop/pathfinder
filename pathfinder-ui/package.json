@@ -1,0 +1,27 @@
+{
+  "name": "pathfinder-ui",
+  "version": "1.0.0",
+  "description": "External dependencies for pathfinder-ui",
+  "main": "index.js",
+  "dependencies": {
+    "chart.js": "^2.7.1",
+    "datatables.net": "^1.10.18",
+    "datatables.net-dt": "^1.10.18",
+    "icheck": "^1.0.2",
+    "jquery": "^3.5.0",
+    "lodash": "^4.17.15",
+    "overpass": "git+https://github.com/RedHatBrand/Overpass.git",
+    "select2": "^4.0.4",
+    "survey-jquery": "^1.0.23",
+    "surveyjs-widgets": "^1.7.1"
+  },
+  "devDependencies": {
+    "copy-files-from-to": "^2.3.0"
+  },
+  "scripts": {
+    "postinstall": "copy-files-from-to",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
