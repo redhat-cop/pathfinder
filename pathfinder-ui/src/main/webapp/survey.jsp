@@ -30,12 +30,11 @@
 						
 		<div class="container-fluid">
 			<!-- #### page content here #### -->
-	    <script src="https://unpkg.com/jquery"></script>
-	
-	    <script src="https://surveyjs.azureedge.net/1.0.23/survey.jquery.js"></script>
-	    <link href="https://surveyjs.azureedge.net/1.0.23/survey.css" type="text/css" rel="stylesheet"/>
-	    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/js/select2.min.js"></script>
-          <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.4/css/select2.min.css" rel="stylesheet" />
+            <script src="assets2/js/jquery.js"></script>    
+            <script src="assets2/js/survey.jquery.js"></script>
+            <link href="assets2/css/survey.css" type="text/css" rel="stylesheet"/>	
+	    <script src="assets2/js/select2.min.js"></script>
+            <link href="assets2/css/select2.min.css" rel="stylesheet" />
 
 	    <!--
 	    <link rel="stylesheet" href="https://unpkg.com/bootstrap@3.3.7/dist/css/bootstrap.min.css">

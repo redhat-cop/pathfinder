@@ -1,0 +1,52 @@
+{
+    "copyFiles": [
+        {
+            "from": "node_modules/chart.js/dist/Chart.min.js",
+            "to": "src/main/webapp/assets2/js/Chart.min.js"
+        },        
+        {
+            "from": "node_modules/chart.js/dist/Chart.bundle.min.js",
+            "to": "src/main/webapp/assets2/js/Chart.bundle.min.js"
+        },
+        {
+            "from": "node_modules/lodash/lodash.min.js",
+            "to": "src/main/webapp/assets2/js/lodash.min.js"
+        },
+        {
+            "from": "node_modules/jquery/dist/jquery.js",
+            "to": "src/main/webapp/assets2/js/jquery.js"
+        },
+        {
+            "from": "node_modules/survey-jquery/survey.jquery.js",
+            "to": "src/main/webapp/assets2/js/survey.jquery.js"
+        },
+        {
+            "from": "node_modules/select2/dist/js/select2.min.js",
+            "to": "src/main/webapp/assets2/js/select2.min.js"
+        },
+        {
+            "from": "node_modules/surveyjs-widgets/surveyjs-widgets.js",
+            "to": "src/main/webapp/assets2/js/surveyjs-widgets.js"
+        },
+        {
+            "from": "node_modules/icheck/icheck.js",
+            "to": "src/main/webapp/assets2/js/icheck.js"
+        },
+        {
+            "from": "node_modules/datatables.net/js/jquery.dataTables.js",
+            "to": "src/main/webapp/assets2/js/jquery.dataTables.js"
+        },
+        {
+            "from": "node_modules/overpass/webfonts/overpass-webfont/*",
+            "to": "src/main/webapp/assets2/css/"
+        },
+        {
+            "from": "node_modules/survey-jquery/survey.css",
+            "to": "src/main/webapp/assets2/css/survey.css"
+        },
+        {
+            "from": "node_modules/select2/dist/css/select2.min.css",
+            "to": "src/main/webapp/assets2/css/select2.min.css"
+        }
+    ]
+}

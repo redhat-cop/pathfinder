@@ -13,7 +13,7 @@
   <%@include file="datatables-dependencies.jsp"%>
 	
 	<!-- #### CHARTS DEPENDENCIES ### -->
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+        <script src="assets2/js/Chart.min.js"></script>
 		
 	<body class="is-preload">
   	<%@include file="nav.jsp"%>
