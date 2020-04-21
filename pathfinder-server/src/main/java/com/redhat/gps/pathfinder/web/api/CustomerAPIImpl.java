@@ -17,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,6 +30,8 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
@@ -75,6 +78,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private String SurveyJSPayload;
     private String SurveyQuestionsJSON;
 
+    @Value("${CustomQuestionsFilePath:}")
+    private String customQuestionsFileLocation;
+
     public CustomerAPIImpl(CustomerRepository custRepo,
                            ApplicationsRepository appsRepo,
                            AssessmentsRepository assmRepo,
@@ -87,26 +93,49 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
-        getSurveyContent();
+        this.SurveyJSPayload = getSurveyContent();
     }
 
-    private void getSurveyContent() throws IOException {
-        String result = "";
-        try {
-            String rawQuestionsJson = getResourceAsString("questions/question-data-default.json");
-            String QuestionsJsonSchema = getResourceAsString("questions/question-schema.json");
-            SurveyQuestionsJSON = QuestionProcessor.GenerateSurveyPages(rawQuestionsJson, QuestionsJsonSchema);
+    public String getSurveyContent() throws IOException {
+        String rawQuestionsJson = "";
+        String questionsJsonSchema = "";
+        String resultPayload = "";
+        String cuztomQuestionsJson = "";
+
+
+        if (!customQuestionsFileLocation.isEmpty()) {
+            File customQuestionsFile = new File(customQuestionsFileLocation);
+            try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
+                cuztomQuestionsJson = getResourceAsString(cqis);
+            } catch (Exception ex) {
+                log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
+                cuztomQuestionsJson = "";
+            }
+        }
+
+        try (InputStream is1 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/base-questions-data-default.json");
+             InputStream is2 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/question-schema.json");
+        ) {
+            rawQuestionsJson = getResourceAsString(is1);
+            questionsJsonSchema = getResourceAsString(is2);
+            resultPayload = QuestionProcessor.GenerateSurveyPages(rawQuestionsJson, cuztomQuestionsJson, questionsJsonSchema);
         } catch (Exception e) {
-            SurveyQuestionsJSON = getResourceAsString("questions/default-survey.json");
-            log.error("Unable to find/parse question-data-default...using default-survey");
+            InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
+            resultPayload = getResourceAsString(is3);
+            if (is3 != null) is3.close();
+            log.error("Unable to find/parse question-data-default...using default-survey...turn on debug for more info");
+            log.trace("getSurveyContent raw {} schema {}", rawQuestionsJson, questionsJsonSchema);
             e.printStackTrace();
         }
-        try {
-            String surveyJs = getResourceAsString("questions/application-survey.js");
-            SurveyJSPayload = surveyJs.replace("$$QUESTIONS_JSON$$", SurveyQuestionsJSON);
+
+        try (InputStream is4 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/application-survey.js");) {
+            String surveyJs = getResourceAsString(is4);
+            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", SurveyQuestionsJSON));
         } catch (Exception ex) {
-            log.error("Unable to process and enrich the question template....FATAL ERROR");
+            log.error("Unable to process and enrich the question template....FATAL ERROR ",ex);
+            System.exit(42);
         }
+        return resultPayload;
     }
 
 
@@ -279,8 +308,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 .replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
     }
 
-    private String getResourceAsString(String resource) throws IOException {
-        InputStream is = CustomerAPIImpl.class.getClassLoader().getResourceAsStream(resource);
+    private String getResourceAsString(InputStream is) throws IOException {
         Validate.notNull(is);
         return IOUtils.toString(is, "UTF-8");
     }
@@ -345,6 +373,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
     interface QuestionParser<T> {
         public void parse(T result, String name, String answerOrdinal, String answerRating, String answerText, String questionText);
+
     }
 
     /* Uh-oh, Uncle Noel is going to murder me for this one... yes, yes I will convert to Swagger later on, chalk it up on the technical debt board! */
@@ -977,16 +1006,16 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                     AtomicInteger assessedCount = new AtomicInteger();
                     AtomicInteger reviewedCount = new AtomicInteger();
 
-                    appList.forEach(app-> {
-                                ApplicationAssessmentReview review = app.getReview();
-                                // if review is null, then it's not been reviewed
-                                reviewedCount.addAndGet((review != null ? 1 : 0));
+                    appList.forEach(app -> {
+                        ApplicationAssessmentReview review = app.getReview();
+                        // if review is null, then it's not been reviewed
+                        reviewedCount.addAndGet((review != null ? 1 : 0));
 
-                                List<Assessments> assmList = app.getAssessments();
-                                if ((assmList != null) && (!assmList.isEmpty())) {
-                                    assessedCount.addAndGet(1);
-                                }
-                            });
+                        List<Assessments> assmList = app.getAssessments();
+                        if ((assmList != null) && (!assmList.isEmpty())) {
+                            assessedCount.addAndGet(1);
+                        }
+                    });
 
                     // reviewedCount + assessedCount / potential total (ie. total * 2)
                     BigDecimal percentageComplete = new BigDecimal(100 * (double) (assessedCount.get() + reviewedCount.get()) / (double) (totalAssessible * 2));

@@ -42,17 +42,32 @@ public class QuestionProcessor {
      * @throws IOException
      * @throws JSONException
      */
-    public static String GenerateSurveyPages(String questionData, String questionSchema) throws IOException, JSONException {
+    public static String GenerateSurveyPages(String questionData, String customQuestions, String questionSchema) throws IOException, JSONException {
         JSONObject jsonSchema;
+        JSONObject customQuestionsJSON;
+        JSONObject defaultQuestionsJSON;
+        JSONArray customPages = null;
+
         jsonSchema = new JSONObject(
                 new JSONTokener(questionSchema));
-        JSONObject jsonSubject = new JSONObject(
-                new JSONTokener(questionData));
-        Schema schema = SchemaLoader.load(jsonSchema);
-        schema.validate(jsonSubject);
 
-        JSONArray pages = jsonSubject.getJSONArray("pages");
-        JSONObject newSurvey = jsonSubject;
+        Schema schema = SchemaLoader.load(jsonSchema);
+
+        defaultQuestionsJSON = new JSONObject(
+                new JSONTokener(questionData));
+
+        schema.validate(defaultQuestionsJSON);
+
+        if (!customQuestions.isEmpty()) {
+            customQuestionsJSON = new JSONObject(
+                    new JSONTokener(customQuestions));
+            schema.validate(defaultQuestionsJSON);
+            customPages = customQuestionsJSON.getJSONArray("pages");
+        }
+
+        JSONArray pages = defaultQuestionsJSON.getJSONArray("pages");
+        JSONObject newSurvey = defaultQuestionsJSON;
+
         JSONArray newPages = new JSONArray();
         for (int j = 0; j < pages.length(); j++) {
             JSONObject page = pages.getJSONObject(j);
@@ -62,13 +77,13 @@ public class QuestionProcessor {
             for (int i = 0; i < questions.length(); i++) {
                 JSONObject x = questions.getJSONObject(i);
                 x.put("type", "radiogroup");
-                x.put("isRequired", "true");
+                x.put("isRequired", "false");
                 x.put("colCount", "1");
                 newQuestions.put(x);
             }
             JSONObject pageComment = new JSONObject();
             pageComment.put("type", "comment");
-            pageComment.put("name", "NOTES" + j);
+            pageComment.put("name", "NOTESONPAGE" + j);
             pageComment.put("title", "Additional notes or comments");
             pageComment.put("isRequired", "false");
             newQuestions.put(pageComment);
@@ -77,12 +92,40 @@ public class QuestionProcessor {
             newPages.put(j, page);
         }
 
+        if ((customPages != null)&&(customPages.length()>0)) {
+            int startPages = pages.length();
+
+            for (int j = 0; j < customPages.length(); j++) {
+                JSONObject page = customPages.getJSONObject(j);
+                JSONArray questions = page.getJSONArray("questions");
+                JSONArray newQuestions = new JSONArray();
+
+                for (int i = 0; i < questions.length(); i++) {
+                    JSONObject x = questions.getJSONObject(i);
+                    x.put("type", "radiogroup");
+                    x.put("isRequired", "false");
+                    x.put("colCount", "1");
+                    x.put("name","customQuestion"+i);
+                    newQuestions.put(x);
+                }
+                JSONObject pageComment = new JSONObject();
+                pageComment.put("type", "comment");
+                pageComment.put("name", "NOTESONPAGE" + (j+startPages));
+                pageComment.put("title", "Additional notes or comments");
+                pageComment.put("isRequired", "false");
+                newQuestions.put(pageComment);
+                page.remove("questions");
+                page.put("questions", newQuestions);
+                newPages.put(j+startPages, page);
+            }
+        }
+
         newSurvey.put("pages", newPages);
         newSurvey.put("title", "Application Assessment");
         newSurvey.put("sendResultOnPageNext", "true");
         newSurvey.put("requiredText", "");
         newSurvey.put("showProgressBar", "bottom");
-        newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page.");
+        newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'><b>Here</b></a> to return to the main page.");
         return newSurvey.toString();
     }
 }

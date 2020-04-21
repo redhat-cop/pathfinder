@@ -1,0 +1,100 @@
+{
+  "pages": [
+    {
+      "title": "Application Details",
+      "questions": [
+        {
+          "name": "DEVOWNER",
+          "title": "Does the application development team understand and actively develop the application?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|External 3rd party or COTS application ",
+            "2-RED|In maintenance mode, no app SME knowledge, poor documentation",
+            "3-AMBER|Maintenance mode, SME knowledge available",
+            "4-GREEN|Actively developed, SME knowledge available",
+            "5-GREEN|New Greenfield application"
+          ]
+        },
+        {
+          "name": "OPSOWNER",
+          "title": "How is the application supported in Production?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Application production support outsourced to 3rd party support provider. Ticket driven escalation process, no inhouse support resources.",
+            "2-RED|Production support provided by separate internal team, little interaction with development team.",
+            "3-AMBER|Multiple teams support the application using an established escalation model",
+            "4-GREEN|SRE based approach with knowledgeable and experienced operations team",
+            "5-GREEN|Pure DevOps model, the team that builds it is responsible for running it in Production"
+          ]
+        },
+        {
+          "name": "LEADTIME",
+          "title": "How long does it take from when code is committed to it being deployed to a stage that is production ready?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|More than six months",
+            "2-AMBER|Between one month and six months",
+            "3-GREEN|Between one week and one month",
+            "4-GREEN|Between one day and one week",
+            "5-GREEN|Less than one day"
+          ]
+        },
+        {
+          "name": "DEPLOYFREQ",
+          "title": "Deployment frequency",
+          "comment": "How often is the application deployed to production?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Greater than once every six months",
+            "2-AMBER|Between once per month and once every six months",
+            "3-GREEN|Weekly deployments",
+            "4-GREEN|Daily deployments",
+            "5-GREEN|On demand (multiple deploys per day)"
+          ]
+        },
+        {
+          "name": "MTTR",
+          "title": "What is the Mean Time to Recover (MTTR) when a fault is found with the application in production?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|One month or greater",
+            "2-AMBER|Between one week and one month",
+            "3-AMBER|Between one day and one week",
+            "4-GREEN|Between one hour and one day",
+            "5-GREEN|Immediately"
+          ]
+        },
+        {
+          "name": "COMPLIANCE",
+          "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPPA etc. Does the application have any licensing requirements? e.g. per core licensing",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|High compliance requirements - both Legal and licensing",
+            "2-RED|Licensing compliance - licensing servers",
+            "3-AMBER|Legal compliance - distinct hardware, isolated clusters, compliance certification",
+            "4-GREEN| None"
+          ]
+        },
+        {
+          "name": "ARCHTYPE",
+          "title": "Which statement best describes the application architecture?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-AMBER|Massive Monolith (high memory, high CPU) singleton deployment, vertical scale only",
+            "2-AMBER|Massive Monolith (high memory, high CPU) , non singleton, complex to scale horizonatally",
+            "3-AMBER|Complex Monolith -  strict runtime dependency startup order, non resilient architecture",
+            "4-GREEN|Modern resilient monolith e.g. retries, circuit breaker etc",
+            "5-GREEN|Independently deployable services"
+          ]
+        }
+      ]
+    }
+  ]
+}

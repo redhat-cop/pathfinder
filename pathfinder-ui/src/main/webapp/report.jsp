@@ -410,16 +410,27 @@ table.dataTable tbody tr td {
 								    
 								    if (type == 'bubble'){
 								      //ctx.restore();
-									    ctx.clearRect(0, 0, chart.chart.width, chart.chart.height);
+									  ctx.clearRect(0, 0, chart.chart.width, chart.chart.height);
 								      var fontSize = 1.1;
 								      ctx.font = fontSize + "em sans-serif";
 								      ctx.textBaseline = "middle"
 								      ctx.fillStyle="#555";
 											
-											var topLeftText    ="Impactful but not advisable to move",  topLeftX=((width/4)*1)-(ctx.measureText(topLeftText).width/2), topLeftTextY=15;
-											var topRightText   ="Impactful and migratable",              topRightX=((width/4)*3)-(ctx.measureText(topRightText).width/2), topRightTextY=15;
-											var bottomLeftText ="Inadvisable",    bottomLeftX=((width/4)*1)-(ctx.measureText(bottomLeftText).width/2), bottomLeftTextY=chart.chartArea.bottom-15;
-											var bottomRightText="Trivial but migratable",                bottomRightX=((width/4)*3)-(ctx.measureText(bottomRightText).width/2), bottomRightTextY=chart.chartArea.bottom-15;
+									  var topLeftText    ="Impactful but not advisable to move";
+									  var topLeftX=((width/4)*1)-(ctx.measureText(topLeftText).width/2);
+									  var topLeftTextY=15;
+									  
+									  var topRightText   ="Impactful and migratable"
+									  var topRightX=((width/4)*3)-(ctx.measureText(topRightText).width/2)
+									  var topRightTextY=15;
+									  
+									  var bottomLeftText ="Inadvisable";
+									  var bottomLeftX=((width/4)*1)-(ctx.measureText(bottomLeftText).width/2);
+									  var bottomLeftTextY=chart.chartArea.bottom-15;
+									  
+									  var bottomRightText="Trivial but migratable";
+									  var bottomRightX=((width/4)*3)-(ctx.measureText(bottomRightText).width/2);
+									  var bottomRightTextY=chart.chartArea.bottom-15;
 											
 											// quadrant text
 									    ctx.fillText(topLeftText, topLeftX, topLeftTextY);
@@ -427,19 +438,19 @@ table.dataTable tbody tr td {
 									    ctx.fillText(bottomLeftText, bottomLeftX, bottomLeftTextY);
 									    ctx.fillText(bottomRightText, bottomRightX, bottomRightTextY);
 									    
-											var x=(width/2)+15, y=0, w=(width/2)-15, h=(height/2)-13;
+										var x=(width/2)+15, y=0, w=(width/2)-15, h=(height/2)-13;
 									    
-										    var adjustment=140;
-										    x=x-adjustment;
-										    w=w+adjustment;
+										var adjustment=140;
+										x=x-adjustment;
+										w=w+adjustment;
 										    
-												var grd=ctx.createLinearGradient(x,0,width-150,0);
-												var grdOpacity=0.12;
-												grd.addColorStop(0,"rgba(255,255,255,0)");
-												grd.addColorStop(1,"rgba(46, 212, 0, "+grdOpacity+")");
+										var grd=ctx.createLinearGradient(x,0,width-150,0);
+										var grdOpacity=0.12;
+										grd.addColorStop(0,"rgba(255,255,255,0)");
+										grd.addColorStop(1,"rgba(46, 212, 0, "+grdOpacity+")");
 												
-												ctx.fillStyle=grd;
-												ctx.fillRect(x,y,w,(h*2)-5);
+										ctx.fillStyle=grd;
+										ctx.fillRect(x,y,w,(h*2)-5);
 									    
 									    
 								    	// draw the dependency line(s)

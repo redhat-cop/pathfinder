@@ -21,6 +21,8 @@ package com.redhat.gps.pathfinder.questions;
  * #L%
  */
 
+import com.redhat.gps.pathfinder.QuestionProcessor;
+import org.apache.commons.io.IOUtils;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
 import org.everit.json.schema.loader.SchemaLoader;
@@ -30,10 +32,12 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class QuestionValidationTest {
     @Test
@@ -66,7 +70,7 @@ public class QuestionValidationTest {
             Schema schema = SchemaLoader.load(jsonSchema);
             schema.validate(jsonSubject);
         });
-        System.out.println("Exception as expected :" +exception.getMessage());
+        System.out.println("Exception as expected :" + exception.getMessage());
     }
 
     @Test
@@ -84,7 +88,7 @@ public class QuestionValidationTest {
             Schema schema = SchemaLoader.load(jsonSchema);
             schema.validate(jsonSubject);
         });
-        System.out.println("Exception as expected :" +exception.getMessage());
+        System.out.println("Exception as expected :" + exception.getMessage());
     }
 
     @Test
@@ -137,4 +141,106 @@ public class QuestionValidationTest {
 
         System.out.println(newSurvey);
     }
+
+    @Test
+    public void givenEmptyCustomFile() throws ValidationException, JSONException, IOException {
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+        InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-no-questions.json");
+
+        String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+
+        String res1 = QuestionProcessor.GenerateSurveyPages(questionsString, "", schemaString);
+        assertNotEquals(res1, "", "Result should not be empty");
+
+        String questionsStringCorrupt = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+        String res2 = QuestionProcessor.GenerateSurveyPages(questionsString, questionsStringCorrupt, schemaString);
+        assertNotEquals(res2, "", "Result should not be empty");
+    }
+
+    @Test
+    public void givenCorruptCustomFile1() throws ValidationException, JSONException, IOException {
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+        InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-no-questions.json");
+
+        String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+
+        String questionsStringCorrupt = IOUtils.toString(customQuestionsCorrupt, StandardCharsets.UTF_8.name());
+        String res2 = QuestionProcessor.GenerateSurveyPages(questionsString, questionsStringCorrupt, schemaString);
+        assertNotEquals(res2, "", "Result should not be empty");
+    }
+
+    @Test
+    public void givenCorruptCustomFile2() throws ValidationException, JSONException, IOException {
+        Exception exception = assertThrows(org.json.JSONException.class, () -> {
+            InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+            InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+            InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-corrupt.json");
+
+            String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+            String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+
+            String questionsStringCorrupt = IOUtils.toString(customQuestionsCorrupt, StandardCharsets.UTF_8.name());
+            String res2 = QuestionProcessor.GenerateSurveyPages(questionsString, questionsStringCorrupt, schemaString);
+            assertNotEquals(res2, "", "Result should not be empty");
+        });
+    }
+
+    @Test
+    public void givenDuplicateQuestionNames() throws ValidationException, JSONException, IOException {
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+        InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-8duplicate-names.json");
+
+        String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+
+        String questionsStringCorrupt = IOUtils.toString(customQuestionsCorrupt, StandardCharsets.UTF_8.name());
+        String res2 = QuestionProcessor.GenerateSurveyPages(questionsString, questionsStringCorrupt, schemaString);
+        assertEquals(res2.lastIndexOf("DEPLOYFREQ"), res2.indexOf("DEPLOYFREQ"), "There should only be one \"DEPLOYFREQ\" string");
+    }
+
+
+    @Test
+    public void givenValidFileCheckMerge() throws ValidationException, JSONException, IOException {
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+        InputStream customQuestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-8duplicate-names.json");
+
+        String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
+        String questionsStringCustom = IOUtils.toString(customQuestions, StandardCharsets.UTF_8.name());
+        String res2 = QuestionProcessor.GenerateSurveyPages(questionsString, questionsStringCustom, schemaString);
+
+        JSONObject stdQuestions = new JSONObject(
+                new JSONTokener(questionsString));
+        JSONArray stdPages = stdQuestions.getJSONArray("pages");
+
+        JSONObject resultQuestions = new JSONObject(
+                new JSONTokener(res2));
+        JSONArray resPages = resultQuestions.getJSONArray("pages");
+
+        JSONObject customQuestionsO = new JSONObject(
+                new JSONTokener(questionsStringCustom));
+        JSONArray cusPages = customQuestionsO.getJSONArray("pages");
+
+        assertEquals((stdPages.length() + cusPages.length()), resPages.length(),"Number of pages isn't what's expected");
+
+        // Need to count the extra comment question added during file survey processing
+        assertEquals((countQuestions(stdPages) + countQuestions(cusPages)+resPages.length()), (countQuestions(resPages)),"Number of questions isn't what's expected");
+    }
+
+    private int countQuestions(JSONArray pages) throws JSONException {
+        int count = 0;
+        for (int j = 0; j < pages.length(); j++) {
+            JSONObject page = pages.getJSONObject(j);
+            count += page.getJSONArray("questions").length();
+        }
+        return count;
+    }
+
+
 }
