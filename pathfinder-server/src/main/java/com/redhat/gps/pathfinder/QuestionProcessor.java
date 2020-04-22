@@ -36,33 +36,39 @@ import java.io.IOException;
 public class QuestionProcessor {
     private final Logger log = LoggerFactory.getLogger(QuestionProcessor.class);
 
+
+    public static JSONObject ValidateQuestionData(String questionData, String questionSchema) throws JSONException {
+        JSONObject jsonSchema;
+        JSONObject QuestionsJSON;
+        jsonSchema = new JSONObject(
+                new JSONTokener(questionSchema));
+        Schema schema = SchemaLoader.load(jsonSchema);
+        QuestionsJSON = new JSONObject(
+                new JSONTokener(questionData));
+        schema.validate(QuestionsJSON);
+        return QuestionsJSON;
+    }
+
     /**
      * @param questionData - String containing the survey questions as a json payload
      * @return String - survey questions enriched as a json payload
      * @throws IOException
      * @throws JSONException
      */
-    public static String GenerateSurveyPages(String questionData, String customQuestions, String questionSchema) throws IOException, JSONException {
-        JSONObject jsonSchema;
+    public String GenerateSurveyPages(String questionData, String customQuestions, String questionSchema) throws JSONException {
         JSONObject customQuestionsJSON;
         JSONObject defaultQuestionsJSON;
         JSONArray customPages = null;
 
-        jsonSchema = new JSONObject(
-                new JSONTokener(questionSchema));
-
-        Schema schema = SchemaLoader.load(jsonSchema);
-
-        defaultQuestionsJSON = new JSONObject(
-                new JSONTokener(questionData));
-
-        schema.validate(defaultQuestionsJSON);
+        defaultQuestionsJSON = QuestionProcessor.ValidateQuestionData(questionData, questionSchema);
 
         if (!customQuestions.isEmpty()) {
-            customQuestionsJSON = new JSONObject(
-                    new JSONTokener(customQuestions));
-            schema.validate(defaultQuestionsJSON);
-            customPages = customQuestionsJSON.getJSONArray("pages");
+            try {
+                customQuestionsJSON = QuestionProcessor.ValidateQuestionData(customQuestions, questionSchema);
+                customPages = customQuestionsJSON.getJSONArray("pages");
+            } catch (Exception ex) {
+                log.error("Unable to parse custom questions...continuing", ex);
+            }
         }
 
         JSONArray pages = defaultQuestionsJSON.getJSONArray("pages");
@@ -92,7 +98,7 @@ public class QuestionProcessor {
             newPages.put(j, page);
         }
 
-        if ((customPages != null)&&(customPages.length()>0)) {
+        if ((customPages != null) && (customPages.length() > 0)) {
             int startPages = pages.length();
 
             for (int j = 0; j < customPages.length(); j++) {
@@ -105,18 +111,18 @@ public class QuestionProcessor {
                     x.put("type", "radiogroup");
                     x.put("isRequired", "false");
                     x.put("colCount", "1");
-                    x.put("name","customQuestion"+i);
+                    x.put("name", "customQuestion" + i);
                     newQuestions.put(x);
                 }
                 JSONObject pageComment = new JSONObject();
                 pageComment.put("type", "comment");
-                pageComment.put("name", "NOTESONPAGE" + (j+startPages));
+                pageComment.put("name", "NOTESONPAGE" + (j + startPages));
                 pageComment.put("title", "Additional notes or comments");
                 pageComment.put("isRequired", "false");
                 newQuestions.put(pageComment);
                 page.remove("questions");
                 page.put("questions", newQuestions);
-                newPages.put(j+startPages, page);
+                newPages.put(j + startPages, page);
             }
         }
 
