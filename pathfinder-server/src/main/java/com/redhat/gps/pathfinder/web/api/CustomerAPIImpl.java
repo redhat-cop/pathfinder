@@ -118,7 +118,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         ) {
             rawQuestionsJson = getResourceAsString(is1);
             questionsJsonSchema = getResourceAsString(is2);
-            resultPayload = QuestionProcessor.GenerateSurveyPages(rawQuestionsJson, cuztomQuestionsJson, questionsJsonSchema);
+            resultPayload = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, cuztomQuestionsJson, questionsJsonSchema);
         } catch (Exception e) {
             InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
             resultPayload = getResourceAsString(is3);
