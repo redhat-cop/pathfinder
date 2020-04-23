@@ -55,6 +55,6 @@
     "TELEPRESENCE_CONTAINER": "pathfinder-server",
     "TELEPRESENCE_CONTAINER_NAMESPACE": "pathfinder-test",
     "TELEPRESENCE_MOUNTS": "/run/secrets:/tmp/secrets/mongodb:/run/secrets/kubernetes.io/serviceaccount",
-    "TELEPRESENCE_POD": "pathfinder-server-10-tpdc9",
-    "TELEPRESENCE_ROOT": "/tmp/tel-5i8nios_/fs"
+    "TELEPRESENCE_POD": "pathfinder-server-16-8wlf8",
+    "TELEPRESENCE_ROOT": "/tmp/tel-89395115/fs"
 }
