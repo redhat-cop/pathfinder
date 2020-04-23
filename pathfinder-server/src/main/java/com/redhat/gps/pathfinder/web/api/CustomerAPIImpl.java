@@ -18,13 +18,17 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -68,6 +72,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 
 @RestController
 @RequestMapping("/api/pathfinder")
+@Component
 public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private final Logger log = LoggerFactory.getLogger(CustomerAPIImpl.class);
     private final CustomerRepository custRepo;
@@ -78,7 +83,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private String SurveyJSPayload;
     private String SurveyQuestionsJSON;
 
-    @Value("${CustomQuestionsFilePath:}")
+    @Value("${CUSTOM_QUESTIONS:}")
     private String customQuestionsFileLocation;
 
     public CustomerAPIImpl(CustomerRepository custRepo,
@@ -93,6 +98,11 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
+        this.SurveyJSPayload = "";
+    }
+
+    @PostConstruct
+    public void init() throws IOException {
         this.SurveyJSPayload = getSurveyContent();
     }
 
@@ -107,6 +117,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
             File customQuestionsFile = new File(customQuestionsFileLocation);
             try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
                 customQuestionsJson = getResourceAsString(cqis);
+                log.info("Successfully read custom questions file {}", customQuestionsFileLocation);
             } catch (Exception ex) {
                 log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
                 customQuestionsJson = "";
@@ -119,6 +130,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
             rawQuestionsJson = getResourceAsString(is1);
             questionsJsonSchema = getResourceAsString(is2);
             resultPayload = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
+            log.info("Successfully generated Survey Questions");
         } catch (Exception e) {
             InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
             resultPayload = getResourceAsString(is3);
