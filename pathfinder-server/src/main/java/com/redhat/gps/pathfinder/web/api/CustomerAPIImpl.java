@@ -18,8 +18,6 @@ import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -99,6 +97,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
         this.SurveyJSPayload = "";
+        this.SurveyQuestionsJSON = "";
     }
 
     @PostConstruct
@@ -111,7 +110,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         String questionsJsonSchema = "";
         String resultPayload = "";
         String customQuestionsJson = "";
-
 
         if ((customQuestionsFileLocation!=null)&&(!customQuestionsFileLocation.isEmpty())) {
             File customQuestionsFile = new File(customQuestionsFileLocation);
@@ -129,7 +127,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         ) {
             rawQuestionsJson = getResourceAsString(is1);
             questionsJsonSchema = getResourceAsString(is2);
-            resultPayload = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
+            this.SurveyQuestionsJSON = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
             log.info("Successfully generated Survey Questions");
         } catch (Exception e) {
             InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
@@ -142,7 +140,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
         try (InputStream is4 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/application-survey.js");) {
             String surveyJs = getResourceAsString(is4);
-            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", resultPayload));
+            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", this.SurveyQuestionsJSON));
         } catch (Exception ex) {
             log.error("Unable to process and enrich the question template....FATAL ERROR ",ex);
             System.exit(42);
@@ -699,7 +697,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                         if (application.getAssessments() != null && application.getAssessments().size() > 0) {
                             Assessments latestAssessment = application.getAssessments().get(application.getAssessments().size() - 1);
                             log.debug("Adding customer assessment field:: {}={}", field, latestAssessment.getResults().get(field));
-                            customFieldMap.put(entity + "." + field, latestAssessment.getResults().get(field));
+
+//                            customFieldMap.put(entity + "." + field, latestAssessment.getResults().get(field));
+                            customFieldMap.put(entity + "." + field, extractNotes(latestAssessment.getResults()));
                         }
 
                     }
@@ -711,6 +711,14 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    private String extractNotes(HashMap<String,String>results){
+        String optionalNotes = results.entrySet().stream()
+                .filter(x->x.getKey().contains("NOTESONPAGE"))
+                .map(x->x.getValue()+".\n ")
+                .collect(Collectors.joining());
+        return optionalNotes;
     }
 
 

@@ -102,8 +102,10 @@ public class OSEMongoDBConfig {
         MongoClientOptions tmpoptions;
         tmpoptions = MongoClientOptions.builder()
                 .applicationName("Pathfinder")
+                .connectionsPerHost(30)
+                .minConnectionsPerHost(5)
+                .maxConnectionIdleTime(300000)
                 .build();
-
         this.mongo = createMongoClient(tmpoptions);
         return this.mongo;
     }
