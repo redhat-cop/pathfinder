@@ -11,9 +11,9 @@ package com.redhat.gps.pathfinder.config;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -112,54 +112,47 @@ public class OSEMongoDBConfig {
 
         List<MongoCredential> credentials = new ArrayList<MongoCredential>();
 
-        if (!"".equals(this.username)){
-          credentials.add(MongoCredential.createCredential(this.username, this.dbname,
-              this.password.toCharArray()));
+        if (!"".equals(this.username)) {
+            credentials.add(MongoCredential.createCredential(this.username, this.dbname,
+                    this.password.toCharArray()));
         }
 
         MongoClientURI dburi = new MongoClientURI(this.createMongoURL());
 
         return new MongoClient(dburi);
-
-//        return new MongoClient(
-//            Collections.singletonList(new ServerAddress(this.dbhost, this.dbport)), credentials,
-//            options);
-
     }
 
-    //mongodb://dbuser:dbuser12345@mongodb/pathfinder?authSource=admin
-
-    private String createMongoURL(){
+    private String createMongoURL() {
         StringBuilder res = new StringBuilder();
         res.append("mongodb://");
-        if (!"".equals(this.username)){
-          res.append(this.username)
-          .append(":")
-          .append(this.password)
-          .append("@");
+        if (!"".equals(this.username)) {
+            res.append(this.username)
+                    .append(":")
+                    .append(this.password)
+                    .append("@");
         }
         res
-            .append(this.dbhost)
-            .append(":")
-            .append(this.dbport)
-            .append("/")
-            .append(this.dbname)
-            .append("?authSource=")
-            .append(this.dbname);
-        log.debug("Mongo URL=============>"+res.toString());
+                .append(this.dbhost)
+                .append(":")
+                .append(this.dbport)
+                .append("/")
+                .append(this.dbname)
+                .append("?authSource=")
+                .append(this.dbname);
+        log.debug("Mongo URL=============>" + res.toString());
         return res.toString();
     }
 
     @Override
     public String toString() {
         return "OSEMongoDBConfig{" +
-            "options=" + options +
-            ", username='" + username + '\'' +
-            ", password='" + password + '\'' +
-            ", dbname='" + dbname + '\'' +
-            ", adminpwd='" + adminpwd + '\'' +
-            ", dbhost='" + dbhost + '\'' +
-            ", dbport=" + dbport +
-            '}';
+                "options=" + options +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", dbname='" + dbname + '\'' +
+                ", adminpwd='" + adminpwd + '\'' +
+                ", dbhost='" + dbhost + '\'' +
+                ", dbport=" + dbport +
+                '}';
     }
 }
