@@ -1,0 +1,35 @@
+{
+  "pages": [
+    {
+      "title": "Application Details",
+      "questions": [
+        {
+          "name": "OOPS1",
+          "title": "Test custom question 1?",
+          "tooltip": "Test custom question 1 tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Test 1",
+            "2-RED|Test 2",
+            "3-AMBER|Test 3",
+            "4-GREEN|Test 4",
+            "5-GREEN|Test 5"
+          ]
+        },
+        {
+          "name": "CUSTOM2",
+          "title": "Test custom question 2?",
+          "tooltip": "Test custom question 2 tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Test 5",
+            "2-RED|Test 4",
+            "3-AMBER|Test 3",
+            "4-GREEN|Test 2",
+            "5-GREEN|Test 1"
+          ]
+        }
+      ]
+    }
+  ]
+}
