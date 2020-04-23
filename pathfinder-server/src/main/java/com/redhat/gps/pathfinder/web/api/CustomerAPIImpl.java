@@ -100,16 +100,16 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         String rawQuestionsJson = "";
         String questionsJsonSchema = "";
         String resultPayload = "";
-        String cuztomQuestionsJson = "";
+        String customQuestionsJson = "";
 
 
-        if (!customQuestionsFileLocation.isEmpty()) {
+        if ((customQuestionsFileLocation!=null)&&(!customQuestionsFileLocation.isEmpty())) {
             File customQuestionsFile = new File(customQuestionsFileLocation);
             try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
-                cuztomQuestionsJson = getResourceAsString(cqis);
+                customQuestionsJson = getResourceAsString(cqis);
             } catch (Exception ex) {
                 log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
-                cuztomQuestionsJson = "";
+                customQuestionsJson = "";
             }
         }
 
@@ -118,7 +118,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         ) {
             rawQuestionsJson = getResourceAsString(is1);
             questionsJsonSchema = getResourceAsString(is2);
-            resultPayload = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, cuztomQuestionsJson, questionsJsonSchema);
+            resultPayload = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
         } catch (Exception e) {
             InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
             resultPayload = getResourceAsString(is3);
@@ -130,7 +130,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
         try (InputStream is4 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/application-survey.js");) {
             String surveyJs = getResourceAsString(is4);
-            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", SurveyQuestionsJSON));
+            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", resultPayload));
         } catch (Exception ex) {
             log.error("Unable to process and enrich the question template....FATAL ERROR ",ex);
             System.exit(42);
