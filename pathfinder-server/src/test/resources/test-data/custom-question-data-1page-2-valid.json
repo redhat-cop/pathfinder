@@ -4,29 +4,29 @@
       "title": "Application Details",
       "questions": [
         {
-          "name": "OOPS1",
-          "title": "Test custom question 1?",
-          "tooltip": "Test custom question 1 tooltip",
+          "name": "FLUXCAP",
+          "title": "Is the flux capacitor used in the container?",
+          "tooltip": "OCP doesn't support hardware flux capacitor",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|Test 1",
-            "2-RED|Test 2",
-            "3-AMBER|Test 3",
-            "4-GREEN|Test 4",
-            "5-GREEN|Test 5"
+            "1-RED| Yes 50%+ in production",
+            "2-RED| Yes 50%+ in Test ",
+            "3-AMBER| Yes only in dev",
+            "4-GREEN| No only in the movies",
+            "5-GREEN| This is a made up question"
           ]
         },
         {
-          "name": "CUSTOM2",
-          "title": "Test custom question 2?",
-          "tooltip": "Test custom question 2 tooltip",
+          "name": "GEOLOCN",
+          "title": "Does the application ingress require a local network POP ?",
+          "tooltip": "Ingress question 1",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|Test 5",
-            "2-RED|Test 4",
-            "3-AMBER|Test 3",
-            "4-GREEN|Test 2",
-            "5-GREEN|Test 1"
+            "1-RED|Yes and country specific",
+            "2-RED|Yes and region specific",
+            "3-AMBER| Supported but not recommended",
+            "4-GREEN| No",
+            "5-GREEN| This is a made up question"
           ]
         }
       ]

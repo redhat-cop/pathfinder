@@ -716,7 +716,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private String extractNotes(HashMap<String,String>results){
         String optionalNotes = results.entrySet().stream()
                 .filter(x->x.getKey().contains("NOTESONPAGE"))
-                .map(x->x.getValue()+".\n ")
+                .map(x->x.getValue()+".<br>")
                 .collect(Collectors.joining());
         return optionalNotes;
     }
