@@ -15,6 +15,9 @@ oc new-project <your-new-project-name>
 oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
+
+Login as admin/admin and start adding customers and apps. Once added assess the apps, review and decide what to do and then hit generate report to see the collective outcome and recommendations.
+
 # License
 The code is made available under the Apache License, Version 2.0
 
