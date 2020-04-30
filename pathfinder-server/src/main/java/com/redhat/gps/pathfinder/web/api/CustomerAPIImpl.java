@@ -157,6 +157,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
         String q; public String getQuestion(){return q;}
         String a; public String getAnswer(){return a;}
         String apps; public String getOffendingApps(){return apps;}
+        public void addOffendingApp(String app) {
+            this.apps = Joiner.on(", ").join(this.apps, app);
+        }
       }
       class Report{
         Map<String,Double> s;
@@ -212,7 +215,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi{
                 String answer=questionKeyToText.get(e.getKey()).get("answerText");
                 risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
               }else{
-                risks2.get(riskQuestionAnswerKey).apps=Joiner.on(",").join(risks2.get(riskQuestionAnswerKey).getOffendingApps().split(","));
+                risks2.get(riskQuestionAnswerKey).addOffendingApp(app.getName());
               }
               
             }
