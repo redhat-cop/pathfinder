@@ -355,22 +355,6 @@
                     <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties
                     </generateGitPropertiesFilename>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>first</id>
-                        <goals>
-                            <goal>update-file-header</goal>
-                        </goals>
-                        <phase>process-sources</phase>
-                        <configuration>
-                            <licenseName>apache_v2</licenseName>
-                            <roots>
-                                <root>src/main/java</root>
-                                <root>src/test/java</root>
-                            </roots>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -576,6 +560,9 @@
                                     <goal>build-info</goal>
                                     <goal>repackage</goal>
                                 </goals>
+                                <configuration>
+                                    <classifier>exec</classifier>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>
