@@ -13,6 +13,8 @@ import com.redhat.gps.pathfinder.service.util.Json;
 import com.redhat.gps.pathfinder.service.util.MapBuilder;
 import com.redhat.gps.pathfinder.web.api.model.*;
 import io.swagger.annotations.ApiParam;
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
@@ -108,10 +110,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     public String getSurveyContent() throws IOException {
         String rawQuestionsJson = "";
         String questionsJsonSchema = "";
-        String resultPayload = "";
+        String finalJScriptDefn = "";
         String customQuestionsJson = "";
 
-        if ((customQuestionsFileLocation!=null)&&(!customQuestionsFileLocation.isEmpty())) {
+        if ((customQuestionsFileLocation != null) && (!customQuestionsFileLocation.isEmpty())) {
             File customQuestionsFile = new File(customQuestionsFileLocation);
             try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
                 customQuestionsJson = getResourceAsString(cqis);
@@ -131,7 +133,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
             log.info("Successfully generated Survey Questions");
         } catch (Exception e) {
             InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
-            resultPayload = getResourceAsString(is3);
+            this.SurveyQuestionsJSON = getResourceAsString(is3);
             if (is3 != null) is3.close();
             log.error("Unable to find/parse question-data-default...using default-survey...turn on debug for more info");
             log.trace("getSurveyContent raw {} schema {}", rawQuestionsJson, questionsJsonSchema);
@@ -140,14 +142,21 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
         try (InputStream is4 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/application-survey.js");) {
             String surveyJs = getResourceAsString(is4);
-            resultPayload = (surveyJs.replace("$$QUESTIONS_JSON$$", this.SurveyQuestionsJSON));
+            finalJScriptDefn = (surveyJs.replace("$$QUESTIONS_JSON$$", this.SurveyQuestionsJSON));
         } catch (Exception ex) {
-            log.error("Unable to process and enrich the question template....FATAL ERROR ",ex);
+            log.error("Unable to process and enrich the question template....FATAL ERROR ", ex);
             System.exit(42);
         }
-        return resultPayload;
+        return finalJScriptDefn;
     }
 
+    // Non-Swagger api - returns the survey payload
+    @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
+    public String getSurvey() throws IOException {
+        return SurveyJSPayload
+                .replaceAll("\"SERVER_URL", "Utils.SERVER+\"")
+                .replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
+    }
 
     // Get Members
     // GET: /api/pathfinder/customers/{customerId}/member/
@@ -184,6 +193,11 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         return new MemberController(custRepo, membersRepo).deleteMembers(custId, body);
     }
 
+
+    interface QuestionParser<T> {
+        void parse(T result, String name, String answerOrdinal, String answerRating, String answerText, String questionText);
+    }
+
     // Non-Swagger api - report page content
     @RequestMapping(value = "/customers/{custId}/report", method = GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin
@@ -191,26 +205,20 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         log.debug("getReport for custID {}", custId);
 
         class Risk {
+            @Getter
+            @Setter
             String q;
+            @Getter
+            @Setter
             String a;
+            @Getter
+            @Setter
             String apps;
 
             public Risk(String q, String a, String apps) {
                 this.q = q;
                 this.a = a;
                 this.apps = apps;
-            }
-
-            public String getQuestion() {
-                return q;
-            }
-
-            public String getAnswer() {
-                return a;
-            }
-
-            public String getOffendingApps() {
-                return apps;
             }
 
             public void addOffendingApp(String app) {
@@ -247,23 +255,13 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 if (null == app.getAssessments()) continue;
                 Assessments assessment = app.getAssessments().get(app.getAssessments().size() - 1);
 
-                Map<String, Map<String, String>> questionKeyToText = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<String, Map<String, String>>(),
+                Map<String, Map<String, String>> questionKeyToText = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<>(),
                         SurveyQuestionsJSON,
                         assessment,
-                        new QuestionParser<Map<String, Map<String, String>>>() {
-                            @Override
-                            public void parse(Map<String, Map<String, String>> result,
-                                              String name,
-                                              String answerOrdinal,
-                                              String answerRating,
-                                              String answerText,
-                                              String questionText) {
-                                result.put(name, new MapBuilder<String, String>()
-                                        .put("questionText", questionText)
-                                        .put("answerText", answerText)
-                                        .build());
-                            }
-                        });
+                        (result1, name, answerOrdinal, answerRating, answerText, questionText) -> result1.put(name, new MapBuilder<String, String>()
+                                .put("questionText", questionText)
+                                .put("answerText", answerText)
+                                .build()));
 
                 String assessmentOverallStatus = "GREEN";
                 int mediumCount = 0;
@@ -314,13 +312,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         return Json.yamlToJson(IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("swagger/api.yml"), "UTF-8"));
     }
 
-    // Non-Swagger api - returns the survey payload
-    @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
-    public String getSurvey() throws IOException {
-        return SurveyJSPayload
-                .replaceAll("\"SERVER_URL", "Utils.SERVER+\"")
-                .replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
-    }
 
     private String getResourceAsString(InputStream is) throws IOException {
         Validate.notNull(is);
@@ -334,6 +325,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                                         @PathVariable("assessmentId") String assessmentId) throws IOException {
 
         log.debug("viewAssessmentSummary....CID {}, AID {} ASID {}", customerId, appId, assessmentId);
+
         class ApplicationAssessmentSummary {
             public ApplicationAssessmentSummary(String q, String a, String r) {
                 this.question = q;
@@ -341,21 +333,15 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 this.rating = r;
             }
 
+            @Getter
+            @Setter
             private String question;
+            @Getter
+            @Setter
             private String answer;
+            @Getter
+            @Setter
             private String rating;
-
-            public String getQuestion() {
-                return question;
-            }
-
-            public String getAnswer() {
-                return answer;
-            }
-
-            public String getRating() {
-                return rating;
-            }
         }
 
         // Find the assessment in mongo
@@ -368,26 +354,11 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         List<ApplicationAssessmentSummary> result = new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(),
                 SurveyQuestionsJSON,
                 assessment,
-                new QuestionParser<List<ApplicationAssessmentSummary>>() {
-                    @Override
-                    public void parse(List<ApplicationAssessmentSummary> result,
-                                      String name,
-                                      String answerOrdinal,
-                                      String answerRating,
-                                      String answerText,
-                                      String questionText) {
-                        result.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating));
-                    }
-                });
+                (result1, name, answerOrdinal, answerRating, answerText, questionText) -> result1.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating)));
 
         String output = Json.newObjectMapper(true).writeValueAsString(result);
         log.debug("viewAssessmentSummary....CID {}, AID {} ASID {} -->{}", customerId, appId, assessmentId, output);
         return output;
-    }
-
-    interface QuestionParser<T> {
-        public void parse(T result, String name, String answerOrdinal, String answerRating, String answerText, String questionText);
-
     }
 
     /* Uh-oh, Uncle Noel is going to murder me for this one... yes, yes I will convert to Swagger later on, chalk it up on the technical debt board! */
@@ -717,10 +688,10 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    private String extractNotes(HashMap<String,String>results){
+    private String extractNotes(HashMap<String, String> results) {
         String optionalNotes = results.entrySet().stream()
-                .filter(x->x.getKey().contains("NOTESONPAGE"))
-                .map(x->x.getValue()+".<br>")
+                .filter(x -> x.getKey().contains("NOTESONPAGE"))
+                .map(x -> x.getValue() + ".<br>")
                 .collect(Collectors.joining());
         return optionalNotes;
     }
@@ -1433,16 +1404,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         Map<String, Map<String, String>> questionInfo = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<String, Map<String, String>>(),
                 SurveyQuestionsJSON,
                 assessment,
-                new QuestionParser<Map<String, Map<String, String>>>() {
-                    @Override
-                    public void parse(Map<String, Map<String, String>> result, String name, String answerOrdinal, String answerRating, String answerText, String questionText) {
-                        result.put(name, new MapBuilder<String, String>()
-//                      .put("questionText", questionText)
-//                      .put("answerText", answerText)
-                                .put("answerRating", answerRating)
-                                .build());
-                    }
-                });
+                (result, name, answerOrdinal, answerRating, answerText, questionText) -> result.put(name, new MapBuilder<String, String>()
+                        .put("answerRating", answerRating)
+                        .build()));
 
         List<String> ratings = new ArrayList<>();
         for (Entry<String, String> qa : assessment.getResults().entrySet()) {
@@ -1452,12 +1416,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
             }
         }
         Collections.sort(ratings,
-                new Comparator<String>() {
-                    @Override
-                    public int compare(String o1, String o2) {
-                        return "RED".equals(o1) ? -1 : 0;
-                    }
-                }
+                (o1, o2) -> "RED".equals(o1) ? -1 : 0
         );
 
         int redCount = Collections.frequency(ratings, "RED");
