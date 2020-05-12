@@ -1,0 +1,66 @@
+{
+  "pages": [
+    {
+      "title": "Extra Application Details #1",
+      "questions": [
+        {
+          "name": "FLUXCAP",
+          "title": "Is the flux capacitor used in the container?",
+          "tooltip": "OCP doesn't support hardware flux capacitor",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED| Yes 50%+ in production",
+            "2-RED| Yes 50%+ in Test ",
+            "3-AMBER| Yes only in dev",
+            "4-GREEN| No only in the movies",
+            "5-GREEN| This is a made up question"
+          ]
+        },
+        {
+          "name": "GEOLOCN",
+          "title": "Does the application ingress require a local network POP ?",
+          "tooltip": "Ingress question 1",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Yes and country specific",
+            "2-RED|Yes and region specific",
+            "3-AMBER| Supported but not recommended",
+            "4-GREEN| No",
+            "5-GREEN| This is a made up question"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Extra Application Details #2",
+      "questions": [
+        {
+          "name": "UNIKERNAL",
+          "title": "Is the UNIKERNAL used in the container?",
+          "tooltip": "OCP doesn't support UNIKERNALs",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED| Yes 50%+ in production",
+            "2-RED| Yes 50%+ in Test ",
+            "3-AMBER| Yes only in dev",
+            "4-GREEN| No only in the movies",
+            "5-GREEN| This is a made up question"
+          ]
+        },
+        {
+          "name": "COVID19",
+          "title": "Does the application deal with COVID19 ?",
+          "tooltip": "COVID19 question 1",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Yes and country specific",
+            "2-RED|Yes and region specific",
+            "3-AMBER| Supported but not recommended",
+            "4-GREEN| No",
+            "5-GREEN| This is a made up question"
+          ]
+        }
+      ]
+    }
+  ]
+}

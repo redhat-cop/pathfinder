@@ -102,7 +102,7 @@ public class QuestionProcessor {
                 newQuestions.put(dependenciesIN);
 
                 JSONObject dependenciesOUT = new JSONObject();
-                dependenciesIN.put("name","DEPSOUTLIST");
+                dependenciesOUT.put("name","DEPSOUTLIST");
                 dependenciesOUT.put("type", "tagbox");
                 dependenciesOUT.put("renderAs", "select2");
                 dependenciesOUT.put("title", "Please add southbound dependencies...");
@@ -127,8 +127,8 @@ public class QuestionProcessor {
         if ((customPages != null) && (customPages.length() > 0)) {
             int startPages = pages.length();
 
-            for (int j = 0; j < customPages.length(); j++) {
-                JSONObject page = customPages.getJSONObject(j);
+            for (int extraPages = 0; extraPages < customPages.length(); extraPages++) {
+                JSONObject page = customPages.getJSONObject(extraPages);
                 JSONArray questions = page.getJSONArray("questions");
                 JSONArray newQuestions = new JSONArray();
 
@@ -142,13 +142,13 @@ public class QuestionProcessor {
                 }
                 JSONObject pageComment = new JSONObject();
                 pageComment.put("type", "comment");
-                pageComment.put("name", "NOTESONPAGE" + (j + startPages));
+                pageComment.put("name", "NOTESONPAGE" + (extraPages + startPages));
                 pageComment.put("title", "Additional notes or comments");
                 pageComment.put("isRequired", "false");
                 newQuestions.put(pageComment);
                 page.remove("questions");
                 page.put("questions", newQuestions);
-                newPages.put(j + startPages, page);
+                newPages.put(extraPages + startPages, page);
             }
         }
 
@@ -158,29 +158,6 @@ public class QuestionProcessor {
         newSurvey.put("requiredText", "");
         newSurvey.put("showProgressBar", "bottom");
         newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'><b>Here</b></a> to return to the main page.");
-
-
-
-//        JSONObject dependenciesIN = new JSONObject();
-//        dependenciesIN.put("name","DEPSINLIST");
-//        dependenciesIN.put("type", "tagbox");
-//        dependenciesIN.put("renderAs", "select2");
-//        dependenciesIN.put("title", "Please add northbound dependencies...");
-//        dependenciesIN.put("visibleIf", "{DEPSIN} notcontains '5'");
-//        dependenciesIN.put("isRequired",false);
-//        dependenciesIN.put("colCount", 3);
-//        dependenciesIN.put("choicesByUrl",new JSONObject());
-//
-//        JSONObject dependenciesOUT = new JSONObject();
-//        dependenciesIN.put("name","DEPSOUTLIST");
-//        dependenciesOUT.put("type", "tagbox");
-//        dependenciesOUT.put("renderAs", "select2");
-//        dependenciesOUT.put("title", "Please add southbound dependencies...");
-//        dependenciesOUT.put("visibleIf", "{DEPSOUT} notcontains '5'");
-//        dependenciesOUT.put("isRequired",false);
-//        dependenciesOUT.put("colCount", 3);
-//        dependenciesOUT.put("choicesByUrl",new JSONObject());
-
         return newSurvey.toString();
     }
 }
