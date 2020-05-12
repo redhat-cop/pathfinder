@@ -95,7 +95,7 @@ public class QuestionProcessor {
                 dependenciesIN.put("type", "tagbox");
                 dependenciesIN.put("renderAs", "select2");
                 dependenciesIN.put("title", "Please add northbound dependencies...");
-                dependenciesIN.put("visibleIf", "{DEPSIN} notcontains '5'");
+                dependenciesIN.put("visibleIf", "{DEPSIN} !='0' and {DEPSIN} !='5'");
                 dependenciesIN.put("isRequired","false");
                 dependenciesIN.put("colCount", "3");
                 dependenciesIN.put("choicesByUrl",new JSONObject());
@@ -106,7 +106,7 @@ public class QuestionProcessor {
                 dependenciesOUT.put("type", "tagbox");
                 dependenciesOUT.put("renderAs", "select2");
                 dependenciesOUT.put("title", "Please add southbound dependencies...");
-                dependenciesOUT.put("visibleIf", "{DEPSOUT} notcontains '5'");
+                dependenciesOUT.put("visibleIf", "{DEPSOUT} !='0' and {DEPSOUT} !='5'");
                 dependenciesOUT.put("isRequired","false");
                 dependenciesOUT.put("colCount", "3");
                 dependenciesOUT.put("choicesByUrl",new JSONObject());
@@ -137,7 +137,7 @@ public class QuestionProcessor {
                     x.put("type", "radiogroup");
                     x.put("isRequired", "false");
                     x.put("colCount", "1");
-                    x.put("name", "customQuestion" + i);
+                    x.put("name", "customQuestionP" + extraPages+"Q"+i);
                     newQuestions.put(x);
                 }
                 JSONObject pageComment = new JSONObject();
