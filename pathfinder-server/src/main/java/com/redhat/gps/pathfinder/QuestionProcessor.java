@@ -75,27 +75,53 @@ public class QuestionProcessor {
         JSONObject newSurvey = defaultQuestionsJSON;
 
         JSONArray newPages = new JSONArray();
-        for (int j = 0; j < pages.length(); j++) {
-            JSONObject page = pages.getJSONObject(j);
+        for (int pageIndex = 0; pageIndex < pages.length(); pageIndex++) {
+            JSONObject page = pages.getJSONObject(pageIndex);
             JSONArray questions = page.getJSONArray("questions");
             JSONArray newQuestions = new JSONArray();
 
             for (int i = 0; i < questions.length(); i++) {
                 JSONObject x = questions.getJSONObject(i);
                 x.put("type", "radiogroup");
-                x.put("isRequired", "false");
+                x.put("isRequired", "true");
                 x.put("colCount", "1");
                 newQuestions.put(x);
             }
+
+            //Need to manually add dependencies list at the end of page 1
+            if (pageIndex == 1){
+                JSONObject dependenciesIN = new JSONObject();
+                dependenciesIN.put("name","DEPSINLIST");
+                dependenciesIN.put("type", "tagbox");
+                dependenciesIN.put("renderAs", "select2");
+                dependenciesIN.put("title", "Please add northbound dependencies...");
+                dependenciesIN.put("visibleIf", "{DEPSIN} notcontains '5'");
+                dependenciesIN.put("isRequired","false");
+                dependenciesIN.put("colCount", "3");
+                dependenciesIN.put("choicesByUrl",new JSONObject());
+                newQuestions.put(dependenciesIN);
+
+                JSONObject dependenciesOUT = new JSONObject();
+                dependenciesIN.put("name","DEPSOUTLIST");
+                dependenciesOUT.put("type", "tagbox");
+                dependenciesOUT.put("renderAs", "select2");
+                dependenciesOUT.put("title", "Please add southbound dependencies...");
+                dependenciesOUT.put("visibleIf", "{DEPSOUT} notcontains '5'");
+                dependenciesOUT.put("isRequired","false");
+                dependenciesOUT.put("colCount", "3");
+                dependenciesOUT.put("choicesByUrl",new JSONObject());
+                newQuestions.put(dependenciesOUT);
+            }
+
             JSONObject pageComment = new JSONObject();
             pageComment.put("type", "comment");
-            pageComment.put("name", "NOTESONPAGE" + j);
+            pageComment.put("name", "NOTESONPAGE" + pageIndex);
             pageComment.put("title", "Additional notes or comments");
             pageComment.put("isRequired", "false");
             newQuestions.put(pageComment);
             page.remove("questions");
             page.put("questions", newQuestions);
-            newPages.put(j, page);
+            newPages.put(pageIndex, page);
         }
 
         if ((customPages != null) && (customPages.length() > 0)) {
@@ -132,6 +158,29 @@ public class QuestionProcessor {
         newSurvey.put("requiredText", "");
         newSurvey.put("showProgressBar", "bottom");
         newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'><b>Here</b></a> to return to the main page.");
+
+
+
+//        JSONObject dependenciesIN = new JSONObject();
+//        dependenciesIN.put("name","DEPSINLIST");
+//        dependenciesIN.put("type", "tagbox");
+//        dependenciesIN.put("renderAs", "select2");
+//        dependenciesIN.put("title", "Please add northbound dependencies...");
+//        dependenciesIN.put("visibleIf", "{DEPSIN} notcontains '5'");
+//        dependenciesIN.put("isRequired",false);
+//        dependenciesIN.put("colCount", 3);
+//        dependenciesIN.put("choicesByUrl",new JSONObject());
+//
+//        JSONObject dependenciesOUT = new JSONObject();
+//        dependenciesIN.put("name","DEPSOUTLIST");
+//        dependenciesOUT.put("type", "tagbox");
+//        dependenciesOUT.put("renderAs", "select2");
+//        dependenciesOUT.put("title", "Please add southbound dependencies...");
+//        dependenciesOUT.put("visibleIf", "{DEPSOUT} notcontains '5'");
+//        dependenciesOUT.put("isRequired",false);
+//        dependenciesOUT.put("colCount", 3);
+//        dependenciesOUT.put("choicesByUrl",new JSONObject());
+
         return newSurvey.toString();
     }
 }

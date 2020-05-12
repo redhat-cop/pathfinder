@@ -22,6 +22,8 @@ package com.redhat.gps.pathfinder.questions;
  */
 
 import com.redhat.gps.pathfinder.QuestionProcessor;
+import com.redhat.gps.pathfinder.web.api.CustomerAPIImpl;
+import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.apache.commons.io.IOUtils;
 import org.everit.json.schema.Schema;
 import org.everit.json.schema.ValidationException;
@@ -32,6 +34,8 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Test;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -91,56 +95,56 @@ public class QuestionValidationTest {
         System.out.println("Exception as expected :" + exception.getMessage());
     }
 
-    @Test
-    public void givenValidInput_Enrich() throws ValidationException, JSONException {
-        JSONObject jsonSchema;
-        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
-        InputStream jsonquestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
-        jsonSchema = new JSONObject(
-                new JSONTokener(new InputStreamReader(schemaFile)));
-        JSONObject jsonSubject = new JSONObject(
-                new JSONTokener(new InputStreamReader(jsonquestions)));
-
-        Schema schema = SchemaLoader.load(jsonSchema);
-        schema.validate(jsonSubject);
-        System.out.println("Validation passed");
-
-
-        JSONArray pages = jsonSubject.getJSONArray("pages");
-        JSONObject newSurvey = jsonSubject;
-        JSONArray newPages = new JSONArray();
-        for (int j = 0; j < pages.length(); j++) {
-            JSONObject page = pages.getJSONObject(j);
-            JSONArray questions = page.getJSONArray("questions");
-            JSONArray newQuestions = new JSONArray();
-
-            for (int i = 0; i < questions.length(); i++) {
-                JSONObject x = questions.getJSONObject(i);
-                x.put("type", "radiogroup");
-                x.put("isRequired", "true");
-                x.put("colCount", "1");
-                newQuestions.put(x);
-            }
-            JSONObject pageComment = new JSONObject();
-            pageComment.put("type", "comment");
-            pageComment.put("name", "NOTES" + j);
-            pageComment.put("title", "Additional notes or comments");
-            pageComment.put("isRequired", "false");
-            newQuestions.put(pageComment);
-            page.remove("questions");
-            page.put("quesions", newQuestions);
-            newPages.put(j, page);
-        }
-
-        newSurvey.put("pages", newPages);
-        newSurvey.put("title", "Application Assessment");
-        newSurvey.put("sendResultOnPageNext", "true");
-        newSurvey.put("requiredText", "");
-        newSurvey.put("showProgressBar", "bottom");
-        newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page.");
-
-        System.out.println(newSurvey);
-    }
+//    @Test
+//    public void givenValidInput_Enrich() throws ValidationException, JSONException {
+//        JSONObject jsonSchema;
+//        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+//        InputStream jsonquestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
+//        jsonSchema = new JSONObject(
+//                new JSONTokener(new InputStreamReader(schemaFile)));
+//        JSONObject jsonSubject = new JSONObject(
+//                new JSONTokener(new InputStreamReader(jsonquestions)));
+//
+//        Schema schema = SchemaLoader.load(jsonSchema);
+//        schema.validate(jsonSubject);
+//        System.out.println("Validation passed");
+//
+//
+//        JSONArray pages = jsonSubject.getJSONArray("pages");
+//        JSONObject newSurvey = jsonSubject;
+//        JSONArray newPages = new JSONArray();
+//        for (int j = 0; j < pages.length(); j++) {
+//            JSONObject page = pages.getJSONObject(j);
+//            JSONArray questions = page.getJSONArray("questions");
+//            JSONArray newQuestions = new JSONArray();
+//
+//            for (int i = 0; i < questions.length(); i++) {
+//                JSONObject x = questions.getJSONObject(i);
+//                x.put("type", "radiogroup");
+//                x.put("isRequired", "true");
+//                x.put("colCount", "1");
+//                newQuestions.put(x);
+//            }
+//            JSONObject pageComment = new JSONObject();
+//            pageComment.put("type", "comment");
+//            pageComment.put("name", "NOTES" + j);
+//            pageComment.put("title", "Additional notes or comments");
+//            pageComment.put("isRequired", "false");
+//            newQuestions.put(pageComment);
+//            page.remove("questions");
+//            page.put("quesions", newQuestions);
+//            newPages.put(j, page);
+//        }
+//
+//        newSurvey.put("pages", newPages);
+//        newSurvey.put("title", "Application Assessment");
+//        newSurvey.put("sendResultOnPageNext", "true");
+//        newSurvey.put("requiredText", "");
+//        newSurvey.put("showProgressBar", "bottom");
+//        newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page.");
+//
+//        System.out.println(newSurvey);
+//    }
 
     @Test
     public void givenEmptyCustomFile() throws ValidationException, JSONException, IOException {
@@ -249,13 +253,13 @@ public class QuestionValidationTest {
 
     @Test
     public void givenInvalidValuesCheckValidator() throws JSONException, IOException {
-        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
         InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
-        InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-invalid-values.json");
+        InputStream customQuestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-invalid-values.json");
 
         String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
         String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
-        String questionsStringCorrupt = IOUtils.toString(customQuestionsCorrupt, StandardCharsets.UTF_8.name());
+        String questionsStringCorrupt = IOUtils.toString(customQuestions, StandardCharsets.UTF_8.name());
 
         JSONObject res2 = QuestionProcessor.ValidateQuestionData(questionsString, schemaString);
         assertNotNull(res2, "Result should not be null");
@@ -275,5 +279,23 @@ public class QuestionValidationTest {
         return count;
     }
 
+    @Test
+    public void  validJSTest() throws Exception {
+        InputStream baseQFile =  QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream jsBase =     QuestionValidationTest.class.getResourceAsStream("../../../../../questions/application-survey.js");
+        InputStream customQue  = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
 
+        String rawQuestionsJson = IOUtils.toString(baseQFile, StandardCharsets.UTF_8.name());
+        String questionsJsonSchema = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String customQuestionsJson = IOUtils.toString(customQue, StandardCharsets.UTF_8.name());
+        String processedQ = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
+        String surveyJs = IOUtils.toString(jsBase, StandardCharsets.UTF_8.name());
+        String finalJScriptDefn = (surveyJs.replace("$$QUESTIONS_JSON$$", processedQ));
+
+        //Ensure the resultant javascript compiles
+        NashornScriptEngine engine = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
+        engine.compile(finalJScriptDefn);
+        System.out.println(finalJScriptDefn);
+    }
 }
