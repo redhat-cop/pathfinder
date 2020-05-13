@@ -233,8 +233,8 @@ public class QuestionValidationTest {
 
         assertEquals((stdPages.length() + cusPages.length()), resPages.length(), "Number of pages isn't what's expected");
 
-        // Need to count the extra comment question added to each page during final survey generation
-        assertEquals((countQuestions(stdPages) + countQuestions(cusPages) + resPages.length()), (countQuestions(resPages)), "Number of questions isn't what's expected");
+        // Need to count the extra comment question added to each page during final survey generation as well as the additional depedency questions
+        assertEquals((countQuestions(stdPages) + countQuestions(cusPages) + resPages.length()+2), (countQuestions(resPages)), "Number of questions isn't what's expected");
     }
 
     @Test
@@ -253,7 +253,7 @@ public class QuestionValidationTest {
 
     @Test
     public void givenInvalidValuesCheckValidator() throws JSONException, IOException {
-        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
         InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
         InputStream customQuestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-invalid-values.json");
 

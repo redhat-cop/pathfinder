@@ -675,9 +675,9 @@ table.dataTable tbody tr td {
 						        "pageLength" : -1, // default page entries
 						        "bInfo" : false, // removes "Showing N entries" in the table footer
 						        "columns": [
-						            { "data": "question" },
-						            { "data": "answer" },
-						            { "data": "offendingApps" },
+						            { "data": "q" },
+						            { "data": "a" },
+						            { "data": "apps" },
 							        ],
 						    } );
 						  }

@@ -266,15 +266,24 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 String assessmentOverallStatus = "GREEN";
                 int mediumCount = 0;
                 for (Entry<String, String> e : assessment.getResults().entrySet()) {
+
+                    //Skip processing notes
+                    if (e.getValue().contains("NOTESONPAGE"))
+                        continue;
+
                     // If ANY answers were RED, then the status is RED
                     if (e.getValue().contains("-RED")) {
                         assessmentOverallStatus = "RED";
                         // add the RED item to the risk list and add the app name against the risk
                         String riskQuestionAnswerKey = e.getKey() + e.getValue();
                         if (!risks2.containsKey(riskQuestionAnswerKey)) {
-                            String question = questionKeyToText.get(e.getKey()).get("questionText");
-                            String answer = questionKeyToText.get(e.getKey()).get("answerText");
-                            risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
+                            try {
+                                String question = questionKeyToText.get(e.getKey()).get("questionText");
+                                String answer = questionKeyToText.get(e.getKey()).get("answerText");
+                                risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
+                            }catch (NullPointerException ex){
+                                log.warn("NPE thrown and caught when trying to map assessment results to risks using key {} ....probably due to CustomQuestions being used during assessment and then removed before displaying results",e.getKey());
+                            }
                         } else {
                             risks2.get(riskQuestionAnswerKey).addOffendingApp(app.getName());
                         }
