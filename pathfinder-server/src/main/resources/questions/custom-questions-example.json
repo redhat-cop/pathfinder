@@ -1,0 +1,77 @@
+{
+  "pages": [
+    {
+      "title": "FuturePlans",
+      "questions": [
+        {
+          "name": "6RQuestions",
+          "title": "Which 6R are you*/would you recommend (*based on your current plan if you have one)?",
+          "tooltip": "Future plans",
+          "choices": [
+            "1-RED| No plan / Don't know",
+            "2-RED| Rehost",
+            "3-AMBER| Replatform",
+            "4-AMBER| Refactor",
+            "5-AMBER| Repurchase",
+            "6-GREEN| Retire"
+          ]
+        },
+        {
+          "name": "TARGETPLATFORM",
+          "title": "Which target platform are you*/would you recommend (*based on your current plan if you have one)?",
+          "tooltip": "If you're planning to move off the current platform what date do you aim to move off by (please specify in comments field at end of survey)? ",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Other (please specify in comments field at end of the page)",
+            "2-AMBER|Shared IaaS",
+            "3-GREEN|Public AWS",
+            "4-GREEN|Shared PaaS (OpenShift)"
+          ]
+        },
+        {
+          "name": "TARGETPLATFORMDATE",
+          "title": "If you're planning to move off the current platform what date do you aim to move off by (please specify in comments field at end of the page)?",
+          "tooltip": "(dd/mm/yy) Can be in the past",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|Date in comments field "
+          ]
+        },
+        {
+          "name": "EFFORTESTIMATE",
+          "title": "What is your effort estimate based on the 6R you've selected in person weeks?",
+          "tooltip": "",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|S (<12 weeks)",
+            "2-AMBER|M (12-25 weeks)",
+            "3-RED|L (26-51 weeks)",
+            "4-RED|XL (>52 weeks)"
+          ]
+        },
+        {
+          "name": "EFFORTESTIMATEELAPSED",
+          "title": "What is your estimate for elapsed duration to deliver the 6R you've selected",
+          "tooltip": "",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|S (<12 weeks)",
+            "2-AMBER|M (12-25 weeks)",
+            "3-RED|L (26-51 weeks)",
+            "4-RED|XL (>52 weeks)"
+          ]
+        },
+        {
+          "name": "SYSTEMSTABILITY",
+          "title": "Does the system have Stability Issues OR Data Quality Issues OR Skills OR Resource Issues",
+          "tooltip": "",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|No",
+            "2-RED|Yes"
+          ]
+        }
+      ]
+    }
+  ]
+}

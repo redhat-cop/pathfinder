@@ -137,7 +137,7 @@ public class QuestionProcessor {
                 for (int i = 0; i < questions.length(); i++) {
                     JSONObject x = questions.getJSONObject(i);
                     x.put("type", "radiogroup");
-                    x.put("isRequired", "false");
+                    x.put("isRequired", "true");
                     x.put("colCount", "1");
                     x.put("name", "customQuestionP" + extraPages + "Q" + i);
                     newQuestions.put(x);
