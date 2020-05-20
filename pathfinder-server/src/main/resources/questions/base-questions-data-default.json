@@ -35,11 +35,12 @@
           "tooltip": "Gauge the development latency",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|More than six months",
-            "2-AMBER|Between one month and six months",
-            "3-GREEN|Between one week and one month",
-            "4-GREEN|Between one day and one week",
-            "5-GREEN|Less than one day"
+            "1-RED|Not tracked",
+            "2-RED|More than six months",
+            "3-AMBER|Between one month and six months",
+            "4-GREEN|Between one week and one month",
+            "5-GREEN|Between one day and one week",
+            "6-GREEN|Less than one day"
           ]
         },
         {
@@ -49,24 +50,25 @@
           "tooltip": "Gauge deployment frequency",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|Greater than once every six months",
-            "2-AMBER|Between once per month and once every six months",
-            "3-GREEN|Weekly deployments",
-            "4-GREEN|Daily deployments",
-            "5-GREEN|On demand (multiple deploys per day)"
+            "1-RED|Not tracked",
+            "2-RED|Greater than once every six months",
+            "3-AMBER|Between once per month and once every six months",
+            "4-GREEN|Weekly deployments",
+            "5-GREEN|Daily deployments",
+            "6-GREEN|On demand (multiple deploys per day)"
           ]
         },
         {
           "name": "MTTR",
           "title": "What is the Mean Time to Recover (MTTR) when a fault is found with the application in production?",
-          "tooltip": "Gauge the problem resolution time",
+          "tooltip": "Gauge the problem resolution time, MTTR (mean time to recover) is the average time it takes to repair/recover a system",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|One month or greater",
-            "2-AMBER|Between one week and one month",
+            "1-RED|Not tracked",
+            "2-RED|One month or greater",
             "3-AMBER|Between one day and one week",
             "4-GREEN|Between one hour and one day",
-            "5-GREEN|Immediately"
+            "5-GREEN|Less than one hour"
           ]
         },
         {
@@ -107,7 +109,7 @@
             "0-UNKNOWN|Unknown",
             "1-RED|Non supported CPU requirements",
             "2-RED|Custom or legacy hardware required",
-            "3-GREEN|GPU, specific worker node hardware requirements",
+            "3-AMBER|GPU, specific worker node hardware requirements",
             "4-GREEN|Supported CPU requirements"
           ]
         },
@@ -134,7 +136,8 @@
             "2-RED|Component not supported by vendor when running in a container",
             "3-AMBER|Supported but with restricted functionality/untested",
             "4-AMBER|Supported but relies on self built images",
-            "5-GREEN|Fully vendor supported, certified images available"
+            "5-GREEN|Fully vendor supported, certified images available",
+            "6-GREEN|No 3rd party components required"
           ]
         },
         {
@@ -160,7 +163,7 @@
             "0-UNKNOWN|Unknown",
             "1-RED|Availability only verified when processing traffic",
             "2-AMBER|Complex strict startup order required",
-            "3-AMBER|Application not ready until dependencies are available ",
+            "3-AMBER|Application not ready until dependencies are verified available ",
             "4-GREEN|Limited processing available if dependencies are unavailable",
             "5-GREEN|No dependencies"
           ]
@@ -198,7 +201,7 @@
         },
         {
           "name": "STATE",
-          "title": "How does the application handle internal state?",
+          "title": "How does the application handle it's internal state?",
           "tooltip": "Does the assessed application have internal state that needs to be managed/retained and if so how?",
           "choices": [
             "0-UNKNOWN|Unknown",
@@ -217,8 +220,9 @@
             "0-UNKNOWN|Unknown",
             "1-RED|Uses proprietary discovery technologies that are not kubernetes suitable e.g. hardcoded ip addresses, custom cluster manager",
             "2-RED|Application requires restart on cluster changes to discover new service instances",
-            "3-AMBER|Service discovery compatible with kubernetes e.g. Standard kubernetes DNS name resolution, hashicorp consul, netflix eureka",
-            "4-GREEN|None required"
+            "3-AMBER|Service discovery compatible with kubernetes but requires specific libraries/services e.g. Hashicorp Consul, Netflix Eureka",
+            "4-GREEN|Standard kubernetes DNS name resolution",
+            "5-GREEN|None required"
           ]
         },
         {
@@ -228,9 +232,9 @@
           "choices": [
             "0-UNKNOWN|Unknown",
             "1-RED|Manually configured clustering mechanism e.g. static clusters",
-            "2-AMBER|Application clustering handled by external off-PAAS cluster manager",
-            "3-GREEN|Application clustering mostly provided by application runtime platform using a kubernetes suitable mechanism",
-            "5-GREEN|None required"
+            "2-RED|Application clustering handled by external off-PAAS cluster manager",
+            "3-GREEN|Application clustering mostly provided by application runtime using a kubernetes suitable mechanism",
+            "4-GREEN|None required"
           ]
         }
       ]
@@ -240,15 +244,16 @@
       "questions": [
         {
           "name": "LOGS",
-          "title": "Does the application use logging?",
+          "title": "How does the application use logging and how is it accessed?",
           "tooltip": "How do we get access the applications logs",
           "choices": [
             "0-UNKNOWN|Unknown",
-            "1-RED|No logging available, internal only with no export mechanism",
+            "1-RED|No logging available or internal only with no export mechanism",
             "2-RED|Custom binary logs exposed using non-standard protocols",
             "3-AMBER|Logs exposed via syslog",
-            "4-AMBER|Log entries written to filesystem",
-            "5-GREEN|Configurable logging e.g. can be sent to STDOUT"
+            "4-AMBER|Log entries written to filesystem potentially in multiple files",
+            "5-GREEN|Application forwards logs to external system e.g. Splunk",
+            "6-GREEN|Configurable logging e.g. can be sent to STDOUT"
           ]
         },
         {
@@ -259,9 +264,9 @@
             "0-UNKNOWN|Unknown",
             "1-AMBER|No metrics exposed",
             "2-AMBER|Internal metrics but not exposed externally",
-            "3-AMBER|Metrics exposed via binary protocols e.g. SNMP",
+            "3-AMBER|Metrics exposed via binary protocols e.g. SNMP, JMX",
             "4-GREEN|3rd party metrics solution e.g. Dynatrace, AppDynamics etc",
-            "5-GREEN|Prometheus endpoint support"
+            "5-GREEN|InBuilt Prometheus endpoint support"
           ]
         },
         {
@@ -273,7 +278,7 @@
             "1-RED|No health or readiness query functionality available",
             "2-RED|Custom watchdog process monitoring and managing the application",
             "3-AMBER|Basic application health requires semi-complex scripting",
-            "4-GREEN|Dedicated liveness and readiness endpoints",
+            "4-GREEN|Dedicated, independent liveness and readiness endpoints",
             "5-GREEN|Probes execute synthetic transactions to verify application health"
           ]
         },
@@ -288,6 +293,19 @@
             "3-AMBER|Constant Traffic, High range of memory/cpu needs",
             "4-GREEN|Intermittent traffic, predictable CPU/Memory Needs",
             "5-GREEN|Constant Traffic, predictable CPU/Memory Needs"
+          ]
+        },
+        {
+          "name": "STARTUPTIME",
+          "title": "How long does it take the application to be ready to handle traffic?",
+          "tooltip": "How long does it take the application to boot",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED| 5+ minutes",
+            "2-AMBER| 2-5 minutes",
+            "3-AMBER| 1-2 minutes",
+            "4-GREEN| > 10 seconds but < 1 minute",
+            "5-GREEN| < 10 seconds"
           ]
         }
       ]
@@ -311,28 +329,30 @@
         {
           "name": "CONFIG",
           "title": "How is the application configured?",
-          "tooltip": "How is the application currently configured and how might that look in a container platform",
+          "tooltip": "How is the application currently configured and how might that look in a container platform, External servers are runtime dependencies hence AMBER",
           "choices": [
             "0-UNKNOWN|Unknown",
             "1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface",
             "2-RED|Externally stored e.g. DB and accessed using specific environment key e.g. hostname, ip address",
             "3-AMBER|Multiple configuration files in multiple filesystem locations",
             "4-AMBER|All environment configuration built into the application and enabled via system property at runtime",
-            "5-GREEN|Configuration loaded from files in a single configurable location, environment variables"
+            "5-AMBER|External configuration server e.g. Spring Cloud Config Server, Hashicorp Consul ",
+            "6-GREEN|Configuration loaded from files in a single configurable location, environment variables"
           ]
         },
         {
           "name": "SECURITY",
-          "title": "How does the application acquire security credentials/certificates?",
-          "tooltip": "",
+          "title": "How does the application acquire the necessary security credentials/certificates?",
+          "tooltip": "External systems are amber as they're a runtime dependency",
           "choices": [
             "0-UNKNOWN|Unknown",
             "1-RED|HSM, hardware based encryption devices",
             "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance",
             "3-AMBER|Keys/Certs compiled into application",
-            "4-GREEN|Certificates/Keys loaded via shared disk",
-            "5-GREEN|Certificates/Keys loaded via files or vault integration",
-            "6-GREEN|None needed"
+            "4-AMBER|Loaded via shared disk",
+            "5-AMBER|Retrieved from external system e.g. HasiCorp Vault, CyberArk Conjur",
+            "6-GREEN|Loaded via files",
+            "7-GREEN|None needed"
           ]
         },
         {
@@ -344,8 +364,9 @@
             "1-RED|Manual documented steps, user interface driven interaction",
             "2-RED|Manual documented steps, some basic automation",
             "3-AMBER|Simple automated deployment scripts",
-            "4-AMBER|Automated deployment, but manual, complex, promotion through stages",
-            "5-GREEN|GitOps Model, Full CD Pipeline in place, promoting Applications through the stages;  B/G + Canary capable"
+            "4-AMBER|Automated deployment, but manual or complex promotion through pipeline stages",
+            "5-GREEN|Automated deployment, Full CD Pipeline in place, promoting Applications through the pipeline stages with minimal intervention",
+            "6-GREEN|GitOps approach and/or B/G + Canary capable"
           ]
         },
         {
@@ -357,7 +378,7 @@
             "1-RED|Desktop-led container implementation designed to support running application on a laptop. Container treated like a VM with multiple services",
             "2-RED|Use of a init process within the container to manage multiple container processes that run independently but are tightly integrated",
             "3-AMBER|Some experience with containers but not fully defined as yet",
-            "4-GREEN|Proficient with containers",
+            "4-GREEN|Proficient with containers and container platforms e.g. Swarm, K8S",
             "5-GREEN|Application containerisation not attempted as yet"
           ]
         }

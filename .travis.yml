@@ -12,7 +12,7 @@ script:
 
 after_success:
   - docker login -u=$QUAY_USER -p=$QUAY_TOKEN quay.io
-  - docker build -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT  .
+  - docker build -t $PATHFINDER_SERVER_IMAGE_FULL -f ServerDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT --build-arg COMMITMESSAGE=$TRAVIS_COMMIT_MESSAGE .
   - docker push $PATHFINDER_SERVER_IMAGE_FULL
-  - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT  .
+  - docker build -t ${PATHFINDER_UI_IMAGE_FULL} -f UIDockerfile --build-arg BRANCH=$TRAVIS_BRANCH --build-arg COMMITHASH=$TRAVIS_COMMIT --build-arg COMMITMESSAGE=$TRAVIS_COMMIT_MESSAGE .
   - docker push $PATHFINDER_UI_IMAGE_FULL
