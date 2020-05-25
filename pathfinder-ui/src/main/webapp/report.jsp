@@ -601,13 +601,14 @@ table.dataTable tbody tr td {
 						<script>
 							var greyscale=false;
 							var dependencies=false;
-							var labels=false;
+							var labels=true;
 							
 							function greyscaleToggle(t){
 								t.value=="Show Decisions"?t.value="Hide Decisions":t.value="Show Decisions";
 								greyscale=(t.value=="Show Decisions");
 								redrawBubble(applicationAssessmentSummary, false);
 							}
+
 							function dependenciesToggle(t){
 								t.value=="Show Dependencies"?t.value="Hide Dependencies":t.value="Show Dependencies";
 								dependencies=(t.value=="Show Dependencies");
@@ -620,14 +621,13 @@ table.dataTable tbody tr td {
 							}
 							
 						</script>
-						<input class="btn btn-default form-control"
-							style="height: 28px; padding: 0px; width: 120px; font-size: 10pt; line-height: 1rem;"
-							type="button" id="greyscale" value="Show Decisions"
-							onclick="greyscaleToggle(this);" /> <input
+
+							<input
 							class="btn btn-default form-control"
 							style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
 							type="button" id="dependencies" value="Show Dependencies"
-							onclick="dependenciesToggle(this);" /> <input
+							onclick="dependenciesToggle(this);" />
+							<input
 							class="btn btn-default form-control"
 							style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
 							type="button" id="labels" value="Show Labels"
