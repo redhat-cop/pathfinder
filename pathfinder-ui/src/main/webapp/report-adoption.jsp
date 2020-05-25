@@ -179,7 +179,7 @@
 						var dependent=appIdToAppMap[summary[i]['OutboundDeps'][d]];
 						if (dependent!=undefined){ // this could happen if the dependency is on a non-assessable application
 							summary[i]['DependsOn'].push(dependent);
-							console.log("INFO :: AdoptionGraph:: DependsOn:: "+ summary[i]['Name']+" depends on "+summary[i]['DependsOn'][d]['Name']);
+							//console.log("INFO :: AdoptionGraph:: DependsOn:: "+ summary[i]['Name']+" depends on "+summary[i]['DependsOn'][d]['Name']);
 						}
 						//summary[i]['DependsOn'].push(appIdToAppMap[summary[i]['OutboundDeps'][d]]);
 						
