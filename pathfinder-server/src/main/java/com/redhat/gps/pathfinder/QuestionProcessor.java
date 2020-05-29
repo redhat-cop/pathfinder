@@ -32,6 +32,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 public class QuestionProcessor {
     private final Logger log = LoggerFactory.getLogger(QuestionProcessor.class);
@@ -88,7 +91,7 @@ public class QuestionProcessor {
                 newQuestions.put(x);
 
                 if (pageIndex == 1) {
-                    if (((String)x.get("name")).equalsIgnoreCase("DEPSIN")) {
+                    if (((String) x.get("name")).equalsIgnoreCase("DEPSIN")) {
                         JSONObject dependenciesIN = new JSONObject();
                         dependenciesIN.put("name", "DEPSINLIST");
                         dependenciesIN.put("type", "tagbox");
@@ -100,7 +103,7 @@ public class QuestionProcessor {
                         dependenciesIN.put("choicesByUrl", new JSONObject());
                         newQuestions.put(dependenciesIN);
                     }
-                    if (((String)x.get("name")).equalsIgnoreCase("DEPSOUT")) {
+                    if (((String) x.get("name")).equalsIgnoreCase("DEPSOUT")) {
                         JSONObject dependenciesOUT = new JSONObject();
                         dependenciesOUT.put("name", "DEPSOUTLIST");
                         dependenciesOUT.put("type", "tagbox");
@@ -161,5 +164,40 @@ public class QuestionProcessor {
         newSurvey.put("showProgressBar", "bottom");
         newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'><b>Here</b></a> to return to the main page.");
         return newSurvey.toString();
+    }
+
+
+    /**
+     * @param questionData - String containing the survey questions as a json payload
+     * @return HashMap<String, List<String>> hasmap keyed on question name and answers
+     * @throws JSONException
+     */
+    public static HashMap<String, List<String>> GenerateSurveyQA(String questionData) throws JSONException {
+        JSONObject defaultQuestionsJSON = new JSONObject(
+                new JSONTokener(questionData));
+
+        HashMap<String, List<String>> qna = new HashMap<>();
+        JSONArray pages = defaultQuestionsJSON.getJSONArray("pages");
+
+        for (int pageIndex = 0; pageIndex < pages.length(); pageIndex++) {
+            JSONObject page = pages.getJSONObject(pageIndex);
+            JSONArray questions = page.getJSONArray("questions");
+
+            for (int i = 0; i < questions.length(); i++) {
+                JSONObject x = questions.getJSONObject(i);
+
+                if (x.getString("type").equalsIgnoreCase("radiogroup")) {
+                    JSONArray answers = x.getJSONArray("choices");
+                    if (answers != null) {
+                        List<String> answersList = new ArrayList<>();
+                        for (int j = 0; j < answers.length(); j++)
+                            answersList.add(answers.getString(j));
+
+                        qna.put((String) x.get("name"), answersList);
+                    }
+                }
+            }
+        }
+        return qna;
     }
 }

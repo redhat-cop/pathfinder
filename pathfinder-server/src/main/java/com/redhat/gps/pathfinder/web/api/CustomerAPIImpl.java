@@ -19,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
@@ -80,11 +81,13 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private final AssessmentsRepository assmRepo;
     private final ReviewsRepository reviewRepository;
     private final MembersRepository membersRepo;
-    private String SurveyJSPayload;
-    private String SurveyQuestionsJSON;
+//    private String SurveyJSPayload;
+//    private String SurveyQuestionsJSON;
 
-    @Value("${CUSTOM_QUESTIONS:}")
-    private String customQuestionsFileLocation;
+    @Autowired
+    private SurveyPayload survey;
+
+
 
     public CustomerAPIImpl(CustomerRepository custRepo,
                            ApplicationsRepository appsRepo,
@@ -98,62 +101,59 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
-        this.SurveyJSPayload = "";
-        this.SurveyQuestionsJSON = "";
+//        this.SurveyJSPayload = "";
+//        this.SurveyQuestionsJSON = "";
     }
 
-    @PostConstruct
-    public void init() throws IOException {
-        this.SurveyJSPayload = getSurveyContent();
-    }
+//    @PostConstruct
+//    public void init() throws IOException {
+//        this.SurveyJSPayload = getSurveyContent();
+//    }
 
-    public String getSurveyContent() throws IOException {
-        String rawQuestionsJson = "";
-        String questionsJsonSchema = "";
-        String finalJScriptDefn = "";
-        String customQuestionsJson = "";
+//    public static String getSurveyQuestions(String customQuestionsFileLocation) throws IOException {
+//        String rawQuestionsJson = "";
+//        String questionsJsonSchema = "";
+//        String finalJScriptDefn = "";
+//        String customQuestionsJson = "";
+//        String SurveyQuestionsJSON;
+//
+//        if ((customQuestionsFileLocation != null) && (!customQuestionsFileLocation.isEmpty())) {
+//            File customQuestionsFile = new File(customQuestionsFileLocation);
+//            try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
+//                customQuestionsJson = getResourceAsString(cqis);
+//                log.info("Successfully read custom questions file {}", customQuestionsFileLocation);
+//            } catch (Exception ex) {
+//                log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
+//                customQuestionsJson = "";
+//            }
+//        }
+//
+//        try (InputStream is1 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/base-questions-data-default.json");
+//             InputStream is2 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/question-schema.json");
+//        ) {
+//            rawQuestionsJson = getResourceAsString(is1);
+//            questionsJsonSchema = getResourceAsString(is2);
+//            SurveyQuestionsJSON = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
+//            log.info("Successfully generated Survey Questions");
+//        } catch (Exception e) {
+//            InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
+//            SurveyQuestionsJSON = getResourceAsString(is3);
+//            if (is3 != null) is3.close();
+//            log.error("Unable to find/parse question-data-default...using default-survey...turn on debug for more info");
+//            log.trace("getSurveyContent raw {} schema {}", rawQuestionsJson, questionsJsonSchema);
+//            e.printStackTrace();
+//        }
+//        return SurveyQuestionsJSON;
+//    }
 
-        if ((customQuestionsFileLocation != null) && (!customQuestionsFileLocation.isEmpty())) {
-            File customQuestionsFile = new File(customQuestionsFileLocation);
-            try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
-                customQuestionsJson = getResourceAsString(cqis);
-                log.info("Successfully read custom questions file {}", customQuestionsFileLocation);
-            } catch (Exception ex) {
-                log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
-                customQuestionsJson = "";
-            }
-        }
 
-        try (InputStream is1 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/base-questions-data-default.json");
-             InputStream is2 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/question-schema.json");
-        ) {
-            rawQuestionsJson = getResourceAsString(is1);
-            questionsJsonSchema = getResourceAsString(is2);
-            this.SurveyQuestionsJSON = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
-            log.info("Successfully generated Survey Questions");
-        } catch (Exception e) {
-            InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
-            this.SurveyQuestionsJSON = getResourceAsString(is3);
-            if (is3 != null) is3.close();
-            log.error("Unable to find/parse question-data-default...using default-survey...turn on debug for more info");
-            log.trace("getSurveyContent raw {} schema {}", rawQuestionsJson, questionsJsonSchema);
-            e.printStackTrace();
-        }
 
-        try (InputStream is4 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/application-survey.js");) {
-            String surveyJs = getResourceAsString(is4);
-            finalJScriptDefn = (surveyJs.replace("$$QUESTIONS_JSON$$", this.SurveyQuestionsJSON));
-        } catch (Exception ex) {
-            log.error("Unable to process and enrich the question template....FATAL ERROR ", ex);
-            System.exit(42);
-        }
-        return finalJScriptDefn;
-    }
+
 
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
     public String getSurvey() throws IOException {
-        return SurveyJSPayload
+        return survey.getSurveyJSPayload()
                 .replaceAll("\"SERVER_URL", "Utils.SERVER+\"")
                 .replaceAll("JWT_TOKEN", "\"+jwtToken+\"");
     }
@@ -256,7 +256,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                 Assessments assessment = app.getAssessments().get(app.getAssessments().size() - 1);
 
                 Map<String, Map<String, String>> questionKeyToText = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<>(),
-                        SurveyQuestionsJSON,
+                        survey.getQNAPayload(),
                         assessment,
                         (result1, name, answerOrdinal, answerRating, answerText, questionText) -> result1.put(name, new MapBuilder<String, String>()
                                 .put("questionText", questionText)
@@ -322,10 +322,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     }
 
 
-    private String getResourceAsString(InputStream is) throws IOException {
-        Validate.notNull(is);
-        return IOUtils.toString(is, "UTF-8");
-    }
+
 
     // Non-Swagger api - returns payload for the assessment summary page
     @RequestMapping(value = "/customers/{customerId}/applications/{appId}/assessments/{assessmentId}/viewAssessmentSummary", method = GET, produces = {APPLICATION_JSON_VALUE})
@@ -361,7 +358,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         }
 
         List<ApplicationAssessmentSummary> result = new QuestionReader<List<ApplicationAssessmentSummary>>().read(new ArrayList<>(),
-                SurveyQuestionsJSON,
+                survey.getQNAPayload(),
                 assessment,
                 (result1, name, answerOrdinal, answerRating, answerText, questionText) -> result1.add(new ApplicationAssessmentSummary(questionText, answerText, answerRating)));
 
@@ -1411,7 +1408,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
         // Get the questions, answers, ratings etc...
         Map<String, Map<String, String>> questionInfo = new QuestionReader<Map<String, Map<String, String>>>().read(new HashMap<String, Map<String, String>>(),
-                SurveyQuestionsJSON,
+                survey.getQNAPayload(),
                 assessment,
                 (result, name, answerOrdinal, answerRating, answerText, questionText) -> result.put(name, new MapBuilder<String, String>()
                         .put("answerRating", answerRating)

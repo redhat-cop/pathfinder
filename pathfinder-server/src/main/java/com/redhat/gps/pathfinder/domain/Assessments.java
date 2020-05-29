@@ -40,17 +40,20 @@ import java.util.Objects;
 @Document(collection = "assessments")
 @Data
 public class Assessments implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
 
     @Id
     private String id;
 
+    //Results store the answer selected
     @NotNull
     @Field("results")
     private HashMap<String, String> results;
 
+    //qanswers stores the text value of the selected answer i.e. what text did the customer see
+    @NotNull
+    @Field("qanswers")
+    private HashMap<String, String> qanswers;
 
     @Field("dependenciesIN")
     private List<String> depsIN = new ArrayList<String>();

@@ -40,7 +40,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.List;
 
+import static com.redhat.gps.pathfinder.QuestionProcessor.GenerateSurveyQA;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class QuestionValidationTest {
@@ -94,57 +97,6 @@ public class QuestionValidationTest {
         });
         System.out.println("Exception as expected :" + exception.getMessage());
     }
-
-//    @Test
-//    public void givenValidInput_Enrich() throws ValidationException, JSONException {
-//        JSONObject jsonSchema;
-//        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
-//        InputStream jsonquestions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
-//        jsonSchema = new JSONObject(
-//                new JSONTokener(new InputStreamReader(schemaFile)));
-//        JSONObject jsonSubject = new JSONObject(
-//                new JSONTokener(new InputStreamReader(jsonquestions)));
-//
-//        Schema schema = SchemaLoader.load(jsonSchema);
-//        schema.validate(jsonSubject);
-//        System.out.println("Validation passed");
-//
-//
-//        JSONArray pages = jsonSubject.getJSONArray("pages");
-//        JSONObject newSurvey = jsonSubject;
-//        JSONArray newPages = new JSONArray();
-//        for (int j = 0; j < pages.length(); j++) {
-//            JSONObject page = pages.getJSONObject(j);
-//            JSONArray questions = page.getJSONArray("questions");
-//            JSONArray newQuestions = new JSONArray();
-//
-//            for (int i = 0; i < questions.length(); i++) {
-//                JSONObject x = questions.getJSONObject(i);
-//                x.put("type", "radiogroup");
-//                x.put("isRequired", "true");
-//                x.put("colCount", "1");
-//                newQuestions.put(x);
-//            }
-//            JSONObject pageComment = new JSONObject();
-//            pageComment.put("type", "comment");
-//            pageComment.put("name", "NOTES" + j);
-//            pageComment.put("title", "Additional notes or comments");
-//            pageComment.put("isRequired", "false");
-//            newQuestions.put(pageComment);
-//            page.remove("questions");
-//            page.put("quesions", newQuestions);
-//            newPages.put(j, page);
-//        }
-//
-//        newSurvey.put("pages", newPages);
-//        newSurvey.put("title", "Application Assessment");
-//        newSurvey.put("sendResultOnPageNext", "true");
-//        newSurvey.put("requiredText", "");
-//        newSurvey.put("showProgressBar", "bottom");
-//        newSurvey.put("completedHtml", "<p><h4>Thank you for completing the Pathfinder Assessment.  Please click <a id='surveyCompleteLink' href='/assessments.jsp?customerId={CUSTID}'>Here</a> to return to the main page.");
-//
-//        System.out.println(newSurvey);
-//    }
 
     @Test
     public void givenEmptyCustomFile() throws ValidationException, JSONException, IOException {
@@ -297,5 +249,22 @@ public class QuestionValidationTest {
         NashornScriptEngine engine = (NashornScriptEngine) new ScriptEngineManager().getEngineByName("nashorn");
         engine.compile(finalJScriptDefn);
         System.out.println(finalJScriptDefn);
+    }
+
+
+    @Test
+    public void  extractQATest() throws Exception {
+        InputStream baseQFile =  QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
+        InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
+        InputStream jsBase =     QuestionValidationTest.class.getResourceAsStream("../../../../../questions/application-survey.js");
+        InputStream customQue  = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
+
+        String rawQuestionsJson = IOUtils.toString(baseQFile, StandardCharsets.UTF_8.name());
+        String questionsJsonSchema = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
+        String customQuestionsJson = IOUtils.toString(customQue, StandardCharsets.UTF_8.name());
+        String processedQ = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
+        HashMap<String, List<String>> result = GenerateSurveyQA(processedQ);
+        assertNotNull(result);
+        assertEquals((result.entrySet().size()),29);
     }
 }
