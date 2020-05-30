@@ -3,7 +3,6 @@ package com.redhat.gps.pathfinder.web.api;
 import com.codahale.metrics.annotation.Timed;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
-import com.redhat.gps.pathfinder.QuestionProcessor;
 import com.redhat.gps.pathfinder.domain.ApplicationAssessmentReview;
 import com.redhat.gps.pathfinder.domain.Applications;
 import com.redhat.gps.pathfinder.domain.Assessments;
@@ -16,11 +15,9 @@ import io.swagger.annotations.ApiParam;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.Validate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Example;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -29,16 +26,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.*;
 import java.util.Map.Entry;
@@ -81,12 +74,9 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     private final AssessmentsRepository assmRepo;
     private final ReviewsRepository reviewRepository;
     private final MembersRepository membersRepo;
-//    private String SurveyJSPayload;
-//    private String SurveyQuestionsJSON;
 
     @Autowired
     private SurveyPayload survey;
-
 
 
     public CustomerAPIImpl(CustomerRepository custRepo,
@@ -101,54 +91,7 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         this.assmRepo = assmRepo;
         this.reviewRepository = reviewRepository;
         this.membersRepo = membersRepository;
-//        this.SurveyJSPayload = "";
-//        this.SurveyQuestionsJSON = "";
     }
-
-//    @PostConstruct
-//    public void init() throws IOException {
-//        this.SurveyJSPayload = getSurveyContent();
-//    }
-
-//    public static String getSurveyQuestions(String customQuestionsFileLocation) throws IOException {
-//        String rawQuestionsJson = "";
-//        String questionsJsonSchema = "";
-//        String finalJScriptDefn = "";
-//        String customQuestionsJson = "";
-//        String SurveyQuestionsJSON;
-//
-//        if ((customQuestionsFileLocation != null) && (!customQuestionsFileLocation.isEmpty())) {
-//            File customQuestionsFile = new File(customQuestionsFileLocation);
-//            try (InputStream cqis = new FileInputStream(customQuestionsFile);) {
-//                customQuestionsJson = getResourceAsString(cqis);
-//                log.info("Successfully read custom questions file {}", customQuestionsFileLocation);
-//            } catch (Exception ex) {
-//                log.error("Unable to load custom questions file {}", customQuestionsFileLocation);
-//                customQuestionsJson = "";
-//            }
-//        }
-//
-//        try (InputStream is1 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/base-questions-data-default.json");
-//             InputStream is2 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/question-schema.json");
-//        ) {
-//            rawQuestionsJson = getResourceAsString(is1);
-//            questionsJsonSchema = getResourceAsString(is2);
-//            SurveyQuestionsJSON = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
-//            log.info("Successfully generated Survey Questions");
-//        } catch (Exception e) {
-//            InputStream is3 = CustomerAPIImpl.class.getClassLoader().getResourceAsStream("questions/default-survey-materialised.json");
-//            SurveyQuestionsJSON = getResourceAsString(is3);
-//            if (is3 != null) is3.close();
-//            log.error("Unable to find/parse question-data-default...using default-survey...turn on debug for more info");
-//            log.trace("getSurveyContent raw {} schema {}", rawQuestionsJson, questionsJsonSchema);
-//            e.printStackTrace();
-//        }
-//        return SurveyQuestionsJSON;
-//    }
-
-
-
-
 
     // Non-Swagger api - returns the survey payload
     @RequestMapping(value = "/survey", method = GET, produces = {"application/javascript"})
@@ -281,8 +224,8 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
                                 String question = questionKeyToText.get(e.getKey()).get("questionText");
                                 String answer = questionKeyToText.get(e.getKey()).get("answerText");
                                 risks2.put(riskQuestionAnswerKey, new Risk(question, answer, app.getName()));
-                            }catch (NullPointerException ex){
-                                log.warn("NPE thrown and caught when trying to map assessment results to risks using key {} ....probably due to CustomQuestions being used during assessment and then removed before displaying results",e.getKey());
+                            } catch (NullPointerException ex) {
+                                log.warn("NPE thrown and caught when trying to map assessment results to risks using key {} ....probably due to CustomQuestions being used during assessment and then removed before displaying results", e.getKey());
                             }
                         } else {
                             risks2.get(riskQuestionAnswerKey).addOffendingApp(app.getName());
@@ -320,8 +263,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
     public String getDocs() throws IOException {
         return Json.yamlToJson(IOUtils.toString(this.getClass().getClassLoader().getResourceAsStream("swagger/api.yml"), "UTF-8"));
     }
-
-
 
 
     // Non-Swagger api - returns payload for the assessment summary page
@@ -538,18 +479,23 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
 
             Applications currApp = appsRepo.findOne(appId);
             if (currApp != null) {
+                HashMap<String,String> answerTxts = new HashMap<>();
+                body.getPayload().forEach((k,v) ->
+                        answerTxts.put(k,survey.getAnswerText(k,v)));
                 Assessments newitem = new Assessments();
                 newitem.setId(UUID.randomUUID().toString());
                 newitem.setResults(body.getPayload());
                 newitem.setDepsIN(body.getDepsIN());
                 newitem.setDepsOUT(body.getDepsOUT());
                 newitem.setDatetime(body.getDatetime());
+                newitem.setQanswers(answerTxts);
                 newitem = assmRepo.insert(newitem);
 
                 List<Assessments> assmList = currApp.getAssessments();
                 if (assmList == null) {
                     assmList = new ArrayList<>();
                 }
+
                 assmList.add(newitem);
                 currApp.setAssessments(assmList);
                 appsRepo.save(currApp);
@@ -590,44 +536,6 @@ public class CustomerAPIImpl extends SecureAPIImpl implements CustomersApi {
         }
         return r;
     }
-
-//    private AssessmentResponse populateCustomerFields(AssessmentResponse map, Customer customer, String field){
-//      try{
-//
-//        }
-//
-//        Map<String, Object> getters=Arrays.asList(
-//            Introspector.getBeanInfo(customer.getClass(), Object.class)
-//                             .getPropertyDescriptors()
-//        )
-//        .stream()
-//        .filter(pd ->Objects.nonNull(pd.getReadMethod()))
-//        .collect(Collectors.toMap(
-//                PropertyDescriptor::getName,
-//                pd -> {
-//                    try {
-//                        return pd.getReadMethod().invoke(customer);
-//                    } catch (Exception e) {
-//                       return null;
-//                    }
-//                }));
-//
-//
-//        log.debug("GETTING "+"get"+StringUtils.capitalize(field));
-//        log.debug("FOUND {} CUSTOMER GETTERS "+getters.size());
-//        for(Entry<String, Object> e:getters.entrySet()){
-//          log.debug("CUSTOMER PROPERTIES: {} = {}", e.getKey(), e.getValue());
-//        }
-//
-//        log.debug("ADDING CUSTOMER FIELD {}={}", field, getters.get(field));
-//
-//        map.put(field, (String)getters.get("get"+StringUtils.capitalize(field)));
-//      }catch (IntrospectionException e){
-//        e.printStackTrace();
-//      }
-//      return map;
-//    }
-
 
     // Get Application
     // GET: /customers/{customerId}/applications/{applicationId}

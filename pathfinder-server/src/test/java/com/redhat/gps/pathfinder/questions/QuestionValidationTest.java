@@ -22,7 +22,6 @@ package com.redhat.gps.pathfinder.questions;
  */
 
 import com.redhat.gps.pathfinder.QuestionProcessor;
-import com.redhat.gps.pathfinder.web.api.CustomerAPIImpl;
 import jdk.nashorn.api.scripting.NashornScriptEngine;
 import org.apache.commons.io.IOUtils;
 import org.everit.json.schema.Schema;
@@ -34,7 +33,6 @@ import org.json.JSONObject;
 import org.json.JSONTokener;
 import org.junit.Test;
 
-import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +40,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.redhat.gps.pathfinder.QuestionProcessor.GenerateSurveyQA;
 import static org.junit.jupiter.api.Assertions.*;
@@ -63,7 +62,7 @@ public class QuestionValidationTest {
     }
 
     @Test
-    public void givenCorruptInput_whenValidating_thenValid() throws ValidationException, JSONException {
+    public void givenCorruptInput_whenValidating_thenValid() throws ValidationException {
         Exception exception = assertThrows(org.json.JSONException.class, () -> {
             JSONObject jsonSchema;
             InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
@@ -81,7 +80,7 @@ public class QuestionValidationTest {
     }
 
     @Test
-    public void givenInvalidQuestionInput_whenValidating_thenValid() throws ValidationException, JSONException {
+    public void givenInvalidQuestionInput_whenValidating_thenValid() throws ValidationException {
         Exception exception = assertThrows(org.everit.json.schema.ValidationException.class, () -> {
             JSONObject jsonSchema;
             InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
@@ -102,7 +101,6 @@ public class QuestionValidationTest {
     public void givenEmptyCustomFile() throws ValidationException, JSONException, IOException {
         InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
         InputStream questions = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/question-data.json");
-        InputStream customQuestionsCorrupt = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-no-questions.json");
 
         String schemaString = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
         String questionsString = IOUtils.toString(questions, StandardCharsets.UTF_8.name());
@@ -186,7 +184,7 @@ public class QuestionValidationTest {
         assertEquals((stdPages.length() + cusPages.length()), resPages.length(), "Number of pages isn't what's expected");
 
         // Need to count the extra comment question added to each page during final survey generation as well as the additional depedency questions
-        assertEquals((countQuestions(stdPages) + countQuestions(cusPages) + resPages.length()+2), (countQuestions(resPages)), "Number of questions isn't what's expected");
+        assertEquals((countQuestions(stdPages) + countQuestions(cusPages) + resPages.length() + 2), (countQuestions(resPages)), "Number of questions isn't what's expected");
     }
 
     @Test
@@ -216,7 +214,7 @@ public class QuestionValidationTest {
         JSONObject res2 = QuestionProcessor.ValidateQuestionData(questionsString, schemaString);
         assertNotNull(res2, "Result should not be null");
 
-        Exception exception = assertThrows(org.everit.json.schema.ValidationException.class, () -> {
+        assertThrows(org.everit.json.schema.ValidationException.class, () -> {
             JSONObject res3 = QuestionProcessor.ValidateQuestionData(questionsStringCorrupt, schemaString);
             assertNotNull(res3, "Result should not be null");
         });
@@ -232,11 +230,11 @@ public class QuestionValidationTest {
     }
 
     @Test
-    public void  validJSTest() throws Exception {
-        InputStream baseQFile =  QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
+    public void validJSTest() throws Exception {
+        InputStream baseQFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
         InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
-        InputStream jsBase =     QuestionValidationTest.class.getResourceAsStream("../../../../../questions/application-survey.js");
-        InputStream customQue  = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
+        InputStream jsBase = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/application-survey.js");
+        InputStream customQue = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
 
         String rawQuestionsJson = IOUtils.toString(baseQFile, StandardCharsets.UTF_8.name());
         String questionsJsonSchema = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
@@ -253,11 +251,10 @@ public class QuestionValidationTest {
 
 
     @Test
-    public void  extractQATest() throws Exception {
-        InputStream baseQFile =  QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
+    public void extractQATest() throws Exception {
+        InputStream baseQFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/base-questions-data-default.json");
         InputStream schemaFile = QuestionValidationTest.class.getResourceAsStream("../../../../../questions/question-schema.json");
-        InputStream jsBase =     QuestionValidationTest.class.getResourceAsStream("../../../../../questions/application-survey.js");
-        InputStream customQue  = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
+        InputStream customQue = QuestionValidationTest.class.getResourceAsStream("../../../../../test-data/custom-question-data-1page-2-valid.json");
 
         String rawQuestionsJson = IOUtils.toString(baseQFile, StandardCharsets.UTF_8.name());
         String questionsJsonSchema = IOUtils.toString(schemaFile, StandardCharsets.UTF_8.name());
@@ -265,6 +262,36 @@ public class QuestionValidationTest {
         String processedQ = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
         HashMap<String, List<String>> result = GenerateSurveyQA(processedQ);
         assertNotNull(result);
-        assertEquals((result.entrySet().size()),29);
+        assertEquals((result.entrySet().size()), 29);
     }
+
+
+    @Test
+    public void extractRAGIndexTest() throws Exception {
+        Pattern ragPattern = Pattern.compile("-");
+        String[] res;
+        res = ragPattern.split("0-UNKNOWN|Unknown");
+        assertEquals(res[0],"0");
+
+        res = ragPattern.split("1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface");
+        assertEquals(res[0],"1");
+
+        res = ragPattern.split("2-RED|Externally stored e.g. DB and accessed using specific environment key e.g. hostname, ip address");
+        assertEquals(res[0],"2");
+
+        res = ragPattern.split("3-AMBER|Multiple configuration files in multiple filesystem locations");
+        assertEquals(res[0],"3");
+
+        res = ragPattern.split("4-AMBER|All environment configuration built into the application and enabled via system property at runtime");
+        assertEquals(res[0],"4");
+
+        res = ragPattern.split("5-AMBER|External configuration server e.g. Spring Cloud Config Server, Hashicorp Consul ");
+        assertEquals(res[0],"5");
+
+        res = ragPattern.split("6-GREEN|Configuration loaded from files in a single configurable location, environment variables");
+        assertEquals(res[0],"6");
+    }
+
+
+
 }

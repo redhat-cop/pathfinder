@@ -67,7 +67,7 @@ public class SurveyEngine {
     }
 
 
-    public void getSurveyContent() throws IOException {
+    private void getSurveyContent() throws IOException {
         String rawQuestionsJson = "";
         String questionsJsonSchema = "";
         String customQuestionsJson = "";

@@ -24,16 +24,19 @@ package com.redhat.gps.pathfinder.web.api;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class SurveyPayload {
     private String jsonQNAPayload;
     private HashMap<String, List<String>> surveyQuestionAnswerMap;
     private String CompleteJSSurvey;
+    private Pattern ragPattern;
 
     public SurveyPayload(String jsSurvey,String jsonPayload, HashMap<String, List<String>> surveyQuestionAnswerMap) {
         this.jsonQNAPayload = jsonPayload;
         this.surveyQuestionAnswerMap = surveyQuestionAnswerMap;
         this.CompleteJSSurvey = jsSurvey;
+        ragPattern = Pattern.compile("^[\\d-]+[(UNKNOWN)(RED)(AMBER)(GREEN)]+\\|(.*)$");
     }
 
     public String getQNAPayload() {
@@ -44,15 +47,17 @@ public class SurveyPayload {
         return this.CompleteJSSurvey;
     }
 
-    public String getAnswerText(String questionName, int index) {
-        String result = null;
+    public String getAnswerText(String questionName, String ragValue) {
+        String result=null;
         try {
+            Pattern ragPattern = Pattern.compile("-");
+            String[] res = ragPattern.split(ragValue);
+            int index = Integer.valueOf(res[0]);
             List<String> x = surveyQuestionAnswerMap.get(questionName);
-            if (x != null) {
-                result = x.get(index);
-            }
+            if (x != null) result = x.get(index);
+
         } catch (Exception ex) {
-            //return null by default
+            result = null;
         }
         return result;
     }
