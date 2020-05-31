@@ -108,7 +108,7 @@
                                     $('#appFilterTBL').DataTable({
                                         "data": applicationAssessmentSummary,
                                         "oLanguage": {
-                                            sSearch: "", // remove the "Search" label text
+                                            sSearch: "Search:", // remove the "Search" label text
                                             sLengthMenu: "_MENU_"}, // remove the "show X entries" text
                                         "scrollCollapse": true,
                                         "paging": true,
@@ -192,6 +192,7 @@
                             decisionColors['RETAIN'] = "#A3DBE8"; //light blue
                             decisionColors['RETIRE'] = "#004153"; //dark blue
                             decisionColors['NULL'] = "#808080"; //grey
+                            
                             var sizing = [];
                             sizing['0'] = 10;
                             sizing['SMALL'] = 15;
@@ -257,7 +258,11 @@
 
                                     //data points
                                     dataset['data'] = [];
-                                    dataset['data'].push({"x": confidence - 50, "y": businessPriority - 5, "r": sizing[workEffort]});
+//                                    dataset['data'].push({"x": confidence - 50, "y": businessPriority - 5, "r": sizing[workEffort]});
+                                    dataset['data'].push({
+                                        "x": confidence - (50-(Math.random() * 5)), 
+                                        "y": businessPriority - (5+(Math.random() * 1)), 
+                                        "r": (sizing[workEffort])});
 
                                     // color
                                     if (decision != null) {
@@ -269,9 +274,26 @@
                                     } else {
                                         dataset['backgroundColor'] = decisionColors.NULL;
                                     }
+                                    dataset['borderColor'] = "#ffffff";
+                                    dataset['borderWidth'] = 2;
 
                                     datasets.push(dataset);
                                 }
+
+                                function compare(a, b) {
+                                    const A = a.data[0].r;
+                                    const B = b.data[0].r;
+
+                                    let comparison = 0;
+                                    if (A > B) {
+                                        comparison = 1;
+                                    } else if (A < B) {
+                                        comparison = -1;
+                                    }
+                                    return comparison;
+                                }
+
+                                datasets.sort(compare);
 
                                 var result = {datasets};
                                 return result;
@@ -279,7 +301,6 @@
 
                             function redrawBubble(applicationAssessmentSummary, initial) {
                                 var appJSONString = JSON.stringify(applicationAssessmentSummary);
-//                                    console.log("redrawBubble -> " + appJSONString);
 
                                 var summary = JSON.parse(appJSONString);
 
@@ -540,7 +561,7 @@
 
                             <style>
                                 #bubbleLegend {
-                                    justify-content: space-between
+                                    justify-content: space-between;
                                     list-style-type: none;
                                 }
 
@@ -551,7 +572,7 @@
                                     width: 120px;
                                 }
                             </style>
-                   
+
                             <div id="bubbleLegend">
                                 <ul>
                                     <li><svg height="25" width="200">
@@ -607,7 +628,7 @@
                             <script>
                                 var greyscale = false;
                                 var dependencies = false;
-                                var labels = true;
+                                var labels = false;
 
                                 function greyscaleToggle(t) {
                                     t.value == "Show Decisions" ? t.value = "Hide Decisions" : t.value = "Show Decisions";
@@ -628,16 +649,16 @@
 
                             </script>
 
-                            <input
-                                class="btn btn-default form-control"
-                                style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
-                                type="button" id="dependencies" value="Show Dependencies"
-                                onclick="dependenciesToggle(this);" />
-                            <input
-                                class="btn btn-default form-control"
-                                style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
-                                type="button" id="labels" value="Show Labels"
-                                onclick="labelsToggle(this);" />
+                            <!--                            <input
+                                                            class="btn btn-default form-control"
+                                                            style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
+                                                            type="button" id="dependencies" value="Show Dependencies"
+                                                            onclick="dependenciesToggle(this);" />
+                                                        <input
+                                                            class="btn btn-default form-control"
+                                                            style="height: 28px; padding: 0px; width: 150px; font-size: 10pt; line-height: 1rem;"
+                                                            type="button" id="labels" value="Show Labels"
+                                                            onclick="labelsToggle(this);" />-->
 
                         </div>
                         <!-- col-sm-? -->
