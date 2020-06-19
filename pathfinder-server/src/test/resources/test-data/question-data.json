@@ -349,6 +349,20 @@
           ]
         },
         {
+          "name": "CURRHOST",
+          "title": "Where is the application currently deployed?",
+          "tooltip": "where does the application run",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|Bare metal server",
+            "2-GREEN|Virtual machine e.g. Red Hat Virtualisation, VMWare Virtualisation",
+            "3-GREEN|Private cloud e.g. OpenStack",
+            "4-GREEN|Public cloud provider compute instance e.g. AWS,Azure,GCP",
+            "5-AMBER|Platform as a service e.g. Heroku, Force.com, Google App Engine",
+            "6-AMBER|Other, please put in comments box below"
+          ]
+        },
+        {
           "name": "CONTAINERS",
           "title": "How mature is the existing containerisation process, if any?",
           "tooltip": "sample tooltip",
