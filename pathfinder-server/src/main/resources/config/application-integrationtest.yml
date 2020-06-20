@@ -1,0 +1,18 @@
+spring:
+    data:
+        mongodb:
+            database: pathfinder
+
+server:
+    port: 8080
+    compression:
+        enabled: true
+        mime-types: text/html,text/xml,text/plain,text/css, application/javascript, application/json
+        min-response-size: 1024
+
+database-user:
+database-password:
+database-name: pathfinder
+database-admin-password:
+dbhostname: 127.0.0.1
+dbhostport: 27017

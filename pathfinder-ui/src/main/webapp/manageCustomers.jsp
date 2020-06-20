@@ -5,7 +5,18 @@
   <link rel="import" href="head.jsp">
   <link rel="import" href="nav.jsp">
   -->
-	
+  <%@ taglib uri = "http://java.sun.com/jsp/jstl/core" prefix = "c" %>
+
+  <c:if test = "${empty disableTracking}">
+      <%@include file="usage-tracking.jsp"%>
+  </c:if>
+
+    <c:if test = "${not empty disableTracking}">
+        DEV MODE - No usage tracking
+    </c:if>
+
+
+
   <link href="assets/css/breadcrumbs.css" rel="stylesheet" />
   
   <%@include file="datatables-dependencies.jsp"%>

@@ -16,12 +16,12 @@
         <revision>1.0.2-SNAPSHOT</revision>
         <spring-boot.version>1.5.9.RELEASE</spring-boot.version>
         <jhipster-dependencies.version>0.1.7</jhipster-dependencies.version>
+        <lombok.version>1.18.12</lombok.version>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
 
     <modules>
-        <!--
-            <module>acceptance</module>
-        -->
         <module>pathfinder-ui</module>
         <module>pathfinder-server</module>
         <module>pathfinder-server-war</module>
@@ -51,18 +51,6 @@
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.9</version>
             </dependency>
-            <!--
-                <dependency>
-                    <groupId>org.slf4j</groupId>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <version>1.7.9</version>
-                </dependency>
-                <dependency>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                    <version>1.2.17</version>
-                </dependency>
-            -->
         </dependencies>
     </dependencyManagement>
 

@@ -1,0 +1,402 @@
+{
+  "pages": [
+    {
+      "title": "Application Details",
+      "questions": [
+        {
+          "name": "DEVOWNER",
+          "title": "Does the application development team understand and actively develop the application?",
+          "tooltip": "How much knowledge does the team have regarding the development or usage of the application",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|External 3rd party or COTS application ",
+            "2-RED|In maintenance mode, no app SME knowledge, poor documentation",
+            "3-AMBER|Maintenance mode, SME knowledge available",
+            "4-GREEN|Actively developed, SME knowledge available",
+            "5-GREEN|New Greenfield application"
+          ]
+        },
+        {
+          "name": "OPSOWNER",
+          "title": "How is the application supported in Production?",
+          "tooltip": "How much knowledge does the team have to support the application in production",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Application production support outsourced to 3rd party support provider. Ticket driven escalation process, no inhouse support resources.",
+            "2-RED|Production support provided by separate internal team, little interaction with development team.",
+            "3-AMBER|Multiple teams support the application using an established escalation model",
+            "4-GREEN|SRE based approach with knowledgeable and experienced operations team",
+            "5-GREEN|Pure DevOps model, the team that builds it is responsible for running it in Production"
+          ]
+        },
+        {
+          "name": "LEADTIME",
+          "title": "How long does it take from when code is committed to it being deployed to a stage that is production ready?",
+          "tooltip": "Gauge the development latency",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Not tracked",
+            "2-RED|More than six months",
+            "3-AMBER|Between one month and six months",
+            "4-GREEN|Between one week and one month",
+            "5-GREEN|Between one day and one week",
+            "6-GREEN|Less than one day"
+          ]
+        },
+        {
+          "name": "DEPLOYFREQ",
+          "title": "Deployment frequency",
+          "comment": "How often is the application deployed to production?",
+          "tooltip": "Gauge deployment frequency",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Not tracked",
+            "2-RED|Greater than once every six months",
+            "3-AMBER|Between once per month and once every six months",
+            "4-GREEN|Weekly deployments",
+            "5-GREEN|Daily deployments",
+            "6-GREEN|On demand (multiple deploys per day)"
+          ]
+        },
+        {
+          "name": "MTTR",
+          "title": "What is the Mean Time to Recover (MTTR) when a fault is found with the application in production?",
+          "tooltip": "Gauge the problem resolution time, MTTR (mean time to recover) is the average time it takes to repair/recover a system",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Not tracked",
+            "2-RED|One month or greater",
+            "3-AMBER|Between one day and one week",
+            "4-GREEN|Between one hour and one day",
+            "5-GREEN|Less than one hour"
+          ]
+        },
+        {
+          "name": "COMPLIANCE",
+          "title": "Does the application have any legal compliance requirements? e.g. PCI, HIPAA etc. Does the application have any licensing requirements? e.g. per core licensing",
+          "tooltip": "Assess the level of compliance and licensing required, think about what impact this will have when using a container platform to host the applications e.g. cost, fault reporting etc",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|High compliance requirements - both Legal and licensing",
+            "2-RED|Licensing compliance - licensing servers",
+            "3-AMBER|Legal compliance - distinct hardware, isolated clusters, compliance certification",
+            "4-GREEN| None"
+          ]
+        },
+        {
+          "name": "ARCHTYPE",
+          "title": "Which statement best describes the application architecture?",
+          "tooltip": "In simple terms describe the application architecture",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-AMBER|Massive Monolith (high memory, high CPU), singleton deployment, vertical scale only",
+            "2-AMBER|Massive Monolith (high memory, high CPU), non singleton, complex to scale horizontally",
+            "3-AMBER|Complex Monolith -  strict runtime dependency startup order, non resilient architecture",
+            "4-GREEN|Modern resilient monolith e.g. retries, circuit breaker etc",
+            "5-GREEN|Independently deployable components"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Application Dependencies",
+      "questions": [
+        {
+          "name": "DEPSHW",
+          "title": "Does the application require specific hardware capabilities to run?",
+          "tooltip": "OpenShift only runs on X86 and IBM Power/Z systems",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Non supported CPU requirements",
+            "2-RED|Custom or legacy hardware required",
+            "3-AMBER|GPU, specific worker node hardware requirements",
+            "4-GREEN|Supported CPU requirements"
+          ]
+        },
+        {
+          "name": "DEPSOS",
+          "title": "What operating system does the application require?",
+          "tooltip": "Only Linux and certain versions of Windows are supported in containers. Check the latest versions and requirements",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Non-supported Operating Systems - OSX, AIX, UNIX, SOLARIS",
+            "2-RED|Linux with custom kernel drivers or specific kernel version",
+            "3-AMBER|Linux with custom capabilities e.g. setcomp, root access",
+            "4-AMBER|Microsoft Windows",
+            "5-GREEN|Standard Linux"
+          ]
+        },
+        {
+          "name": "DEPS3RD",
+          "title": "Are 3rd party/Vendor components supported in containers?",
+          "tooltip": "While you can potentially run anything in a container doesn't mean that the vendor will support it",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Not recommended to run component in containers",
+            "2-RED|Component not supported by vendor when running in a container",
+            "3-AMBER|Supported but with restricted functionality/untested",
+            "4-AMBER|Supported but relies on self built images",
+            "5-GREEN|Fully vendor supported, certified images available",
+            "6-GREEN|No 3rd party components required"
+          ]
+        },
+        {
+          "name": "DEPSIN",
+          "title": "Dependencies - (Incoming/Northbound)",
+          "comment": "How dependent are other systems on this application and how easy are they to change?",
+          "tooltip": "Systems/Applications that calls the assessed application",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Difficult/Expensive to change dependent systems - legacy, 3rd party, external",
+            "2-AMBER|Many dependent systems, possible to change but expensive and time consuming",
+            "3-GREEN|Many dependent systems, possible to change as they're internally managed",
+            "4-GREEN|Internal dependencies only",
+            "5-GREEN|No dependent systems"
+          ]
+        },
+        {
+          "name": "DEPSOUT",
+          "title": "Dependencies - (Outgoing/Southbound)",
+          "comment": "How dependent is this application on other systems?",
+          "tooltip": "Systems/Applications that the assessed application calls",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Availability only verified when processing traffic",
+            "2-AMBER|Complex strict startup order required",
+            "3-AMBER|Application not ready until dependencies are verified available ",
+            "4-GREEN|Limited processing available if dependencies are unavailable",
+            "5-GREEN|No dependencies"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Application Architecture",
+      "questions": [
+        {
+          "name": "RESILIENCY",
+          "title": "How resilient is the application and how well does it recover from outages/restarts?",
+          "tooltip": "If the assessed application or one of its dependencies fails how does the application currently recover from the failure and is manual intervention required ",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Application cannot be restarted cleanly and requires manual intervention",
+            "2-RED|Application errors when southbound dependencies are unavailable and doesn't recover automatically",
+            "3-AMBER|Application functionality limited when dependency is unavailable but recovers once dependency is available",
+            "4-GREEN|Application employs resilient architecture patterns e.g. circuit breaker, retries etc",
+            "5-GREEN|Chaos Engineering principals followed, application containers randomly terminated to test resiliency in production"
+          ]
+        },
+        {
+          "name": "COMMS",
+          "title": "How does the external world communicate with the application?",
+          "tooltip": "How do external clients communicate with the application",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Non-IP protocols e.g. serial, IPX, AppleTalk",
+            "2-RED|IP based - hostname/ip encapsulated in payload",
+            "3-AMBER|TCP/UDP Traffic without host addressing e.g. SSH ",
+            "4-GREEN|TCP/UDP encapsulated using SSL with SNI header",
+            "5-GREEN|HTTP/HTTPS Web traffic "
+          ]
+        },
+        {
+          "name": "STATE",
+          "title": "How does the application handle it's internal state?",
+          "tooltip": "Does the assessed application have internal state that needs to be managed/retained and if so how?",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-AMBER|Shared memory between application components",
+            "2-AMBER|Managed/Coordinated externally from application e.g. external Zookeeper, data grid etc",
+            "3-AMBER|State maintained in non-shared, non-ephemeral storage",
+            "4-GREEN|Shared disk between application instances",
+            "5-GREEN|Stateless/Ephemeral container storage"
+          ]
+        },
+        {
+          "name": "HA",
+          "title": "Does the application have any unusual concerns around service discovery?",
+          "tooltip": "How does the application perform service discovery and how is it discovered",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Uses proprietary discovery technologies that are not kubernetes suitable e.g. hardcoded ip addresses, custom cluster manager",
+            "2-RED|Application requires restart on cluster changes to discover new service instances",
+            "3-AMBER|Service discovery compatible with kubernetes but requires specific libraries/services e.g. Hashicorp Consul, Netflix Eureka",
+            "4-GREEN|Standard kubernetes DNS name resolution",
+            "5-GREEN|None required"
+          ]
+        },
+        {
+          "name": "CLUSTER",
+          "title": "How is the application clustered?",
+          "tooltip": "Does the application need to be clustered and managed (if required)",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Manually configured clustering mechanism e.g. static clusters",
+            "2-RED|Application clustering handled by external off-PAAS cluster manager",
+            "3-GREEN|Application clustering mostly provided by application runtime using a kubernetes suitable mechanism",
+            "4-GREEN|None required"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Application Observability",
+      "questions": [
+        {
+          "name": "LOGS",
+          "title": "How does the application use logging and how is it accessed?",
+          "tooltip": "How do we get access the applications logs",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|No logging available or internal only with no export mechanism",
+            "2-RED|Custom binary logs exposed using non-standard protocols",
+            "3-AMBER|Logs exposed via syslog",
+            "4-AMBER|Log entries written to filesystem potentially in multiple files",
+            "5-GREEN|Application forwards logs to external system e.g. Splunk",
+            "6-GREEN|Configurable logging e.g. can be sent to STDOUT"
+          ]
+        },
+        {
+          "name": "METRICS",
+          "title": "Does the application provide metrics?",
+          "tooltip": "How do we get access the applications metrics if required, OCP defaults to CPU/Memory metrics",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-AMBER|No metrics exposed",
+            "2-AMBER|Internal metrics but not exposed externally",
+            "3-AMBER|Metrics exposed via binary protocols e.g. SNMP, JMX",
+            "4-GREEN|3rd party metrics solution e.g. Dynatrace, AppDynamics etc",
+            "5-GREEN|InBuilt Prometheus endpoint support"
+          ]
+        },
+        {
+          "name": "HEALTH",
+          "title": "How easy is it to determine the application health (liveness) and if it's ready to handle traffic (readiness)?",
+          "tooltip": "How can we determine if the app is ready to handle traffic and if its in good health as opposed to deadlocked/crashed/stuck but without crashing the container",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|No health or readiness query functionality available",
+            "2-RED|Custom watchdog process monitoring and managing the application",
+            "3-AMBER|Basic application health requires semi-complex scripting",
+            "4-GREEN|Dedicated, independent liveness and readiness endpoints",
+            "5-GREEN|Probes execute synthetic transactions to verify application health"
+          ]
+        },
+        {
+          "name": "PROFILE",
+          "title": "What best describes the applications runtime characteristics?",
+          "tooltip": "When running what does the profile of the application resemble e.g. how would it look if the cpu/memory usage was graphed, consider serverless as well",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Deterministic predictable real time execution/control requirements",
+            "2-AMBER|Latency sensitive applications e.g. voice, HFT",
+            "3-AMBER|Constant Traffic, High range of memory/cpu needs",
+            "4-GREEN|Intermittent traffic, predictable CPU/Memory Needs",
+            "5-GREEN|Constant Traffic, predictable CPU/Memory Needs"
+          ]
+        },
+        {
+          "name": "STARTUPTIME",
+          "title": "How long does it take the application to be ready to handle traffic?",
+          "tooltip": "How long does it take the application to boot",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED| 5+ minutes",
+            "2-AMBER| 2-5 minutes",
+            "3-AMBER| 1-2 minutes",
+            "4-GREEN| > 10 seconds but < 1 minute",
+            "5-GREEN| < 10 seconds"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Application Cross-Cutting concerns",
+      "questions": [
+        {
+          "name": "TEST",
+          "title": "What kind of testing does the application undergo?",
+          "tooltip": "Is the application tested, is it easily tested, is it tested in production",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|None, minimal manual testing only",
+            "2-AMBER|Minimal automated testing, UI focused only ",
+            "3-AMBER|Some Automated unit & regression testing, basic CI pipelines, modern test practices not followed",
+            "4-GREEN|Highly repeatable automated testing - Unit, Integration, smoke tests before production deployment, modern test practices followed",
+            "5-GREEN|Chaos Engineering principals followed. Constant testing in production e.g. A/B, experimentation"
+          ]
+        },
+        {
+          "name": "CONFIG",
+          "title": "How is the application configured?",
+          "tooltip": "How is the application currently configured and how might that look in a container platform, External servers are runtime dependencies hence AMBER",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Configuration compiled/patched into the application at installation time, application configured via user interface",
+            "2-RED|Externally stored e.g. DB and accessed using specific environment key e.g. hostname, ip address",
+            "3-AMBER|Multiple configuration files in multiple filesystem locations",
+            "4-AMBER|All environment configuration built into the application and enabled via system property at runtime",
+            "5-AMBER|External configuration server e.g. Spring Cloud Config Server, Hashicorp Consul ",
+            "6-GREEN|Configuration loaded from files in a single configurable location, environment variables"
+          ]
+        },
+        {
+          "name": "SECURITY",
+          "title": "How does the application acquire the necessary security credentials/certificates?",
+          "tooltip": "External systems are amber as they're a runtime dependency",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|HSM, hardware based encryption devices",
+            "2-RED|Certs, Keys bound to application IP addresses, generated at runtime per application instance",
+            "3-AMBER|Keys/Certs compiled into application",
+            "4-AMBER|Loaded via shared disk",
+            "5-AMBER|Retrieved from external system e.g. HasiCorp Vault, CyberArk Conjur",
+            "6-GREEN|Loaded via files",
+            "7-GREEN|None needed"
+          ]
+        },
+        {
+          "name": "DEPLOY",
+          "title": "How is the application currently deployed?",
+          "tooltip": "Understand the current deployment process and how might that look in a container platform",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Manual documented steps, user interface driven interaction",
+            "2-RED|Manual documented steps, some basic automation",
+            "3-AMBER|Simple automated deployment scripts",
+            "4-AMBER|Automated deployment, but manual or complex promotion through pipeline stages",
+            "5-GREEN|Automated deployment, Full CD Pipeline in place, promoting Applications through the pipeline stages with minimal intervention",
+            "6-GREEN|GitOps approach and/or B/G + Canary capable"
+          ]
+        },
+        {
+          "name": "CURRHOST",
+          "title": "Where is the application currently deployed?",
+          "tooltip": "where does the application run",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-GREEN|Bare metal server",
+            "2-GREEN|Virtual machine e.g. Red Hat Virtualisation, VMWare Virtualisation",
+            "3-GREEN|Private cloud e.g. OpenStack",
+            "4-GREEN|Public cloud provider compute instance e.g. AWS,Azure,GCP",
+            "5-AMBER|Platform as a service e.g. Heroku, Force.com, Google App Engine",
+            "6-AMBER|Other, please put in comments box below"
+          ]
+        },
+        {
+          "name": "CONTAINERS",
+          "title": "How mature is the existing containerisation process, if any?",
+          "tooltip": "If the team has used container previously how have they used them",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|Desktop-led container implementation designed to support running application on a laptop. Container treated like a VM with multiple services",
+            "2-RED|Use of a init process within the container to manage multiple container processes that run independently but are tightly integrated",
+            "3-AMBER|Some experience with containers but not fully defined as yet",
+            "4-GREEN|Proficient with containers and container platforms e.g. Swarm, K8S",
+            "5-GREEN|Application containerisation not attempted as yet"
+          ]
+        }
+      ]
+    }
+  ]
+}

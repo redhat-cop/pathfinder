@@ -18,6 +18,10 @@ oc process -f pathfinder-full-template.yaml|oc create -f-
 
 Login as admin/admin and start adding customers and apps. Once added assess the apps, review and decide what to do and then hit generate report to see the collective outcome and recommendations.
 
+# Usage Tracking
+Pathfinder uses analytics to track usage of the application. This can be turned off by setting the "-DdisableTracking=true" JVM option on the Pathfinder UI application.
+See the file "run-local.sh" under the pathfinder-ui directory for an example of how to do this.
+
 # License
 The code is made available under the Apache License, Version 2.0
 

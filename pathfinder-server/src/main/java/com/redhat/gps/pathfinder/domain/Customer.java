@@ -3,7 +3,6 @@ package com.redhat.gps.pathfinder.domain;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
-
 import javax.validation.constraints.NotNull;
 
 /*-
@@ -32,6 +31,8 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+
+
 
 /**
  * A Customer.
@@ -63,12 +64,11 @@ public class Customer implements Serializable {
     @Field("rtilink")
     private String rtilink;
 
-    @DBRef
+    @DBRef(lazy = true)
     private List<Member> members;
-    
-    @DBRef
-    private List<Applications> Applications;
 
+    @DBRef(lazy = true)
+    private List<Applications> Applications;
 
     public String getId() {
         return id;
@@ -154,13 +154,14 @@ public class Customer implements Serializable {
             Objects.equals(description, customer.description) &&
             Objects.equals(assessor, customer.assessor) &&
             Objects.equals(rtilink, customer.rtilink) &&
-            Objects.equals(members, customer.members) &&
-            Objects.equals(Applications, customer.Applications);
+            Objects.equals(members, customer.members);
+//                &&
+//            Objects.equals(Applications, customer.Applications);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, vertical, size, description, assessor, rtilink, Applications);
+        return Objects.hash(id, name, vertical, size, description, assessor, rtilink);
     }
 
     @Override
@@ -173,7 +174,7 @@ public class Customer implements Serializable {
             ", description='" + description + '\'' +
             ", assessor='" + assessor + '\'' +
             ", rtilink='" + rtilink + '\'' +
-            ", Applications=" + Applications +
+//            ", Applications=" + Applications +
             ", Members=" + members +
             '}';
     }

@@ -16,8 +16,6 @@
 	<artifactId>pathfinder-ui</artifactId>
 	<packaging>war</packaging>
 	<properties>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<build>
@@ -28,6 +26,10 @@
 				<artifactId>jetty-maven-plugin</artifactId>
 				<version>9.4.20.v20190813</version>
 				<configuration>
+					<war>${project.basedir}/target/root.war</war>
+<!--					<webAppConfig>-->
+<!--						<overrideDescriptor>src/main/webapp/WEB-INF/override-web.xml</overrideDescriptor>-->
+<!--					</webAppConfig>-->
 					<systemProperty>
 						<name>com.sun.management.jmxremote.port</name>
 						<value>9530</value>
@@ -36,6 +38,7 @@
 						<name>com.sun.management.jmxremote.authenticate</name>
 						<value>false</value>
 					</systemProperty>
+					<dumpOnStart>false</dumpOnStart>
 				</configuration>
 			</plugin>
 		</plugins>
@@ -45,6 +48,11 @@
 			<groupId>org.mitre.dsmiley.httpproxy</groupId>
 			<artifactId>smiley-http-proxy-servlet</artifactId>
 			<version>1.11</version>
+		</dependency>
+		<dependency>
+			<groupId>jstl</groupId>
+			<artifactId>jstl</artifactId>
+			<version>1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.bcel</groupId>
@@ -87,11 +95,11 @@
 			<artifactId>mjson</artifactId>
 			<version>1.4.0</version>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.data</groupId>
-			<artifactId>spring-data-mongodb</artifactId>
-			<version>1.10.4.RELEASE</version>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.data</groupId>-->
+<!--			<artifactId>spring-data-mongodb</artifactId>-->
+<!--			<version>1.10.4.RELEASE</version>-->
+<!--		</dependency>-->
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
@@ -101,5 +109,20 @@
 			<artifactId>guava</artifactId>
 			<version>23.5-jre</version>
 		</dependency>
+	 <dependency>
+	  <groupId>org.glassfish.jersey.containers</groupId>
+	  <artifactId>jersey-container-servlet</artifactId>
+	  <version>2.5.1</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.glassfish.jersey.core</groupId>
+	  <artifactId>jersey-client</artifactId>
+	  <version>2.5.1</version>
+	 </dependency>
+	 <dependency>
+	  <groupId>org.glassfish.jersey.media</groupId>
+	  <artifactId>jersey-media-moxy</artifactId>
+	  <version>2.5.1</version>
+	 </dependency>
 	</dependencies>
 </project>

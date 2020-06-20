@@ -56,6 +56,12 @@ public class Applications implements Serializable {
     @Field("stereotype")
     private String stereotype;
 
+    @DBRef(lazy = true)
+    private List<Assessments> Assessments;
+
+    @DBRef(lazy = true)
+    private ApplicationAssessmentReview review;
+
     @Override
     public String toString() {
         return "Applications{" +
@@ -96,11 +102,7 @@ public class Applications implements Serializable {
         this.stereotype = stereotype;
     }
 
-    @DBRef
-    private List<Assessments> Assessments;
 
-    @DBRef
-    private ApplicationAssessmentReview review;
 
     public List<Assessments> getAssessments() {
         return Assessments;
@@ -110,7 +112,6 @@ public class Applications implements Serializable {
         this.Assessments = Assessments;
     }
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
     }
@@ -158,8 +159,4 @@ public class Applications implements Serializable {
       this.owner = value;
       return this;
     }
-
-    // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here, do not remove
-
-
 }

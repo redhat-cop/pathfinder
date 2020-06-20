@@ -22,10 +22,14 @@ package com.redhat.gps.pathfinder.domain;
  * #L%
  */
 
+import com.redhat.gps.pathfinder.web.api.SurveyPayload;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -39,18 +43,22 @@ import java.util.Objects;
  */
 @Document(collection = "assessments")
 @Data
+@Component
 public class Assessments implements Serializable {
-
     private static final long serialVersionUID = 1L;
-
 
     @Id
     private String id;
 
+    //Results store the answer selected
     @NotNull
     @Field("results")
-    private HashMap<String, String> results;
+    private HashMap<String, String> results = new HashMap<>();
 
+    //qanswers stores the text value of the selected answer i.e. what text did the customer see
+    @NotNull
+    @Field("qanswers")
+    private HashMap<String, String> qanswers = new HashMap<>();
 
     @Field("dependenciesIN")
     private List<String> depsIN = new ArrayList<String>();
@@ -87,7 +95,6 @@ public class Assessments implements Serializable {
     }
 
     public String getDatetime() {
-
         return datetime;
     }
 
@@ -98,7 +105,6 @@ public class Assessments implements Serializable {
     @Field("AssessmentDateTime")
     private String datetime;
 
-    // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
     public String getId() {
         return id;
     }
@@ -111,13 +117,8 @@ public class Assessments implements Serializable {
         return results;
     }
 
-    public Assessments results(HashMap<String, String> results) {
-        this.results = results;
-        return this;
-    }
-
-    public void setResults(HashMap<String, String> results) {
-        this.results = results;
+    public void setResults(HashMap<String, String> resultsIn) {
+        this.results = resultsIn;
     }
 
     public List<String> getDepsIN() {
@@ -134,5 +135,13 @@ public class Assessments implements Serializable {
 
     public void setDepsOUT(List<String> depsOUT) {
         this.depsOUT = depsOUT;
+    }
+
+    public HashMap<String, String> getQanswers() {
+        return qanswers;
+    }
+
+    public void setQanswers(HashMap<String, String> qanswers) {
+        this.qanswers = qanswers;
     }
 }

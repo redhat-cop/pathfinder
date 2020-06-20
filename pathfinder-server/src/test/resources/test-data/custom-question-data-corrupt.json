@@ -1,0 +1,18 @@
+{
+  "pages": [
+    {
+      "title": "Application Details",
+      "questions": [
+        {
+          "name": "DEVOWNER",
+          "title": "Does the application development team understand and actively develop the application?",
+          "tooltip": "sample tooltip",
+          "choices": [
+            "0-UNKNOWN|Unknown",
+            "1-RED|External 3rd party or COTS application ",
+            "2-RED|In maintenance mode, no app SME knowledge, poor documentation",
+            "3-AMBER|Maintenance mode, SME knowledge available",
+            "4-GREEN|Actively developed, SME knowledge available",
+            "5-GREEN|New Greenfield application"
+          ]
+        },

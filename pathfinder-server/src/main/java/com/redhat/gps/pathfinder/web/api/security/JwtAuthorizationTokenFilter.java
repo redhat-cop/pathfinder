@@ -62,23 +62,17 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         logger.debug("processing authentication for '{}'", request.getRequestURL());
-        
-//        String requestHeader = request.getHeader(tokenHeader);
-        
+
         String username = null;
         String authToken=null;
         if (authToken==null) authToken = request.getHeader("Authorization");
-//        if (authToken==null) authToken = request.getHeader("Access-Control-Request-Headers");
         if (authToken==null) authToken = request.getParameter("_t");
-        
-        
+
         if (authToken!=null && authToken.startsWith("Bearer "))
           authToken=authToken.substring(7);
         
         logger.debug("Discovered token: {}", authToken);
-        
-//        if (authToken==null || "".equals(authToken))
-//          throw new AccessDeniedException("Access is denied");
+
         
         if (authToken!=null && !"".equals(authToken)){
           try {
@@ -89,34 +83,16 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
               logger.warn("the token is expired and not valid anymore", e);
           }
         }else{
-          logger.warn("couldn't find bearer string, will ignore the header");
+          logger.debug("couldn't find bearer string, will ignore the header");
         }
         
-//        if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
-//            authToken = requestHeader.substring(7);
-//            try {
-//                username = jwtTokenUtil.getUsernameFromToken(authToken);
-//            } catch (IllegalArgumentException e) {
-//                logger.error("an error occured during getting username from token", e);
-//            } catch (ExpiredJwtException e) {
-//                logger.warn("the token is expired and not valid anymore", e);
-//            }
-//        } else {
-//            logger.warn("couldn't find bearer string, will ignore the header");
-//        }
-
         logger.debug("checking authentication for user '{}'", username);
         
-//        logger.debug("XXXXXXXXXXXXXXXX "+SecurityContextHolder.getContext().getAuthentication().getName());
-//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         boolean wasNull=SecurityContextHolder.getContext().getAuthentication() == null;
         boolean wasAnon=!wasNull?SecurityContextHolder.getContext().getAuthentication().getName().equals("anonymousUser"):false;
         
         if (username != null && (wasNull || wasAnon)) {
             logger.debug("security context was "+(wasNull?"null":"anonymous")+", so authorizing user");
-            
-            
-//            logger.debug("XXXXXXXX userdetailsservice="+this.userDetailsService);
             
             // It is not compelling necessary to load the use details from the database. You could also store the information
             // in the token and read it from it. It's up to you ;)
@@ -132,7 +108,7 @@ public class JwtAuthorizationTokenFilter extends OncePerRequestFilter {
                 logger.info("authorized user '{}', setting security context", username);
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }else{
-              logger.debug("XXXXXXXX jwt token was NOT valid");
+              logger.warn("XXXXXXXX jwt token was NOT valid");
             }
         }
 

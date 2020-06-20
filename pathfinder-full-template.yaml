@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Template
 metadata:
-  name: pathfinder-server-template
+  name: pathfinder-application-template
 objects:
 - apiVersion: v1
   kind: Service
@@ -13,7 +13,7 @@ objects:
     creationTimestamp: null
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     ports:
@@ -28,26 +28,7 @@ objects:
     - name: 8778-tcp
       port: 8778
       protocol: TCP
-      targetPort: 8778
-    readinessProbe:
-      failureThreshold: 3
-      httpGet:
-        path: /management/health
-        port: 8080
-        scheme: HTTP
-      initialDelaySeconds: 30
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 1  
-    livenessProbe:
-      failureThreshold: 3
-      httpGet:
-        path: /management/health
-        port: 8080
-        scheme: HTTP
-      periodSeconds: 10
-      successThreshold: 1
-      timeoutSeconds: 1  
+      targetPort: 8778  
     selector:
       app: pathfinder-server
       deploymentconfig: pathfinder-server
@@ -63,7 +44,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     lookupPolicy:
@@ -72,11 +53,11 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: quay.io/pathfinder/pathfinder-server
+        name: quay.io/pathfinder/pathfinder-server:${VERSION}
       generation: null
       importPolicy:
         scheduled: true
-      name: latest
+      name: ${VERSION}
       referencePolicy:
         type: ""
 - apiVersion: v1
@@ -87,7 +68,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     lookupPolicy:
@@ -96,11 +77,11 @@ objects:
     - annotations: null
       from:
         kind: DockerImage
-        name: quay.io/pathfinder/pathfinder-ui
+        name: quay.io/pathfinder/pathfinder-ui:${VERSION}
       generation: null
       importPolicy:
         scheduled: true
-      name: latest
+      name: ${VERSION}
       referencePolicy:
         type: ""
 - apiVersion: v1
@@ -111,7 +92,7 @@ objects:
     generation: 1
     labels:
       app: pathfinder-server
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-server
   spec:
     replicas: 1
@@ -136,7 +117,7 @@ objects:
         labels:
           app: pathfinder-server
           deploymentconfig: pathfinder-server
-          bundle: pathfinder
+          bundle: pathfinder-${VERSION}
       spec:
         containers:
         - env:
@@ -145,7 +126,7 @@ objects:
               -Dspring.cloud.kubernetes.secrets.name=mongodb -Dspring.cloud.kubernetes.secrets.paths=/tmp/secrets
           - name: JAVA_ENABLE_DEBUG
             value: "false"
-          image: 172.30.1.1:5000/pathfinder/pathfinder-server:latest
+          image: ''
           imagePullPolicy: Always
           name: pathfinder-server
           ports:
@@ -177,9 +158,9 @@ objects:
             timeoutSeconds: 1
           resources:
             limits:
-              memory: 1Gi
+              memory: 500Mi
             requests:
-              memory: 700Mi
+              memory: 300Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
           volumeMounts:
@@ -204,7 +185,7 @@ objects:
         - pathfinder-server
         from:
           kind: ImageStreamTag
-          name: pathfinder-server:latest
+          name: pathfinder-server:${VERSION}
       type: ImageChange
 - apiVersion: v1
   kind: Service
@@ -215,7 +196,7 @@ objects:
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     ports:
@@ -232,16 +213,18 @@ objects:
   kind: Route
   metadata:
     annotations:
-      description: Route for application's http service.
+      description: Route to Pathfinder UI http service.
       openshift.io/host.generated: "true"
     creationTimestamp: null
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
-    name: app
+      bundle: pathfinder-${VERSION}
+    name: pathfinder-${VERSION}
   spec:
     path: "" 
+    tls:
+      termination: edge
     to:
       kind: Service
       name: pathfinder-ui
@@ -255,7 +238,7 @@ objects:
     labels:
       app: pathfinder-ui
       application: pathfinder-ui
-      bundle: pathfinder
+      bundle: pathfinder-${VERSION}
     name: pathfinder-ui
   spec:
     replicas: 1
@@ -274,7 +257,7 @@ objects:
           app: pathfinder-ui
           application: pathfinder-ui
           deploymentConfig: pathfinder-ui
-          bundle: pathfinder
+          bundle: pathfinder-${VERSION}
         name: pathfinder-ui
       spec:
         containers:
@@ -287,7 +270,7 @@ objects:
             value: http://pathfinder-server:8080
           - name: PATHFINDER_SELF
             value: .
-          image: 172.30.1.1:5000/pathfinder/pathfinder-ui:latest
+          image: ''
           imagePullPolicy: Always
           name: pathfinder-ui
           ports:
@@ -308,7 +291,11 @@ objects:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
-          resources: {}
+          resources:
+            limits:
+              memory: 500Mi
+            requests:
+              memory: 300Mi
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
         dnsPolicy: ClusterFirst
@@ -324,7 +311,7 @@ objects:
         - pathfinder-ui
         from:
           kind: ImageStreamTag
-          name: pathfinder-ui:latest
+          name: pathfinder-ui:${VERSION}
       type: ImageChange
     - type: ConfigChange
   status:
@@ -334,3 +321,9 @@ objects:
     replicas: 0
     unavailableReplicas: 0
     updatedReplicas: 0
+parameters:
+- description: The image tag to be used, defaults to release
+  displayName: ImageTag
+  name: VERSION
+  required: true
+  value: release
