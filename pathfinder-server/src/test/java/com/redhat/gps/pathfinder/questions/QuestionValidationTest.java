@@ -262,7 +262,7 @@ public class QuestionValidationTest {
         String processedQ = new QuestionProcessor().GenerateSurveyPages(rawQuestionsJson, customQuestionsJson, questionsJsonSchema);
         HashMap<String, List<String>> result = GenerateSurveyQA(processedQ);
         assertNotNull(result);
-        assertEquals(30,(result.entrySet().size()) );
+        assertEquals(42,(result.entrySet().size()) );
     }
 
 

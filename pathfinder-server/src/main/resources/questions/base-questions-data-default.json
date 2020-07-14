@@ -397,6 +397,178 @@
           ]
         }
       ]
+    },
+    {
+      "title": "OpenShift Virtualisation - Architecture",
+      "questions": [
+        {
+          "name": "CNVUSECASE",
+          "title": "Is the VM used in any of the following use-cases?",
+          "tooltip": "Determine whether an alternative to OSV is needed for these use-cases",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|VoIP based tools (e.g. Skype, Jabber)",
+            "3-AMBER|Virtual desktop infrastructure (VDI)",
+            "4-AMBER|Big Data analytics (Hadoop, ElasticSearch)",
+            "5-AMBER|Machine Learning / Artificial Intelligence",
+            "6-GREEN|None of the use-cases are applicable"
+          ]
+        },
+        {
+          "name": "CNVCOMPUTE",
+          "title": "Are any of the following techniques used to manage VM memory allocation?",
+          "tooltip": "What type of memory overallocation methods are used?",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-AMBER|Transparent page sharing to reduce memory consumption",
+            "3-AMBER|Ballooning for memory overcommitment",
+            "4-GREEN|No techniques used. Memory is never shared/overcommitted"
+          ]
+        },
+        {
+          "name": "CNVNETWORK",
+          "title": "What is the level of IPv6 usage in the application's VMs?",
+          "tooltip": "Establish if/how IPv6 is needed for the VM",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Currently using only IPv6 single stack",
+            "3-AMBER|Planning or actively migrating to IPv6 single stack",
+            "4-GREEN|Planning or actively migrating to IPv4 / IPv6 dual stack",
+            "5-GREEN|Currently using IPv4 / IPv6 dual stack",
+            "6-GREEN|Currently using only IPv4 single stack with no plans to change"
+          ]
+        },
+        {
+          "name": "CNVSECURITY",
+          "title": "Does the VM utilise any hypervisor layer security services",
+          "tooltip": "",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-AMBER|Yes - agentless AV protection",
+            "3-AMBER|Yes - IPS and/or IPS",
+            "4-GREEN|Yes - Edge firewalls and/or microsegmentation of east-west traffic"
+          ]
+        },
+        {
+          "name": "CNVSTORAGE",
+          "title": "Which of the following best describes how storage should be presented to the applications VMs?",
+          "tooltip": "Determine the impact will storage architecture has on target platform",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Clustered file system mounted directly in VMs (GPFS, StorNext, Lustre)",
+            "3-AMBER|Datastores shared across hosts using SAN protocols (e.g. FC, iSCSI, FCoE) or file protocols (e.g. NFS/CIFS)",
+            "4-GREEN|Block devices attached to a single host",
+            "5-GREEN|File protocols mounted directly into the VM (NFS/CIFS)",
+            "6-GREEN|Object storage consumed directly by the application (e.g s3 API or SDK)"
+          ]
+        },
+        {
+          "name": "CNVOS",
+          "title": "What platform architecture and OS does the application's VM's depend on?",
+          "tooltip": "Determine if guest is supported on OSV, RHV or OSP",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Solaris SPARC",
+            "3-RED|Solaris x86-64",
+            "4-AMBER|AIX",
+            "5-AMBER|Linux POWER",
+            "6-GREEN|Linux / Windows x86-64"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "OpenShift Virtualisation - Operational Concerns",
+      "questions": [
+        {
+          "name": "CNVPROVISION",
+          "title": "How are guest operating systems typically provisioned?",
+          "tooltip": "Determine if existing provisioning processes are supported by OSV functionality",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|From a snapshot of an existing VM",
+            "3-AMBER|From a clone of an existing VM",
+            "4-GREEN|From a template or image available in a catalogue",
+            "5-GREEN|From the network (e.g. PXE)"
+          ]
+        },
+        {
+          "name": "CNVLOGS",
+          "title": "How are VM logs processed?",
+          "tooltip": "Establish likely impact to management tools and procedures if VM is migrated",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-AMBER|VM logs are collected and analysed using tools integrated with the virtualisation platform",
+            "3-GREEN|VM logs are collected and analysed using a 3rd-party product (e.g. Splunk)",
+            "4-GREEN|VM logs are collected and manually analysed (e.g. ELK / EFK)",
+            "5-GREEN|No logs are collected"
+          ]
+        },
+        {
+          "name": "CNVSDK",
+          "title": "To what extent are SDKs used for the provisioning and management of VM",
+          "tooltip": "Establish likely impact to management tools and procedures if VM is migrated",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Heavy usage of Perl",
+            "3-AMBER|Heavy usage of Java, Python or Ruby",
+            "4-GREEN|Light usage of Java, Python, Ruby or Perl",
+            "5-GREEN|No SDKs are used"
+          ]
+        },
+        {
+          "name": "CNVBACKUP",
+          "title": "What backup strategy is used to protect VM data?",
+          "tooltip": "What will be the impact to backup and restore services?",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|3rd party tool, off-host (e.g. Netbackup, TSM, Veeam)",
+            "3-RED|VM snapshots (Full backup)",
+            "4-GREEN|3rd Party agent-based (e.g. Netbackup, TSM, Veeam)",
+            "5-GREEN|No backup taken"
+          ]
+        }
+      ]
+    },
+    {
+      "title": "OpenShift Virtualisation - Workloads",
+      "questions": [
+        {
+          "name": "CNVDBWL",
+          "title": "Is the VM running a database service?",
+          "tooltip": "Is expert DBA input required? Can the VM be replaced by a containerised DB instance?",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Yes - Clustered RDBMS (e.g. Oracle RAC)",
+            "3-AMBER|Yes - Non-clustered RDBMS (e.g. Oracle, MySQL, Postgres)",
+            "4-GREEN|Yes - other types of databases such as document-orientated (e.g. MongoDB, Couchbase) or key-value (Redis, Memcached)",
+            "5-GREEN|No databases are running in the VM"
+          ]
+        },
+        {
+          "name": "CNVHAPPS",
+          "title": "To what extent are high availability features required to support the application's availability SLAs?",
+          "tooltip": "Which platform best supports applications HA needs? (App level HA would be an improvement)",
+          "choices": [
+            "0-GREEN|Not Applicable",
+            "1-UNKNOWN|Unknown",
+            "2-RED|Advanced such as VM state continuously replicated to standby VM on another host",
+            "3-AMBER|VMs are subject to resource balancing across hosts (e.g. using DRS)",
+            "4-GREEN|Basic features such as restarting / relocating VMs due to failure"
+          ]
+        }
+      ]
     }
   ]
 }
