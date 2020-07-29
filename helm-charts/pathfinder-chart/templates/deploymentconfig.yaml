@@ -1,0 +1,202 @@
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  annotations: null
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: pathfinder-server
+    bundle: pathfinder-{{ .Values.version }}
+  name: pathfinder-server
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    app: pathfinder-server
+    deploymentconfig: pathfinder-server
+  strategy:
+    activeDeadlineSeconds: 21600
+    resources: {}
+    rollingParams:
+      intervalSeconds: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
+      timeoutSeconds: 600
+      updatePeriodSeconds: 1
+    type: Rolling
+  template:
+    metadata:
+      annotations: null
+      creationTimestamp: null
+      labels:
+        app: pathfinder-server
+        bundle: pathfinder-{{ .Values.version }}
+        deploymentconfig: pathfinder-server
+    spec:
+      containers:
+      - env:
+        - name: JAVA_OPTIONS
+          value: -Xmx1024m -Dspring.cloud.kubernetes.secrets.enableApi=false -Dspring.profiles.active=swagger,prodose
+            -Dspring.cloud.kubernetes.secrets.name=mongodb -Dspring.cloud.kubernetes.secrets.paths=/tmp/secrets
+        - name: JAVA_ENABLE_DEBUG
+          value: "false"
+        image: ""
+        imagePullPolicy: Always
+        livenessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /management/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 60
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        name: pathfinder-server
+        ports:
+        - containerPort: 8080
+          protocol: TCP
+        - containerPort: 8443
+          protocol: TCP
+        - containerPort: 8778
+          protocol: TCP
+        readinessProbe:
+          failureThreshold: 3
+          httpGet:
+            path: /management/health
+            port: 8080
+            scheme: HTTP
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 300Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /tmp/secrets/mongodb
+          name: mongodb-secret
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: mongodb-secret
+        secret:
+          defaultMode: 420
+          secretName: mongodb
+  test: false
+  triggers:
+  - type: ConfigChange
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - pathfinder-server
+      from:
+        kind: ImageStreamTag
+        name: pathfinder-server:{{ .Values.version }}
+    type: ImageChange
+status:
+  availableReplicas: 0
+  latestVersion: 0
+  observedGeneration: 0
+  replicas: 0
+  unavailableReplicas: 0
+  updatedReplicas: 0
+---
+apiVersion: apps.openshift.io/v1
+kind: DeploymentConfig
+metadata:
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: pathfinder-ui
+    application: pathfinder-ui
+    bundle: pathfinder-{{ .Values.version }}
+  name: pathfinder-ui
+spec:
+  replicas: 1
+  selector:
+    deploymentConfig: pathfinder-ui
+  strategy:
+    activeDeadlineSeconds: 21600
+    recreateParams:
+      timeoutSeconds: 600
+    resources: {}
+    type: Recreate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: pathfinder-ui
+        application: pathfinder-ui
+        bundle: pathfinder-{{ .Values.version }}
+        deploymentConfig: pathfinder-ui
+      name: pathfinder-ui
+    spec:
+      containers:
+      - env:
+        - name: JWS_ADMIN_USERNAME
+          value: VnTsjJjY
+        - name: JWS_ADMIN_PASSWORD
+          value: xfnfyTKW
+        - name: PATHFINDER_SERVER
+          value: http://pathfinder-server:8080
+        - name: PATHFINDER_SELF
+          value: .
+        image: ""
+        imagePullPolicy: Always
+        name: pathfinder-ui
+        ports:
+        - containerPort: 8778
+          name: jolokia
+          protocol: TCP
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - -c
+            - curl --noproxy '*' -s -u VnTsjJjY:xfnfyTKW 'http://localhost:8080/manager/jmxproxy/?get=Catalina%3Atype%3DServer&att=stateName'
+              |grep -iq 'stateName *= *STARTED'
+          failureThreshold: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 1
+        resources:
+          limits:
+            memory: 500Mi
+          requests:
+            memory: 300Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 60
+  test: false
+  triggers:
+  - imageChangeParams:
+      automatic: true
+      containerNames:
+      - pathfinder-ui
+      from:
+        kind: ImageStreamTag
+        name: pathfinder-ui:{{ .Values.version }}
+    type: ImageChange
+  - type: ConfigChange
+status:
+  availableReplicas: 0
+  latestVersion: 0
+  observedGeneration: 0
+  replicas: 0
+  unavailableReplicas: 0
+  updatedReplicas: 0

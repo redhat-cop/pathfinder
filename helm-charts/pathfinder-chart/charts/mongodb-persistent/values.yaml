@@ -1,0 +1,7 @@
+database_service_name: mongodb
+memory_limit: 512Mi
+mongodb_database: pathfinder
+mongodb_user: pathfinderuser
+mongodb_version: "3.6"
+namespace: openshift
+volume_capacity: 1Gi

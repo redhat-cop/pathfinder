@@ -1,0 +1,49 @@
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  annotations: null
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: pathfinder-server
+    bundle: pathfinder-{{ .Values.version }}
+  name: pathfinder-server
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - annotations: null
+    from:
+      kind: DockerImage
+      name: quay.io/pathfinder/pathfinder-server:{{ .Values.version }}
+    generation: null
+    importPolicy:
+      scheduled: true
+    name: {{ .Values.version }}
+    referencePolicy:
+      type: ""
+---
+apiVersion: image.openshift.io/v1
+kind: ImageStream
+metadata:
+  annotations: null
+  creationTimestamp: null
+  generation: 1
+  labels:
+    app: pathfinder-ui
+    bundle: pathfinder-{{ .Values.version }}
+  name: pathfinder-ui
+spec:
+  lookupPolicy:
+    local: false
+  tags:
+  - annotations: null
+    from:
+      kind: DockerImage
+      name: quay.io/pathfinder/pathfinder-ui:{{ .Values.version }}
+    generation: null
+    importPolicy:
+      scheduled: true
+    name: {{ .Values.version }}
+    referencePolicy:
+      type: ""

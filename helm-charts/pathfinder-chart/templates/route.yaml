@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  annotations:
+    description: Route to Pathfinder UI http service.
+    openshift.io/host.generated: "true"
+  creationTimestamp: null
+  labels:
+    app: pathfinder-ui
+    application: pathfinder-ui
+    bundle: pathfinder-{{ .Values.version }}
+  name: pathfinder-{{ .Values.version }}
+spec:
+  path: ""
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: pathfinder-ui
+    weight: 100
+  wildcardPolicy: None
