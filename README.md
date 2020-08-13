@@ -16,6 +16,14 @@ oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
 
+# Installation using HELM
+```
+git clone https://github.com/redhat-cop/pathfinder
+
+helm install pathfinder  ./pathfinder/helm-charts/pathfinder-chart
+
+```
+
 Login as admin/admin and start adding customers and apps. Once added assess the apps, review and decide what to do and then hit generate report to see the collective outcome and recommendations.
 
 # Usage Tracking
