@@ -16,6 +16,12 @@ oc new-app --template=mongodb-persistent --param=MONGODB_DATABASE=pathfinder
 oc process -f pathfinder-full-template.yaml|oc create -f-
 ```
 
+Note: If the mongodb template can't be found, you can restore it after creating your new project and before creating the mongodb instance:
+```
+wget https://raw.githubusercontent.com/openshift/origin/master/examples/db-templates/mongodb-persistent-template.json
+oc create -f mongodb-persistent-template.json
+```
+
 Login as admin/admin and start adding customers and apps. Once added assess the apps, review and decide what to do and then hit generate report to see the collective outcome and recommendations.
 
 # Usage Tracking
