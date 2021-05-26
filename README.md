@@ -24,6 +24,25 @@ oc create -f mongodb-persistent-template.json
 
 Login as admin/admin and start adding customers and apps. Once added assess the apps, review and decide what to do and then hit generate report to see the collective outcome and recommendations.
 
+## Using custom questions
+
+Assuming the mongo db is present.
+
+Create a config map with questions customization with the following command.
+```
+oc create configmap pathfinder-custom-files \
+  --from-file=customQuestions.json=pathfinder-server/src/main/resources/questions/custom-questions-example.json
+```
+
+Create a pathfinder-server and pathfinder-ui with custom questions using this command:
+
+```
+oc process --param=VERSION=master -f pathfinder-full-custom-questions-template.yaml | oc create -f-
+```
+
+NOTE: `master` version is required, until `release` will include this feature.
+
+
 # Usage Tracking
 Pathfinder uses analytics to track usage of the application. This can be turned off by setting the "-DdisableTracking=true" JVM option on the Pathfinder UI application.
 See the file "run-local.sh" under the pathfinder-ui directory for an example of how to do this.
