@@ -1,5 +1,7 @@
 # Pathfinder
 
+🚨 **NOTE** 🚨: This project is not more under development or maintanance mode. This project was moved to the [Tackle project](https://github.com/konveyor/tackle-pathfinder) in [Konveyor community](https://github.com/konveyor). Check it to get the latest features and updates 💪.
+
 A workload assessment tool used to determine an applications suitability for running on OpenShift/Kubernetes
 
 [![Build Status](https://travis-ci.org/redhat-cop/pathfinder.svg?branch=master)](https://travis-ci.org/redhat-cop/pathfinder) [![Docker Repository on Quay](https://quay.io/repository/pathfinder/pathfinder-server/status "Docker Repository on Quay")](https://quay.io/repository/pathfinder/pathfinder-server)
